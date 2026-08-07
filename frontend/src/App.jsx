@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-
-const SAMPLE_STATIONS = ["Bhawarkuwa", "navlakha", "GPO", "Palasiya"];
+import { SAMPLE_STATIONS } from "./data/SampleStations";
+import MapView from "./components/MapView";
 
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -15,7 +15,8 @@ export default function App() {
   const totalKeystrokesRef = useRef(0);
   const correctKeystrokesRef = useRef(0);
 
-  const targetStation = SAMPLE_STATIONS[currentIndex];
+  const currentStation = SAMPLE_STATIONS[currentIndex];
+  const targetStation = currentStation.name;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -179,6 +180,10 @@ export default function App() {
             DELHI METRO • YELLOW LINE
           </span>
         </div>
+        {/* 🗺️ Interactive Map (Passing stations & activeIndex as props) */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <MapView stations={SAMPLE_STATIONS} activeIndex={currentIndex} />
+        </div>
         {/* Live Telemetry Display */}
         <div
           style={{
@@ -270,6 +275,7 @@ export default function App() {
           </span>
           <span>MODE: LOCAL</span>
         </div>
+        <MapView />
       </div>
     </div>
   );

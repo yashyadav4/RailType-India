@@ -1,0 +1,26 @@
+import { useState } from "react";
+const SAMPLE_STATIONS = ["Bhawarkuwa", "navlakha", "GPO", "Palasiya"];
+
+export default function App() {
+  const [userInput, setUserInput] = useState("");
+  const [targetIndex, setTargetIndex] = useState(0);
+  const targetStation = SAMPLE_STATIONS[targetIndex];
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+
+    setUserInput(value);
+    if (targetIndex < SAMPLE_STATIONS.length - 1) {
+      if (value.trim().toLowerCase() === targetStation.toLowerCase()) {
+        setTargetIndex(targetIndex + 1);
+        setUserInput("");
+      }
+    }
+  };
+
+  return (
+    <div>
+      <div></div>
+      <input type="text" value={userInput} onChange={handleInputChange} />
+    </div>
+  );
+}
