@@ -1,55 +1,73 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SAMPLE_STATIONS } from "./data/SampleStations";
 import MapView from "./components/MapView";
 
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
-  const [shake, setShake] = useState("");
+  const [shake, setShake] = useState(false);
 
-  const [wpm, setWpm] = useState(0);
+  // HUD Telemetry States
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [cpm, setCpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
 
-  // Telemetry Refs (Silent Engine - no re-renders!)
+  // Telemetry Refs
   const startTimeRef = useRef(null);
   const totalKeystrokesRef = useRef(0);
   const correctKeystrokesRef = useRef(0);
+  const inputRef = useRef(null);
 
-  const currentStation = SAMPLE_STATIONS[currentIndex];
+  const currentStation = SAMPLE_STATIONS[currentIndex] || SAMPLE_STATIONS[0];
   const targetStation = currentStation.name;
+  const prevStation =
+    currentIndex > 0 ? SAMPLE_STATIONS[currentIndex - 1].name : "START";
+  const nextStation =
+    currentIndex < SAMPLE_STATIONS.length - 1
+      ? SAMPLE_STATIONS[currentIndex + 1].name
+      : "TERMINUS";
 
+  // Realtime Timer & Stats Loop
   useEffect(() => {
     const timer = setInterval(() => {
       if (!startTimeRef.current) return;
 
-      const elapsedSeconds = (Date.now() - startTimeRef.current) / 1000;
-      if (elapsedSeconds < 1) return;
+      const now = Date.now();
+      const diff = now - startTimeRef.current;
+      setElapsedMs(diff);
 
-      // WPM = (Total Correct Chars / 5) / Elapsed Minutes
-      const wordsTyped = correctKeystrokesRef.current / 5;
-      const minutesElapsed = elapsedSeconds / 60;
-      const calculatedWpm = Math.round(wordsTyped / minutesElapsed);
+      const elapsedMinutes = diff / 1000 / 60;
+      if (elapsedMinutes > 0) {
+        const calculatedCpm = Math.round(
+          correctKeystrokesRef.current / elapsedMinutes,
+        );
+        setCpm(calculatedCpm);
+      }
 
-      // Accuracy = (Correct Keystrokes / Total Keystrokes) * 100
-      const calculatedAccuracy =
+      const calculatedAcc =
         totalKeystrokesRef.current > 0
           ? Math.round(
               (correctKeystrokesRef.current / totalKeystrokesRef.current) * 100,
             )
           : 100;
-
-      setWpm(calculatedWpm);
-      setAccuracy(calculatedAccuracy);
-    }, 500);
+      setAccuracy(calculatedAcc);
+    }, 50);
 
     return () => clearInterval(timer);
   }, []);
 
+  // Format Elapsed Time (M:SS.ms)
+  const formatTime = (ms) => {
+    const totalSecs = Math.floor(ms / 1000);
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    const millis = Math.floor((ms % 1000) / 10);
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}.${millis < 10 ? "0" : ""}${millis}`;
+  };
+
   const handleInputChange = (e) => {
     const value = e.target.value;
-    if (value.length > targetStation.length) return;
 
-    // Start timer on very first keystroke
     if (!startTimeRef.current && value.length > 0) {
       startTimeRef.current = Date.now();
     }
@@ -60,17 +78,13 @@ export default function App() {
     }
 
     totalKeystrokesRef.current += 1;
-
-    // Get the character just typed
     const typedChar = value[value.length - 1];
     const expectedChar = targetStation[userInput.length];
 
-    // STOP & SHAKE RULE: Did they type the wrong character?
     if (typedChar !== expectedChar) {
-      // Trigger CSS Shake Animation
       setShake(true);
-      setTimeout(() => setShake(false), 300); // Remove shake class after 300ms
-      return; // DO NOT update userInput (Stops input from advancing!)
+      setTimeout(() => setShake(false), 300);
+      return;
     }
 
     correctKeystrokesRef.current += 1;
@@ -81,30 +95,38 @@ export default function App() {
         setCurrentIndex(currentIndex + 1);
         setUserInput("");
       } else {
-        alert(`🎉 Line Complete!\nFinal WPM: ${wpm}\nAccuracy: ${accuracy}%`);
+        alert(
+          `🎉 Line Complete!\nTime: ${formatTime(elapsedMs)}\nCPM: ${cpm}\nAccuracy: ${accuracy}%`,
+        );
       }
     }
   };
+
   const renderStyledStationName = () => {
     return targetStation.split("").map((char, index) => {
-      let colorClass = "#64748b"; // Default (untyped letter)
+      let colorClass = "#94a3b8"; // Untyped letter
 
       if (index < userInput.length) {
-        colorClass = "#34d399"; // Correct letter (Neon Green)
-      } else if (index === userInput.length && shake) {
-        colorClass = "#f43f5e"; // Current active letter flashes Red on typo
+        colorClass = "#16a34a"; // Typed correct letter
       }
 
+      const isCursor = index === userInput.length;
+
       return (
-        <span
-          key={index}
-          style={{
-            color: colorClass,
-            padding: "0 2px",
-            borderBottom:
-              index === userInput.length ? "3px solid #38bdf8" : "none", // Active cursor underline
-          }}
-        >
+        <span key={index} style={{ position: "relative", color: colorClass }}>
+          {isCursor && (
+            <span
+              style={{
+                position: "absolute",
+                left: "-2px",
+                top: "10%",
+                bottom: "10%",
+                width: "3px",
+                backgroundColor: "#16a34a",
+                borderRadius: "2px",
+              }}
+            />
+          )}
           {char}
         </span>
       );
@@ -114,169 +136,281 @@ export default function App() {
   return (
     <div
       style={{
-        minHeight: "100vh",
-        backgroundColor: "#090d16",
-        color: "#f8fafc",
-        fontFamily: "monospace",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem",
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+        fontFamily: "sans-serif",
+        backgroundColor: "#0b0f19",
       }}
+      onClick={() => inputRef.current?.focus()}
     >
-      {/* CSS Keyframe Animation for Shake */}
       <style>{`
         @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-8px); }
-          40%, 80% { transform: translateX(8px); }
+          0%, 100% { transform:  translateX(0); }
+          20%, 60% { transform:  translateX(-5px); }
+          40%, 80% { transform: translateX(5px); }
         }
         .shake-animation {
-          animation: shake 0.3s ease-in-out;
-          border-color: #f43f5e !important;
+          animation: shake 0.3s ease-in-out !important;
         }
       `}</style>
-      {/* Dark Mode Terminal Container */}
+
+      {/* 1. Fullscreen Map Canvas */}
+      <MapView stations={SAMPLE_STATIONS} activeIndex={currentIndex} />
+
+      {/* 2. Top HUD Header Bar */}
       <div
-        className={shake ? "shake-animation" : ""}
         style={{
-          backgroundColor: "#0f172a",
-          border: "1px solid #1e293b",
-          borderRadius: "16px",
-          padding: "3rem",
-          maxWidth: "600px",
-          width: "100%",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)",
-          textAlign: "center",
-          transition: "border-color 0.2s ease",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 20,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1.2rem 2.5rem",
+          background:
+            "linear-gradient(to bottom, rgba(11,15,25,0.9), rgba(11,15,25,0))",
         }}
       >
-        {/* Line Header */}
+        {/* Line Info */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div
+            style={{
+              width: "42px",
+              height: "42px",
+              backgroundColor: "#f97316",
+              borderRadius: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.2rem",
+            }}
+          >
+            🚂
+          </div>
+          <div>
+            <h3 style={{ margin: 0, color: "#f8fafc", fontSize: "1.1rem" }}>
+              INDORE METRO
+            </h3>
+            <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.8rem" }}>
+              Bhawarkuwa → Palasiya
+            </p>
+          </div>
+        </div>
+
+        {/* Timer Display */}
+        <div
+          style={{
+            fontSize: "2.2rem",
+            fontWeight: "bold",
+            color: "#facc15",
+            fontFamily: "monospace",
+            letterSpacing: "2px",
+          }}
+        >
+          {formatTime(elapsedMs)}
+        </div>
+
+        {/* Telemetry Stats & Controls */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            marginBottom: "1.5rem",
+            gap: "2rem",
+            color: "#f8fafc",
           }}
         >
-          <span
+          <div style={{ textAlign: "right" }}>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: "#94a3b8",
+                display: "block",
+              }}
+            >
+              Stations
+            </span>
+            <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+              {currentIndex}/{SAMPLE_STATIONS.length}
+            </span>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: "#94a3b8",
+                display: "block",
+              }}
+            >
+              Accuracy
+            </span>
+            <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+              {accuracy}.0%
+            </span>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <span
+              style={{
+                fontSize: "0.75rem",
+                color: "#94a3b8",
+                display: "block",
+              }}
+            >
+              CPM
+            </span>
+            <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+              {cpm}
+            </span>
+          </div>
+          <button
             style={{
-              width: "12px",
-              height: "12px",
-              borderRadius: "50%",
-              backgroundColor: "#eab308",
-            }}
-          ></span>
-          <span
-            style={{
-              color: "#94a3b8",
-              fontSize: "0.9rem",
-              letterSpacing: "1px",
+              backgroundColor: "#1e293b",
+              color: "#f8fafc",
+              border: "1px solid #334155",
+              padding: "0.5rem 1.2rem",
+              borderRadius: "20px",
+              cursor: "pointer",
+              fontWeight: "bold",
             }}
           >
-            DELHI METRO • YELLOW LINE
-          </span>
+            Pause
+          </button>
         </div>
-        {/* 🗺️ Interactive Map (Passing stations & activeIndex as props) */}
-        <div style={{ marginBottom: "1.5rem" }}>
-          <MapView stations={SAMPLE_STATIONS} activeIndex={currentIndex} />
-        </div>
-        {/* Live Telemetry Display */}
+      </div>
+
+      {/* 3 & 4. Bottom UI Wrapper */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "1.5rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0.6rem",
+          zIndex: 10,
+        }}
+      >
+        {/* Floating Metro Station Signboard */}
         <div
+          className={shake ? "shake-animation" : ""}
           style={{
-            display: "flex",
-            justifyContent: "space-around",
-            backgroundColor: "#020617",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "2rem",
-            border: "1px solid #1e293b",
+            backgroundColor: "#fefcf3",
+            borderRadius: "28px",
+            width: "520px",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
+            overflow: "hidden",
+            transition: "transform 0.1s ease",
           }}
         >
-          <div>
-            <p style={{ color: "#64748b", fontSize: "0.75rem" }}>SPEED</p>
-            <p
+          <div
+            style={{
+              padding: "0.5rem 1rem 1rem 1rem",
+              textAlign: "center",
+            }}
+          >
+            <div
               style={{
-                fontSize: "1.8rem",
-                fontWeight: "bold",
-                color: "#38bdf8",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "1rem",
+                marginBottom: "0.5rem",
               }}
             >
-              {wpm} <span style={{ fontSize: "0.9rem" }}>WPM</span>
-            </p>
-          </div>
-          <div>
-            <p style={{ color: "#64748b", fontSize: "0.75rem" }}>ACCURACY</p>
-            <p
+              <div
+                style={{
+                  border: "3px solid #f97316",
+                  borderRadius: "12px",
+                  padding: "4px 10px",
+                  fontWeight: "bold",
+                  color: "#000",
+                  fontSize: "1.1rem",
+                }}
+              >
+                {currentStation.code}
+
+                <p
+                  style={{
+                    color: "#64748b",
+                    fontSize: "0.9rem",
+                    margin: "0 0 0.5rem 0",
+                    letterSpacing: "1px",
+                  }}
+                >
+                  {currentStation.hindiName}
+                </p>
+              </div>
+            </div>
+
+            {/* Typing String Display */}
+            <div
               style={{
-                fontSize: "1.8rem",
+                fontSize: "2.2rem",
                 fontWeight: "bold",
-                color: "#34d399",
+                fontFamily: "monospace",
+                letterSpacing: "2px",
+                margin: "1.5rem 0",
               }}
             >
-              {accuracy}%
-            </p>
+              {renderStyledStationName()}
+            </div>
           </div>
-        </div>
-        {/* Dynamic Station Target Display */}
-        <p
-          style={{
-            color: "#64748b",
-            fontSize: "0.85rem",
-            marginBottom: "0.5rem",
-          }}
-        >
-          NEXT STATION
-        </p>
-        <div
-          style={{
-            fontSize: "3rem",
-            fontWeight: "bold",
-            letterSpacing: "2px",
-            marginBottom: "2.5rem",
-          }}
-        >
-          {renderStyledStationName()}
+
+          {/* Bottom Station Accent Banner */}
+          <div
+            style={{
+              backgroundColor: "#f97316",
+              color: "#ffffff",
+              padding: "0.8rem 1.5rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+            }}
+          >
+            <span>◀ {prevStation}</span>
+
+            <span
+              style={{
+                fontSize: "0.8rem",
+                opacity: 0.9,
+              }}
+            >
+              अगला (Next)
+            </span>
+
+            <span>{nextStation} ▶</span>
+          </div>
         </div>
 
-        <input
-          type="text"
-          value={userInput}
-          onChange={handleInputChange}
-          placeholder="type the station name here"
-          style={{
-            width: "100%",
-            padding: "1rem",
-            fontSize: "1.2rem",
-            backgroundColor: "#020617",
-            border: "1px solid #334155",
-            borderRadius: "8px",
-            color: "#38bdf8",
-            outline: "none",
-            textAlign: "center",
-            fontFamily: "monospace",
-          }}
-          autoFocus
-        />
+        {/* Bottom Hint */}
         <div
           style={{
-            marginTop: "2rem",
-            display: "flex",
-            justifyContent: "space-between",
-            color: "#64748b",
+            color: "#94a3b8",
             fontSize: "0.85rem",
+            textAlign: "center",
           }}
         >
-          <span>
-            STATION {currentIndex + 1} OF {SAMPLE_STATIONS.length}
-          </span>
-          <span>MODE: LOCAL</span>
+          Wrong keys are ignored — just type the correct letter, no backspace
+          needed.
         </div>
-        <MapView />
       </div>
+
+      {/* Hidden Auto-focused Input */}
+      <input
+        ref={inputRef}
+        type="text"
+        value={userInput}
+        onChange={handleInputChange}
+        style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}
+        autoFocus
+      />
     </div>
   );
 }
