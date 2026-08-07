@@ -157,7 +157,12 @@ export default function App() {
       `}</style>
 
       {/* 1. Fullscreen Map Canvas */}
-      <MapView stations={SAMPLE_STATIONS} activeIndex={currentIndex} />
+      <MapView
+        stations={SAMPLE_STATIONS}
+        activeIndex={currentIndex}
+        userInputLength={userInput.length}
+        targetLength={targetStation.length}
+      />
 
       {/* 2. Top HUD Header Bar */}
       <div

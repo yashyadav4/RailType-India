@@ -8,91 +8,113 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 
-// Custom Camera Controller
-function CameraController({ activeCoordinates }) {
+// Linear interpolation between two coordinates
+function interpolateCoords(start, end, progress) {
+  if (!start || !end) return start || [0, 0];
+  const lat = start[0] + (end[0] - start[0]) * progress;
+  const lng = start[1] + (end[1] - start[1]) * progress;
+  return [lat, lng];
+}
+
+// Dynamic Camera Follower
+function CameraController({ trainCoordinates }) {
   const map = useMap();
 
   useEffect(() => {
-    if (activeCoordinates) {
-      map.flyTo(activeCoordinates, 14, { duration: 1.5 });
+    if (trainCoordinates) {
+      map.panTo(trainCoordinates, { animate: true, duration: 0.5 });
     }
-  }, [activeCoordinates, map]);
+  }, [trainCoordinates, map]);
 
   return null;
 }
 
-// Marker Factory
+// Station Pin Icon Factory (Green for completed/active, Muted Gray for upcoming)
 const createStationIcon = (status) => {
-  let iconHtml = "";
+  const isCompletedOrActive = status === "completed" || status === "active";
+  const color = isCompletedOrActive ? "#16a34a" : "#334155";
+  const glow = status === "active" ? "box-shadow: 0 0 12px #16a34a;" : "";
 
-  if (status === "completed") {
-    iconHtml = `
-      <div style="
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background-color: #16a34a;
-        border: 2px solid #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 10px rgba(22, 163, 74, 0.7);
-      ">
-        <div style="width: 6px; height: 6px; border-radius: 50%; background-color: #ffffff;"></div>
-      </div>
-    `;
-  } else if (status === "active") {
-    iconHtml = `
-      <div class="active-pin-pulse" style="
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background-color: #f97316;
-        border: 3px solid #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 15px #f97316, 0 0 25px rgba(249, 115, 22, 0.6);
-      ">
-        <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #ffffff;"></div>
-      </div>
-    `;
-  } else {
-    iconHtml = `
-      <div style="
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: #0b0f19;
-        border: 2px solid #475569;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0.8;
-      ">
-        <div style="width: 4px; height: 4px; border-radius: 50%; background-color: #475569;"></div>
-      </div>
-    `;
-  }
+  const iconHtml = `
+    <div style="
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: ${color};
+      border: 2px solid #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      ${glow}
+    ">
+      <div style="width: 5px; height: 5px; border-radius: 50%; background-color: #ffffff;"></div>
+    </div>
+  `;
 
   return L.divIcon({
     html: iconHtml,
     className: "custom-station-pin",
-    iconSize: [26, 26],
-    iconAnchor: [13, 13],
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
   });
 };
 
-export default function MapView({ stations = [], activeIndex = 0 }) {
+// Custom Train Marker
+const trainIcon = L.divIcon({
+  html: `
+    <div style="
+      font-size: 26px;
+      line-height: 1;
+      filter: drop-shadow(0 0 10px #16a34a);
+      transform: translate(-50%, -50%);
+      transition: all 0.1s linear;
+    ">
+      🚂
+    </div>
+  `,
+  className: "custom-train-pin",
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+});
+
+export default function MapView({
+  stations = [],
+  activeIndex = 0,
+  userInputLength = 0,
+  targetLength = 1,
+}) {
   if (!stations || stations.length === 0) return null;
 
-  // 1. MEMOIZE THE TRACK PATH ARRAY
-  // This keeps the array reference identical across re-renders, preventing Leaflet from redrawing the Polyline
-  const linePolyline = useMemo(() => {
-    return stations.map((s) => s.coordinates);
-  }, [stations]);
+  // 1. Calculate Segment Interpolation Progress (0.0 to 1.0)
+  const safeTargetLength = Math.max(targetLength, 1);
+  const progressFraction = Math.min(userInputLength / safeTargetLength, 1);
 
-  const activeStation = stations[activeIndex] || stations[0];
+  const startStationIndex = Math.max(0, activeIndex - 1);
+  const startCoords =
+    stations[startStationIndex]?.coordinates || stations[0].coordinates;
+  const targetCoords =
+    stations[activeIndex]?.coordinates || stations[0].coordinates;
+
+  // 2. Active Train Coordinate
+  const trainCoords = useMemo(() => {
+    return interpolateCoords(startCoords, targetCoords, progressFraction);
+  }, [startCoords, targetCoords, progressFraction]);
+
+  // 3. Completed Path (Green Line)
+  const completedPath = useMemo(() => {
+    const passedStations = stations
+      .slice(0, startStationIndex + 1)
+      .map((s) => s.coordinates);
+    return [...passedStations, trainCoords];
+  }, [stations, startStationIndex, trainCoords]);
+
+  // 4. Remaining Path (Gray Line)
+  const remainingPath = useMemo(() => {
+    const upcomingStations = stations
+      .slice(activeIndex)
+      .map((s) => s.coordinates);
+    return [trainCoords, ...upcomingStations];
+  }, [stations, activeIndex, trainCoords]);
 
   return (
     <div
@@ -105,40 +127,48 @@ export default function MapView({ stations = [], activeIndex = 0 }) {
       }}
     >
       <style>{`
-        @keyframes pulseGlow {
-          0% { transform: scale(1); box-shadow: 0 0 12px #f97316, 0 0 20px rgba(249, 115, 22, 0.6); }
-          50% { transform: scale(1.15); box-shadow: 0 0 20px #f97316, 0 0 35px rgba(249, 115, 22, 0.9); }
-          100% { transform: scale(1); box-shadow: 0 0 12px #f97316, 0 0 20px rgba(249, 115, 22, 0.6); }
-        }
-        .active-pin-pulse {
-          animation: pulseGlow 1.5s infinite ease-in-out;
-        }
-        .custom-station-pin {
+        .custom-station-pin, .custom-train-pin {
           background: transparent !important;
           border: none !important;
         }
       `}</style>
 
       <MapContainer
-        center={activeStation ? activeStation.coordinates : [22.6908, 75.8672]}
-        zoom={13}
+        center={trainCoords}
+        zoom={15}
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
+        dragging={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+        boxZoom={false}
+        keyboard={false}
+        attributionControl={false}
       >
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         />
 
-        {/* Static, Permanent Track Line */}
+        {/* Completed Track Line (Emerald Green) */}
         <Polyline
-          positions={linePolyline}
-          color="#f97316"
-          weight={5}
-          opacity={0.85}
+          positions={completedPath}
+          color="#16a34a"
+          weight={6}
+          opacity={0.9}
         />
 
-        {/* Station Pins */}
+        {/* Upcoming Track Line (Muted Gray) */}
+        <Polyline
+          positions={remainingPath}
+          color="#334155"
+          weight={5}
+          opacity={0.7}
+          dashArray="8, 8"
+        />
+
+        {/* Station Markers */}
         {stations.map((station, index) => {
           let status = "upcoming";
           if (index < activeIndex) status = "completed";
@@ -153,7 +183,11 @@ export default function MapView({ stations = [], activeIndex = 0 }) {
           );
         })}
 
-        <CameraController activeCoordinates={activeStation?.coordinates} />
+        {/* Moving Train Marker */}
+        <Marker position={trainCoords} icon={trainIcon} zIndexOffset={1000} />
+
+        {/* Camera Following Train */}
+        <CameraController trainCoordinates={trainCoords} />
       </MapContainer>
     </div>
   );
