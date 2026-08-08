@@ -1,0 +1,222 @@
+{
+  "id": "green_line",
+  "cityName": "Delhi NCR",
+  "systemName": "Delhi Metro",
+  "lineName": "Green Line",
+  "color": "#22c55e",
+  "startTerminal": "Inderlok Conn:Red",
+  "endTerminal": "Brigadier Hoshiar Singh",
+  "totalStations": 21,
+  "stations": [
+    {
+      "id": "green_line_1",
+      "code": "GL-01",
+      "name": "Inderlok Conn:Red",
+      "hindiName": "Inderlok Conn:Red",
+      "coordinates": [
+        28.67319,
+        77.16994
+      ]
+    },
+    {
+      "id": "green_line_2",
+      "code": "GL-02",
+      "name": "Ashok Park Main",
+      "hindiName": "Ashok Park Main",
+      "coordinates": [
+        28.67153,
+        77.15527
+      ]
+    },
+    {
+      "id": "green_line_3",
+      "code": "GL-03",
+      "name": "Punjabi Bagh",
+      "hindiName": "Punjabi Bagh",
+      "coordinates": [
+        28.67289,
+        77.14614
+      ]
+    },
+    {
+      "id": "green_line_4",
+      "code": "GL-04",
+      "name": "Shivaji Park",
+      "hindiName": "Shivaji Park",
+      "coordinates": [
+        28.6749,
+        77.13056
+      ]
+    },
+    {
+      "id": "green_line_5",
+      "code": "GL-05",
+      "name": "Madipur",
+      "hindiName": "Madipur",
+      "coordinates": [
+        28.67734,
+        77.11965
+      ]
+    },
+    {
+      "id": "green_line_6",
+      "code": "GL-06",
+      "name": "Paschim Vihar",
+      "hindiName": "Paschim Vihar",
+      "coordinates": [
+        28.6773,
+        77.11228
+      ]
+    },
+    {
+      "id": "green_line_7",
+      "code": "GL-07",
+      "name": "Paschim Vihar",
+      "hindiName": "Paschim Vihar",
+      "coordinates": [
+        28.67855,
+        77.10227
+      ]
+    },
+    {
+      "id": "green_line_8",
+      "code": "GL-08",
+      "name": "Peera Garhi",
+      "hindiName": "Peera Garhi",
+      "coordinates": [
+        28.67959,
+        77.09261
+      ]
+    },
+    {
+      "id": "green_line_9",
+      "code": "GL-09",
+      "name": "Udyog Nagar",
+      "hindiName": "Udyog Nagar",
+      "coordinates": [
+        28.6809,
+        77.08077
+      ]
+    },
+    {
+      "id": "green_line_10",
+      "code": "GL-10",
+      "name": "Maharaja Surajmal Stadium",
+      "hindiName": "Maharaja Surajmal Stadium",
+      "coordinates": [
+        28.6818,
+        77.07385
+      ]
+    },
+    {
+      "id": "green_line_11",
+      "code": "GL-11",
+      "name": "Nangloi",
+      "hindiName": "Nangloi",
+      "coordinates": [
+        28.68231,
+        77.06471
+      ]
+    },
+    {
+      "id": "green_line_12",
+      "code": "GL-12",
+      "name": "Nangloi Railway Station",
+      "hindiName": "Nangloi Railway Station",
+      "coordinates": [
+        28.68208,
+        77.05596
+      ]
+    },
+    {
+      "id": "green_line_13",
+      "code": "GL-13",
+      "name": "Rajdhani Park",
+      "hindiName": "Rajdhani Park",
+      "coordinates": [
+        28.68221,
+        77.04381
+      ]
+    },
+    {
+      "id": "green_line_14",
+      "code": "GL-14",
+      "name": "Mundka",
+      "hindiName": "Mundka",
+      "coordinates": [
+        28.68321,
+        77.03133
+      ]
+    },
+    {
+      "id": "green_line_15",
+      "code": "GL-15",
+      "name": "Mundka Industrial Area",
+      "hindiName": "Mundka Industrial Area",
+      "coordinates": [
+        28.683449,
+        77.017133
+      ]
+    },
+    {
+      "id": "green_line_16",
+      "code": "GL-16",
+      "name": "Ghevra Metro station",
+      "hindiName": "Ghevra Metro station",
+      "coordinates": [
+        28.685238,
+        76.996159
+      ]
+    },
+    {
+      "id": "green_line_17",
+      "code": "GL-17",
+      "name": "Tikri Kalan",
+      "hindiName": "Tikri Kalan",
+      "coordinates": [
+        28.686866,
+        76.977207
+      ]
+    },
+    {
+      "id": "green_line_18",
+      "code": "GL-18",
+      "name": "Tikri Border",
+      "hindiName": "Tikri Border",
+      "coordinates": [
+        28.688025,
+        76.964083
+      ]
+    },
+    {
+      "id": "green_line_19",
+      "code": "GL-19",
+      "name": "Pandit Shree Ram Sharma",
+      "hindiName": "Pandit Shree Ram Sharma",
+      "coordinates": [
+        28.689281,
+        76.951199
+      ]
+    },
+    {
+      "id": "green_line_20",
+      "code": "GL-20",
+      "name": "Bahdurgarh City",
+      "hindiName": "Bahdurgarh City",
+      "coordinates": [
+        28.690785,
+        76.935485
+      ]
+    },
+    {
+      "id": "green_line_21",
+      "code": "GL-21",
+      "name": "Brigadier Hoshiar Singh",
+      "hindiName": "Brigadier Hoshiar Singh",
+      "coordinates": [
+        28.69746,
+        76.919203
+      ]
+    }
+  ]
+}

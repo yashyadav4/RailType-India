@@ -1,0 +1,337 @@
+{
+  "id": "blue_line",
+  "cityName": "Delhi NCR",
+  "systemName": "Delhi Metro",
+  "lineName": "Blue Line",
+  "color": "#2563eb",
+  "startTerminal": "Dwarka Sector 21",
+  "endTerminal": "Sector 62",
+  "totalStations": 49,
+  "stations": [
+    
+      
+    {
+      "id": "blue_line_9",
+      "code": "BL-09",
+      "name": "Dwarka",
+      "hindiName": "Dwarka",
+      "coordinates": [
+        28.61564,
+        77.02197
+      ]
+    },
+    {
+      "id": "blue_line_10",
+      "code": "BL-10",
+      "name": "Dwarka Mor",
+      "hindiName": "Dwarka Mor",
+      "coordinates": [
+        28.61932,
+        77.03326
+      ]
+    },
+    {
+      "id": "blue_line_11",
+      "code": "BL-11",
+      "name": "Nawada",
+      "hindiName": "Nawada",
+      "coordinates": [
+        28.62025,
+        77.04514
+      ]
+    },
+    {
+      "id": "blue_line_12",
+      "code": "BL-12",
+      "name": "Uttam Nagar West",
+      "hindiName": "Uttam Nagar West",
+      "coordinates": [
+        28.62481,
+        77.0653
+      ]
+    },
+    
+    {
+      "id": "blue_line_14",
+      "code": "BL-14",
+      "name": "Janak Puri West",
+      "hindiName": "Janak Puri West",
+      "coordinates": [
+        28.62943,
+        77.07767
+      ]
+    },
+    {
+      "id": "blue_line_15",
+      "code": "BL-15",
+      "name": "Janak Puri East",
+      "hindiName": "Janak Puri East",
+      "coordinates": [
+        28.63305,
+        77.08669
+      ]
+    },
+    {
+      "id": "blue_line_16",
+      "code": "BL-16",
+      "name": "Tilak Nagar",
+      "hindiName": "Tilak Nagar",
+      "coordinates": [
+        28.63657,
+        77.09648
+      ]
+    },
+    {
+      "id": "blue_line_17",
+      "code": "BL-17",
+      "name": "Subhash Nagar",
+      "hindiName": "Subhash Nagar",
+      "coordinates": [
+        28.64039,
+        77.10495
+      ]
+    },
+    {
+      "id": "blue_line_18",
+      "code": "BL-18",
+      "name": "Tagore Garden",
+      "hindiName": "Tagore Garden",
+      "coordinates": [
+        28.64379,
+        77.11284
+      ]
+    },
+    {
+      "id": "blue_line_19",
+      "code": "BL-19",
+      "name": "Rajouri Garden",
+      "hindiName": "Rajouri Garden",
+      "coordinates": [
+        28.64902,
+        77.1227
+      ]
+    },
+    {
+      "id": "blue_line_20",
+      "code": "BL-20",
+      "name": "Ramesh Nagar",
+      "hindiName": "Ramesh Nagar",
+      "coordinates": [
+        28.65274,
+        77.13164
+      ]
+    },
+    {
+      "id": "blue_line_21",
+      "code": "BL-21",
+      "name": "Moti Nagar",
+      "hindiName": "Moti Nagar",
+      "coordinates": [
+        28.65784,
+        77.14248
+      ]
+    },
+    {
+      "id": "blue_line_22",
+      "code": "BL-22",
+      "name": "Kirti Nagar",
+      "hindiName": "Kirti Nagar",
+      "coordinates": [
+        28.65575,
+        77.15057
+      ]
+    },
+    {
+      "id": "blue_line_23",
+      "code": "BL-23",
+      "name": "Shadipur",
+      "hindiName": "Shadipur",
+      "coordinates": [
+        28.6516,
+        77.15824
+      ]
+    },
+    {
+      "id": "blue_line_24",
+      "code": "BL-24",
+      "name": "Patel Nagar",
+      "hindiName": "Patel Nagar",
+      "coordinates": [
+        28.64498,
+        77.16929
+      ]
+    },
+    {
+      "id": "blue_line_25",
+      "code": "BL-25",
+      "name": "Rajendra Place",
+      "hindiName": "Rajendra Place",
+      "coordinates": [
+        28.6425,
+        77.17815
+      ]
+    },
+    {
+      "id": "blue_line_26",
+      "code": "BL-26",
+      "name": "Karol Bagh",
+      "hindiName": "Karol Bagh",
+      "coordinates": [
+        28.644,
+        77.18855
+      ]
+    },
+    {
+      "id": "blue_line_27",
+      "code": "BL-27",
+      "name": "Jhandewalan",
+      "hindiName": "Jhandewalan",
+      "coordinates": [
+        28.64427,
+        77.19988
+      ]
+    },
+    {
+      "id": "blue_line_28",
+      "code": "BL-28",
+      "name": "R K Ashram Marg",
+      "hindiName": "R K Ashram Marg",
+      "coordinates": [
+        28.63923,
+        77.2084
+      ]
+    },
+    {
+      "id": "blue_line_29",
+      "code": "BL-29",
+      "name": "Rajiv Chowk",
+      "hindiName": "Rajiv Chowk",
+      "coordinates": [
+        28.63282,
+        77.21826
+      ]
+    },
+    {
+      "id": "blue_line_30",
+      "code": "BL-30",
+      "name": "Barakhamba",
+      "hindiName": "Barakhamba",
+      "coordinates": [
+        28.63003,
+        77.22436
+      ]
+    },
+    {
+      "id": "blue_line_31",
+      "code": "BL-31",
+      "name": "Mandi House",
+      "hindiName": "Mandi House",
+      "coordinates": [
+        28.62588,
+        77.2341
+      ]
+    },
+    {
+      "id": "blue_line_32",
+      "code": "BL-32",
+      "name": "Supreme Court",
+      "hindiName": "Supreme Court",
+      "coordinates": [
+        28.62342,
+        77.2425
+      ]
+    },
+    {
+      "id": "blue_line_33",
+      "code": "BL-33",
+      "name": "Indraprastha",
+      "hindiName": "Indraprastha",
+      "coordinates": [
+        28.62051,
+        77.24993
+      ]
+    },
+    {
+      "id": "blue_line_34",
+      "code": "BL-34",
+      "name": "Yamuna Bank",
+      "hindiName": "Yamuna Bank",
+      "coordinates": [
+        28.62331,
+        77.26792
+      ]
+    },
+    {
+      "id": "blue_line_35",
+      "code": "BL-35",
+      "name": "Akshardham",
+      "hindiName": "Akshardham",
+      "coordinates": [
+        28.61806,
+        77.27869
+      ]
+    },
+    {
+      "id": "blue_line_36",
+      "code": "BL-36",
+      "name": "Mayur Vihar Phase-1",
+      "hindiName": "Mayur Vihar Phase-1",
+      "coordinates": [
+        28.60442,
+        77.29455
+      ]
+    },
+    {
+      "id": "blue_line_37",
+      "code": "BL-37",
+      "name": "Mayur Vihar Extention",
+      "hindiName": "Mayur Vihar Extention",
+      "coordinates": [
+        28.594158,
+        77.294589
+      ]
+    },
+    {
+      "id": "blue_line_38",
+      "code": "BL-38",
+      "name": "New Ashok Nagar",
+      "hindiName": "New Ashok Nagar",
+      "coordinates": [
+        28.58916,
+        77.30204
+      ]
+    },
+    
+    {
+      "id": "blue_line_42",
+      "code": "BL-42",
+      "name": "Botanical Garden",
+      "hindiName": "Botanical Garden",
+      "coordinates": [
+        28.56409,
+        77.3342
+      ]
+    },
+    {
+      "id": "blue_line_43",
+      "code": "BL-43",
+      "name": "Golf Course",
+      "hindiName": "Golf Course",
+      "coordinates": [
+        28.56714,
+        77.34598
+      ]
+    },
+    {
+      "id": "blue_line_44",
+      "code": "BL-44",
+      "name": "Noida City Center",
+      "hindiName": "Noida City Center",
+      "coordinates": [
+        28.57466,
+        77.35608
+      ]
+    }
+    
+  ]
+}

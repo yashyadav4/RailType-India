@@ -1,0 +1,72 @@
+{
+  "id": "orange_line",
+  "cityName": "Delhi NCR",
+  "systemName": "Delhi Metro",
+  "lineName": "Orange Line (Airport Express)",
+  "color": "#f97316",
+  "startTerminal": "New Delhi-Airport Express",
+  "endTerminal": "Dwarka Sector 21",
+  "totalStations": 6,
+  "stations": [
+    {
+      "id": "orange_line_1",
+      "code": "OL-01",
+      "name": "New Delhi-Airport Express",
+      "hindiName": "New Delhi-Airport Express",
+      "coordinates": [
+        28.64307,
+        77.22144
+      ]
+    },
+    {
+      "id": "orange_line_2",
+      "code": "OL-02",
+      "name": "Shivaji Stadium",
+      "hindiName": "Shivaji Stadium",
+      "coordinates": [
+        28.62901,
+        77.2119
+      ]
+    },
+    {
+      "id": "orange_line_3",
+      "code": "OL-03",
+      "name": "Dhaula Kuan",
+      "hindiName": "Dhaula Kuan",
+      "coordinates": [
+        28.59178,
+        77.16155
+      ]
+    },
+    {
+      "id": "orange_line_4",
+      "code": "OL-04",
+      "name": "Delhi Aerocity",
+      "hindiName": "Delhi Aerocity",
+      "coordinates": [
+        28.54881,
+        77.12092
+      ]
+    },
+    {
+      "id": "orange_line_5",
+      "code": "OL-05",
+      "name": "IGI Airport",
+      "hindiName": "IGI Airport",
+      "coordinates": [
+        28.55693,
+        77.08669
+      ]
+    },
+    {
+      "id": "orange_line_6",
+      "code": "OL-06",
+      "name": "Dwarka Sector 21",
+      "hindiName": "Dwarka Sector 21",
+      "coordinates": [
+        28.55226,
+        77.05828
+      ]
+    }
+  ]
+}

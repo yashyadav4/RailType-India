@@ -16,76 +16,75 @@ function interpolateCoords(start, end, progress) {
   return [lat, lng];
 }
 
-// Dynamic Camera Follower
+// Camera Follower
 function CameraController({ trainCoordinates }) {
   const map = useMap();
 
   useEffect(() => {
     if (trainCoordinates) {
-      map.panTo(trainCoordinates, { animate: true, duration: 0.5 });
+      map.panTo(trainCoordinates, { animate: true, duration: 0.4 });
     }
   }, [trainCoordinates, map]);
 
   return null;
 }
 
-// Station Pin Icon Factory (Green for completed/active, Muted Gray for upcoming)
-const createStationIcon = (status) => {
-  const isCompletedOrActive = status === "completed" || status === "active";
-  const color = isCompletedOrActive ? "#16a34a" : "#334155";
-  const glow = status === "active" ? "box-shadow: 0 0 12px #16a34a;" : "";
+// Station Pin Icon Factory (Emerald Green for completed, Muted Slate Gray for upcoming)
+const createStationIcon = (isCompleted) => {
+  const color = isCompleted ? "#16a34a" : "#334155";
 
   const iconHtml = `
     <div style="
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background-color: ${color};
       border: 2px solid #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      ${glow}
+      box-shadow: 0 0 8px ${isCompleted ? "rgba(22, 163, 74, 0.6)" : "rgba(0,0,0,0.4)"};
     ">
-      <div style="width: 5px; height: 5px; border-radius: 50%; background-color: #ffffff;"></div>
+      <div style="width: 4px; height: 4px; border-radius: 50%; background-color: #ffffff;"></div>
     </div>
   `;
 
   return L.divIcon({
     html: iconHtml,
     className: "custom-station-pin",
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
   });
 };
 
-// Custom Train Marker
+// Train Icon
 const trainIcon = L.divIcon({
   html: `
     <div style="
-      font-size: 26px;
+      font-size: 28px;
       line-height: 1;
       filter: drop-shadow(0 0 10px #16a34a);
-      transform: translate(-50%, -50%);
-      transition: all 0.1s linear;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     ">
       🚂
     </div>
   `,
   className: "custom-train-pin",
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
 });
 
 export default function MapView({
   stations = [],
-  activeIndex = 0,
+  activeIndex = 1,
   userInputLength = 0,
   targetLength = 1,
 }) {
   if (!stations || stations.length === 0) return null;
 
-  // 1. Calculate Segment Interpolation Progress (0.0 to 1.0)
+  // Calculate segment interpolation progress (0.0 to 1.0)
   const safeTargetLength = Math.max(targetLength, 1);
   const progressFraction = Math.min(userInputLength / safeTargetLength, 1);
 
@@ -95,12 +94,12 @@ export default function MapView({
   const targetCoords =
     stations[activeIndex]?.coordinates || stations[0].coordinates;
 
-  // 2. Active Train Coordinate
+  // Calculate live position of train between origin and target
   const trainCoords = useMemo(() => {
     return interpolateCoords(startCoords, targetCoords, progressFraction);
   }, [startCoords, targetCoords, progressFraction]);
 
-  // 3. Completed Path (Green Line)
+  // Emerald Green Path (Completed line up to train)
   const completedPath = useMemo(() => {
     const passedStations = stations
       .slice(0, startStationIndex + 1)
@@ -108,7 +107,7 @@ export default function MapView({
     return [...passedStations, trainCoords];
   }, [stations, startStationIndex, trainCoords]);
 
-  // 4. Remaining Path (Gray Line)
+  // Solid Gray Path (Remaining line from train onward)
   const remainingPath = useMemo(() => {
     const upcomingStations = stations
       .slice(activeIndex)
@@ -126,67 +125,66 @@ export default function MapView({
         width: "100vw",
       }}
     >
+      {/* CSS Transitions for smooth marker sliding */}
       <style>{`
         .custom-station-pin, .custom-train-pin {
           background: transparent !important;
           border: none !important;
+        }
+        .leaflet-marker-icon.custom-train-pin {
+          transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
         }
       `}</style>
 
       <MapContainer
         center={trainCoords}
         zoom={15}
-        style={{ height: "100%", width: "100%" }}
-        zoomControl={false}
-        dragging={false}
-        scrollWheelZoom={false}
-        doubleClickZoom={false}
-        touchZoom={false}
-        boxZoom={false}
-        keyboard={false}
-        attributionControl={false}
+        style={{ height: "100%", width: "100%" }} // Disables all mouse clicks & hover
+        // zoomControl={false}
+        // dragging={false} // Disables click & drag panning
+        // scrollWheelZoom={false} // Disables scroll wheel zooming
+        // doubleClickZoom={false} // Disables double-click zoom
+        // touchZoom={false} // Disables pinch-to-zoom on touch screens
+        // keyboard={false} // Disables arrow key panning
+        // boxZoom={false}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         />
 
-        {/* Completed Track Line (Emerald Green) */}
+        {/* 1. Completed Path: Solid Emerald Green */}
         <Polyline
           positions={completedPath}
           color="#16a34a"
           weight={6}
-          opacity={0.9}
+          opacity={0.95}
         />
 
-        {/* Upcoming Track Line (Muted Gray) */}
+        {/* 2. Remaining Path: Solid Muted Gray */}
         <Polyline
           positions={remainingPath}
-          color="#334155"
+          color="#475569"
           weight={5}
-          opacity={0.7}
-          dashArray="8, 8"
+          opacity={0.75}
         />
 
-        {/* Station Markers */}
+        {/* Station Markers (Green for passed, Gray for upcoming) */}
         {stations.map((station, index) => {
-          let status = "upcoming";
-          if (index < activeIndex) status = "completed";
-          if (index === activeIndex) status = "active";
-
+          const isCompleted = index < activeIndex;
           return (
             <Marker
               key={station.id}
               position={station.coordinates}
-              icon={createStationIcon(status)}
+              icon={createStationIcon(isCompleted)}
             />
           );
         })}
 
-        {/* Moving Train Marker */}
+        {/* 3. Train Marker */}
         <Marker position={trainCoords} icon={trainIcon} zIndexOffset={1000} />
 
-        {/* Camera Following Train */}
+        {/* Camera Follower */}
         <CameraController trainCoordinates={trainCoords} />
       </MapContainer>
     </div>

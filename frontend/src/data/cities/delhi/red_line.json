@@ -1,0 +1,302 @@
+{
+  "id": "red_line",
+  "cityName": "Delhi NCR",
+  "systemName": "Delhi Metro",
+  "lineName": "Red Line",
+  "color": "#ef4444",
+  "startTerminal": "Shaheed Sthal",
+  "endTerminal": "Rithala",
+  "totalStations": 29,
+  "stations": [
+    {
+      "id": "red_line_1",
+      "code": "RL-01",
+      "name": "Shaheed Sthal",
+      "hindiName": "Shaheed Sthal",
+      "coordinates": [
+        28.670611,
+        77.415582
+      ]
+    },
+    {
+      "id": "red_line_2",
+      "code": "RL-02",
+      "name": "Hindon River",
+      "hindiName": "Hindon River",
+      "coordinates": [
+        28.680000,
+        77.400000
+      ]
+    },
+    {
+      "id": "red_line_3",
+      "code": "RL-03",
+      "name": "Arthala",
+      "hindiName": "Arthala",
+      "coordinates": [
+        28.676999,
+        77.391892
+      ]
+    },
+    {
+      "id": "red_line_4",
+      "code": "RL-04",
+      "name": "Mohan Nagar",
+      "hindiName": "Mohan Nagar",
+      "coordinates": [
+        28.682428,
+        77.386689
+      ]
+    },
+    {
+      "id": "red_line_5",
+      "code": "RL-05",
+      "name": "Shyam park",
+      "hindiName": "Shyam park",
+      "coordinates": [
+        28.682133,
+        77.373144
+      ]
+    },
+    {
+      "id": "red_line_6",
+      "code": "RL-06",
+      "name": "Major Mohit Sharma",
+      "hindiName": "Major Mohit Sharma",
+      "coordinates": [
+        28.677611,
+        77.358143
+      ]
+    },
+    {
+      "id": "red_line_7",
+      "code": "RL-07",
+      "name": "Raj Bagh",
+      "hindiName": "Raj Bagh",
+      "coordinates": [
+        28.680977,
+        77.349420
+      ]
+    },
+    {
+      "id": "red_line_8",
+      "code": "RL-08",
+      "name": "Shaheed Nagar",
+      "hindiName": "Shaheed Nagar",
+      "coordinates": [
+        28.680576,
+        77.336583
+      ]
+    },
+    {
+      "id": "red_line_9",
+      "code": "RL-09",
+      "name": "Dilshad Garden",
+      "hindiName": "Dilshad Garden",
+      "coordinates": [
+        28.679705,
+        77.324089
+      ]
+    },
+    {
+      "id": "red_line_10",
+      "code": "RL-10",
+      "name": "Jhil Mil",
+      "hindiName": "Jhil Mil",
+      "coordinates": [
+        28.67579,
+        77.31239
+      ]
+    },
+    {
+      "id": "red_line_11",
+      "code": "RL-11",
+      "name": "Mansarovar Park",
+      "hindiName": "Mansarovar Park",
+      "coordinates": [
+        28.67544,
+        77.30095
+      ]
+    },
+    {
+      "id": "red_line_12",
+      "code": "RL-12",
+      "name": "Shahdara",
+      "hindiName": "Shahdara",
+      "coordinates": [
+        28.67345,
+        77.28962
+      ]
+    },
+    {
+      "id": "red_line_13",
+      "code": "RL-13",
+      "name": "Welcome",
+      "hindiName": "Welcome",
+      "coordinates": [
+        28.6718,
+        77.27756
+      ]
+    },
+    {
+      "id": "red_line_14",
+      "code": "RL-14",
+      "name": "Seelampur",
+      "hindiName": "Seelampur",
+      "coordinates": [
+        28.66989,
+        77.2667
+      ]
+    },
+    {
+      "id": "red_line_15",
+      "code": "RL-15",
+      "name": "Shastri Park",
+      "hindiName": "Shastri Park",
+      "coordinates": [
+        28.668,
+        77.24994
+      ]
+    },
+    {
+      "id": "red_line_16",
+      "code": "RL-16",
+      "name": "Kashmere Gate",
+      "hindiName": "Kashmere Gate",
+      "coordinates": [
+        28.6675,
+        77.22817
+      ]
+    },
+    {
+      "id": "red_line_17",
+      "code": "RL-17",
+      "name": "Tis Hazari",
+      "hindiName": "Tis Hazari",
+      "coordinates": [
+        28.66711,
+        77.21653
+      ]
+    },
+    {
+      "id": "red_line_18",
+      "code": "RL-18",
+      "name": "Pul Bangash",
+      "hindiName": "Pul Bangash",
+      "coordinates": [
+        28.66636,
+        77.20727
+      ]
+    },
+    {
+      "id": "red_line_19",
+      "code": "RL-19",
+      "name": "Pratap Nagar",
+      "hindiName": "Pratap Nagar",
+      "coordinates": [
+        28.66662,
+        77.19882
+      ]
+    },
+    {
+      "id": "red_line_20",
+      "code": "RL-20",
+      "name": "Shastri Nagar",
+      "hindiName": "Shastri Nagar",
+      "coordinates": [
+        28.66999,
+        77.18169
+      ]
+    },
+    {
+      "id": "red_line_21",
+      "code": "RL-21",
+      "name": "Inderlok",
+      "hindiName": "Inderlok",
+      "coordinates": [
+        28.67319,
+        77.16994
+      ]
+    },
+    {
+      "id": "red_line_22",
+      "code": "RL-22",
+      "name": "Kanhaiya Nagar",
+      "hindiName": "Kanhaiya Nagar",
+      "coordinates": [
+        28.68254,
+        77.16459
+      ]
+    },
+    {
+      "id": "red_line_23",
+      "code": "RL-23",
+      "name": "Keshav Puram",
+      "hindiName": "Keshav Puram",
+      "coordinates": [
+        28.68894,
+        77.1616
+      ]
+    },
+    {
+      "id": "red_line_24",
+      "code": "RL-24",
+      "name": "Netaji Subash Place",
+      "hindiName": "Netaji Subash Place",
+      "coordinates": [
+        28.69591,
+        77.15226
+      ]
+    },
+    {
+      "id": "red_line_25",
+      "code": "RL-25",
+      "name": "Kohat Enclave",
+      "hindiName": "Kohat Enclave",
+      "coordinates": [
+        28.6981,
+        77.14024
+      ]
+    },
+    {
+      "id": "red_line_26",
+      "code": "RL-26",
+      "name": "Pitam Pura",
+      "hindiName": "Pitam Pura",
+      "coordinates": [
+        28.70317,
+        77.13223
+      ]
+    },
+    {
+      "id": "red_line_27",
+      "code": "RL-27",
+      "name": "Rohini East",
+      "hindiName": "Rohini East",
+      "coordinates": [
+        28.7076,
+        77.12591
+      ]
+    },
+    {
+      "id": "red_line_28",
+      "code": "RL-28",
+      "name": "Rohini West",
+      "hindiName": "Rohini West",
+      "coordinates": [
+        28.71483,
+        77.11467
+      ]
+    },
+    {
+      "id": "red_line_29",
+      "code": "RL-29",
+      "name": "Rithala",
+      "hindiName": "Rithala",
+      "coordinates": [
+        28.72072,
+        77.10713
+      ]
+    }
+  ]
+}

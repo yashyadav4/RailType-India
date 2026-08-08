@@ -1,0 +1,343 @@
+{
+  "id": "voilet_line",
+  "cityName": "Delhi NCR",
+  "systemName": "Delhi Metro",
+  "lineName": "Violet Line",
+  "color": "#8b5cf6",
+  "startTerminal": "Kashmere Gate",
+  "endTerminal": "Raja Nahar Singh",
+  "totalStations": 34,
+  "stations": [
+    {
+      "id": "voilet_line_1",
+      "code": "VL-01",
+      "name": "Kashmere Gate",
+      "hindiName": "Kashmere Gate",
+      "coordinates": [
+        28.6675,
+        77.22817
+      ]
+    },
+    {
+      "id": "voilet_line_2",
+      "code": "VL-02",
+      "name": "Lal Quila",
+      "hindiName": "Lal Quila",
+      "coordinates": [
+        28.658755,
+        77.232923
+      ]
+    },
+    {
+      "id": "voilet_line_3",
+      "code": "VL-03",
+      "name": "Jama Masjid",
+      "hindiName": "Jama Masjid",
+      "coordinates": [
+        28.65001,
+        77.237676
+      ]
+    },
+    {
+      "id": "voilet_line_4",
+      "code": "VL-04",
+      "name": "Delhi Gate",
+      "hindiName": "Delhi Gate",
+      "coordinates": [
+        28.639204,
+        77.240782
+      ]
+    },
+    {
+      "id": "voilet_line_5",
+      "code": "VL-05",
+      "name": "ITO",
+      "hindiName": "ITO",
+      "coordinates": [
+        28.630509,
+        77.241436
+      ]
+    },
+    {
+      "id": "voilet_line_6",
+      "code": "VL-06",
+      "name": "Mandi House",
+      "hindiName": "Mandi House",
+      "coordinates": [
+        28.625556,
+        77.234195
+      ]
+    },
+    {
+      "id": "voilet_line_7",
+      "code": "VL-07",
+      "name": "Janpath",
+      "hindiName": "Janpath",
+      "coordinates": [
+        28.60886,
+        77.218165
+      ]
+    },
+    
+    {
+      "id": "voilet_line_9",
+      "code": "VL-09",
+      "name": "Khan Market",
+      "hindiName": "Khan Market",
+      "coordinates": [
+        28.605937,
+        77.231828
+      ]
+    },
+    {
+      "id": "voilet_line_10",
+      "code": "VL-10",
+      "name": "Jawaharlal Nehru Stadium",
+      "hindiName": "Jawaharlal Nehru Stadium",
+      "coordinates": [
+        28.5904,
+        77.23326
+      ]
+    },
+    {
+      "id": "voilet_line_11",
+      "code": "VL-11",
+      "name": "Jangpura",
+      "hindiName": "Jangpura",
+      "coordinates": [
+        28.5843,
+        77.23766
+      ]
+    },
+    {
+      "id": "voilet_line_12",
+      "code": "VL-12",
+      "name": "Lajpat Nagar",
+      "hindiName": "Lajpat Nagar",
+      "coordinates": [
+        28.57079,
+        77.23653
+      ]
+    },
+    {
+      "id": "voilet_line_13",
+      "code": "VL-13",
+      "name": "Moolchand",
+      "hindiName": "Moolchand",
+      "coordinates": [
+        28.56417,
+        77.23423
+      ]
+    },
+    {
+      "id": "voilet_line_14",
+      "code": "VL-14",
+      "name": "Kailash Colony",
+      "hindiName": "Kailash Colony",
+      "coordinates": [
+        28.55527,
+        77.24205
+      ]
+    },
+    {
+      "id": "voilet_line_15",
+      "code": "VL-15",
+      "name": "Nehru Place",
+      "hindiName": "Nehru Place",
+      "coordinates": [
+        28.55148,
+        77.25154
+      ]
+    },
+    {
+      "id": "voilet_line_16",
+      "code": "VL-16",
+      "name": "Kalkaji Mandir",
+      "hindiName": "Kalkaji Mandir",
+      "coordinates": [
+        28.55007,
+        77.25835
+      ]
+    },
+    {
+      "id": "voilet_line_17",
+      "code": "VL-17",
+      "name": "Govind Puri",
+      "hindiName": "Govind Puri",
+      "coordinates": [
+        28.54451,
+        77.26401
+      ]
+    },
+    {
+      "id": "voilet_line_18",
+      "code": "VL-18",
+      "name": "Okhla",
+      "hindiName": "Okhla",
+      "coordinates": [
+        28.54292,
+        77.27504
+      ]
+    },
+    {
+      "id": "voilet_line_19",
+      "code": "VL-19",
+      "name": "Jasola",
+      "hindiName": "Jasola",
+      "coordinates": [
+        28.53824,
+        77.28319
+      ]
+    },
+    {
+      "id": "voilet_line_20",
+      "code": "VL-20",
+      "name": "Sarita Vihar",
+      "hindiName": "Sarita Vihar",
+      "coordinates": [
+        28.52878,
+        77.28826
+      ]
+    },
+    {
+      "id": "voilet_line_21",
+      "code": "VL-21",
+      "name": "Mohan Estate",
+      "hindiName": "Mohan Estate",
+      "coordinates": [
+        28.51938,
+        77.29388
+      ]
+    },
+    {
+      "id": "voilet_line_22",
+      "code": "VL-22",
+      "name": "Tughlakabad",
+      "hindiName": "Tughlakabad",
+      "coordinates": [
+        28.50254,
+        77.2993
+      ]
+    },
+    {
+      "id": "voilet_line_23",
+      "code": "VL-23",
+      "name": "Badarpur Border",
+      "hindiName": "Badarpur Border",
+      "coordinates": [
+        28.49334,
+        77.30307
+      ]
+    },
+    {
+      "id": "voilet_line_24",
+      "code": "VL-24",
+      "name": "Sarai",
+      "hindiName": "Sarai",
+      "coordinates": [
+        28.481527,
+        77.307433
+      ]
+    },
+    {
+      "id": "voilet_line_25",
+      "code": "VL-25",
+      "name": "NHPC Chowk",
+      "hindiName": "N.H.P.C. Chowk",
+      "coordinates": [
+        28.461634,
+        77.309993
+      ]
+    },
+    {
+      "id": "voilet_line_26",
+      "code": "VL-26",
+      "name": "Mewala Maharajpur",
+      "hindiName": "Mewala Maharajpur",
+      "coordinates": [
+        28.452448,
+        77.310684
+      ]
+    },
+    {
+      "id": "voilet_line_27",
+      "code": "VL-27",
+      "name": "Sector 28 Faridabad",
+      "hindiName": "Sector 28 Faridabad",
+      "coordinates": [
+        28.432344,
+        77.306289
+      ]
+    },
+    {
+      "id": "voilet_line_28",
+      "code": "VL-28",
+      "name": "Badkal Mor",
+      "hindiName": "Badkal Mor",
+      "coordinates": [
+        28.422814,
+        77.310278
+      ]
+    },
+    {
+      "id": "voilet_line_29",
+      "code": "VL-29",
+      "name": "Old Faridabad",
+      "hindiName": "Old Faridabad",
+      "coordinates": [
+        28.410148,
+        77.311319
+      ]
+    },
+    {
+      "id": "voilet_line_30",
+      "code": "VL-30",
+      "name": "Neelam Chowk Ajronda",
+      "hindiName": "Neelam Chowk Ajronda",
+      "coordinates": [
+        28.397482,
+        77.31236
+      ]
+    },
+    {
+      "id": "voilet_line_31",
+      "code": "VL-31",
+      "name": "Bata Chowk",
+      "hindiName": "Bata Chowk",
+      "coordinates": [
+        28.385836,
+        77.313462
+      ]
+    },
+    {
+      "id": "voilet_line_32",
+      "code": "VL-32",
+      "name": "Escorts Mujesar",
+      "hindiName": "Escorts Mujesar",
+      "coordinates": [
+        28.370234,
+        77.31492
+      ]
+    },
+    {
+      "id": "voilet_line_33",
+      "code": "VL-33",
+      "name": "Sant Surdas - Sihi",
+      "hindiName": "Sant Surdas - Sihi",
+      "coordinates": [
+        28.354651,
+        77.316226
+      ]
+    },
+    {
+      "id": "voilet_line_34",
+      "code": "VL-34",
+      "name": "Raja Nahar Singh",
+      "hindiName": "Raja Nahar Singh",
+      "coordinates": [
+        28.340019,
+        77.316428
+      ]
+    }
+  ]
+}
