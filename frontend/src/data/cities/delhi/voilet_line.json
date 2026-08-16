@@ -6,7 +6,7 @@
   "color": "#8b5cf6",
   "startTerminal": "Kashmere Gate",
   "endTerminal": "Raja Nahar Singh",
-  "totalStations": 34,
+  "totalStations": 33,
   "stations": [
     {
       "id": "voilet_line_1",

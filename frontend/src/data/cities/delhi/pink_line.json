@@ -5,8 +5,8 @@
   "lineName": "Pink Line",
   "color": "#ec4899",
   "startTerminal": "Majlis Park",
-  "endTerminal": "Shiv Vihar",
-  "totalStations": 38,
+  "endTerminal": "Johri Enclave",
+  "totalStations": 36,
   "stations": [
     {
       "id": "pink_line_1",

@@ -4,9 +4,9 @@
   "systemName": "Delhi Metro",
   "lineName": "Blue Line",
   "color": "#2563eb",
-  "startTerminal": "Dwarka Sector 21",
-  "endTerminal": "Sector 62",
-  "totalStations": 49,
+  "startTerminal": "Dwarka",
+  "endTerminal": "Noida city center",
+  "totalStations": 32,
   "stations": [
     
       
