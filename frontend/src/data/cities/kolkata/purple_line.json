@@ -1,0 +1,96 @@
+{
+  "id": "purple_line",
+  "cityName": "Kolkata",
+  "systemName": "Kolkata Metro",
+  "lineName": "Purple Line",
+  "color": "#a855f7",
+  "startTerminal": "Joka",
+  "endTerminal": "Esplanade",
+  "totalStations": 12,
+  "stations": [
+    {
+      "id": "kol_purple_1",
+      "code": "JOK",
+      "name": "Joka",
+      "hindiName": "Joka",
+      "coordinates": [ 22.4640, 88.3070 ]
+    },
+    {
+      "id": "kol_purple_2",
+      "code": "TKP",
+      "name": "Thakurpukur",
+      "hindiName": "Thakurpukur",
+      "coordinates": [ 22.4740, 88.3090 ]
+    },
+    {
+      "id": "kol_purple_3",
+      "code": "SKB",
+      "name": "Sakherbazar",
+      "hindiName": "Sakherbazar",
+      "coordinates": [ 22.4830, 88.3120 ]
+    },
+    {
+      "id": "kol_purple_4",
+      "code": "BHC",
+      "name": "Behala Chowrasta",
+      "hindiName": "Behala Chowrasta",
+      "coordinates": [ 22.4930, 88.3150 ]
+    },
+    {
+      "id": "kol_purple_5",
+      "code": "BHB",
+      "name": "Behala Bazar",
+      "hindiName": "Behala Bazar",
+      "coordinates": [ 22.5020, 88.3170 ]
+    },
+    {
+      "id": "kol_purple_6",
+      "code": "TAR",
+      "name": "Taratala",
+      "hindiName": "Taratala",
+      "coordinates": [ 22.5110, 88.3190 ]
+    },
+    {
+      "id": "kol_purple_7",
+      "code": "MJH",
+      "name": "Majerhat",
+      "hindiName": "Majerhat",
+      "coordinates": [ 22.5220, 88.3260 ]
+    },
+    {
+      "id": "kol_purple_8",
+      "code": "MMP",
+      "name": "Mominpur",
+      "hindiName": "Mominpur",
+      "coordinates": [ 22.5320, 88.3300 ]
+    },
+    {
+      "id": "kol_purple_9",
+      "code": "KDP",
+      "name": "Kidderpore",
+      "hindiName": "Kidderpore",
+      "coordinates": [ 22.5440, 88.3320 ]
+    },
+    {
+      "id": "kol_purple_10",
+      "code": "VIC",
+      "name": "Victoria",
+      "hindiName": "Victoria",
+      "coordinates": [ 22.5490, 88.3400 ]
+    },
+    {
+      "id": "kol_purple_11",
+      "code": "PAR",
+      "name": "Park Street",
+      "hindiName": "Park Street",
+      "coordinates": [ 22.5530, 88.3490 ]
+    },
+    {
+      "id": "kol_purple_12",
+      "code": "ESP",
+      "name": "Esplanade",
+      "hindiName": "Esplanade",
+      "coordinates": [ 22.5649, 88.3517 ]
+    }
+  ]
+}

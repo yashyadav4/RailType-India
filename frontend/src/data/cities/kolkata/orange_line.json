@@ -1,0 +1,96 @@
+{
+  "id": "orange_line",
+  "cityName": "Kolkata",
+  "systemName": "Kolkata Metro",
+  "lineName": "Orange Line",
+  "color": "#f97316",
+  "startTerminal": "Kavi Subhash",
+  "endTerminal": "Salt Lake Sector V",
+  "totalStations": 12,
+  "stations": [
+    {
+      "id": "kol_orange_1",
+      "code": "KVS",
+      "name": "Kavi Subhash",
+      "hindiName": "Kavi Subhash",
+      "coordinates": [ 22.4719, 88.3995 ]
+    },
+    {
+      "id": "kol_orange_2",
+      "code": "SJR",
+      "name": "Satyajit Ray",
+      "hindiName": "Satyajit Ray",
+      "coordinates": [ 22.4810, 88.4000 ]
+    },
+    {
+      "id": "kol_orange_3",
+      "code": "JTN",
+      "name": "Jyotirindra Nandi",
+      "hindiName": "Jyotirindra Nandi",
+      "coordinates": [ 22.4900, 88.4010 ]
+    },
+    {
+      "id": "kol_orange_4",
+      "code": "KVK",
+      "name": "Kavi Sukanta",
+      "hindiName": "Kavi Sukanta",
+      "coordinates": [ 22.5020, 88.4010 ]
+    },
+    {
+      "id": "kol_orange_5",
+      "code": "HMK",
+      "name": "Hemanta Mukhopadhyay",
+      "hindiName": "Hemanta Mukhopadhyay",
+      "coordinates": [ 22.5140, 88.4020 ]
+    },
+    {
+      "id": "kol_orange_6",
+      "code": "VPB",
+      "name": "VIP Bazar",
+      "hindiName": "VIP Bazar",
+      "coordinates": [ 22.5250, 88.4020 ]
+    },
+    {
+      "id": "kol_orange_7",
+      "code": "RWG",
+      "name": "Ritwik Ghatak",
+      "hindiName": "Ritwik Ghatak",
+      "coordinates": [ 22.5380, 88.4020 ]
+    },
+    {
+      "id": "kol_orange_8",
+      "code": "BSG",
+      "name": "Barun Sengupta",
+      "hindiName": "Barun Sengupta",
+      "coordinates": [ 22.5450, 88.4010 ]
+    },
+    {
+      "id": "kol_orange_9",
+      "code": "BGH",
+      "name": "Beliaghata",
+      "hindiName": "Beliaghata",
+      "coordinates": [ 22.5590, 88.4030 ]
+    },
+    {
+      "id": "kol_orange_10",
+      "code": "GKG",
+      "name": "Gour Kishore Ghosh",
+      "hindiName": "Gour Kishore Ghosh",
+      "coordinates": [ 22.5690, 88.4060 ]
+    },
+    {
+      "id": "kol_orange_11",
+      "code": "NCP",
+      "name": "Nicco Park",
+      "hindiName": "Nicco Park",
+      "coordinates": [ 22.5710, 88.4210 ]
+    },
+    {
+      "id": "kol_orange_12",
+      "code": "SLV",
+      "name": "Salt Lake Sector V",
+      "hindiName": "Salt Lake Sector V",
+      "coordinates": [ 22.5801, 88.4357 ]
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "id": "yellow_line",
+  "cityName": "Bengaluru",
+  "systemName": "Namma Metro",
+  "lineName": "Yellow Line",
+  "color": "#facc15",
+  "startTerminal": "RV Road",
+  "endTerminal": "Bommasandra",
+  "totalStations": 16,
+  "stations": [
+    {
+      "id": "yellow_1",
+      "code": "RVR",
+      "name": "RV Road",
+      "hindiName": "RV Road",
+      "coordinates": [ 12.9230, 77.5801 ]
+    },
+    {
+      "id": "yellow_2",
+      "code": "RGD",
+      "name": "Ragigudda",
+      "hindiName": "Ragigudda",
+      "coordinates": [ 12.9180, 77.5900 ]
+    },
+    {
+      "id": "yellow_3",
+      "code": "JDV",
+      "name": "Jayadeva Hospital",
+      "hindiName": "Jayadeva Hospital",
+      "coordinates": [ 12.9175, 77.6010 ]
+    },
+    {
+      "id": "yellow_4",
+      "code": "BTM",
+      "name": "BTM Layout",
+      "hindiName": "BTM Layout",
+      "coordinates": [ 12.9160, 77.6105 ]
+    },
+    {
+      "id": "yellow_5",
+      "code": "CSB",
+      "name": "Central Silk Board",
+      "hindiName": "Central Silk Board",
+      "coordinates": [ 12.9175, 77.6225 ]
+    },
+    {
+      "id": "yellow_6",
+      "code": "BMH",
+      "name": "Bommanahalli",
+      "hindiName": "Bommanahalli",
+      "coordinates": [ 12.9065, 77.6240 ]
+    },
+    {
+      "id": "yellow_7",
+      "code": "HGS",
+      "name": "Hongasandra",
+      "hindiName": "Hongasandra",
+      "coordinates": [ 12.8980, 77.6275 ]
+    },
+    {
+      "id": "yellow_8",
+      "code": "KUD",
+      "name": "Kudlu Gate",
+      "hindiName": "Kudlu Gate",
+      "coordinates": [ 12.8875, 77.6330 ]
+    },
+    {
+      "id": "yellow_9",
+      "code": "SGS",
+      "name": "Singasandra",
+      "hindiName": "Singasandra",
+      "coordinates": [ 12.8795, 77.6375 ]
+    },
+    {
+      "id": "yellow_10",
+      "code": "HSR",
+      "name": "Hosa Road",
+      "hindiName": "Hosa Road",
+      "coordinates": [ 12.8710, 77.6430 ]
+    },
+    {
+      "id": "yellow_11",
+      "code": "BTA",
+      "name": "Beratena Agrahara",
+      "hindiName": "Beratena Agrahara",
+      "coordinates": [ 12.8625, 77.6490 ]
+    },
+    {
+      "id": "yellow_12",
+      "code": "ELC",
+      "name": "Electronic City",
+      "hindiName": "Electronic City",
+      "coordinates": [ 12.8500, 77.6580 ]
+    },
+    {
+      "id": "yellow_13",
+      "code": "IFK",
+      "name": "Infosys Foundation Konappana Agrahara",
+      "hindiName": "Infosys Foundation Konappana Agrahara",
+      "coordinates": [ 12.8425, 77.6650 ]
+    },
+    {
+      "id": "yellow_14",
+      "code": "HSK",
+      "name": "Huskur Road",
+      "hindiName": "Huskur Road",
+      "coordinates": [ 12.8330, 77.6715 ]
+    },
+    {
+      "id": "yellow_15",
+      "code": "HBG",
+      "name": "Hebbagodi",
+      "hindiName": "Hebbagodi",
+      "coordinates": [ 12.8225, 77.6780 ]
+    },
+    {
+      "id": "yellow_16",
+      "code": "BMS",
+      "name": "Bommasandra",
+      "hindiName": "Bommasandra",
+      "coordinates": [ 12.8150, 77.6835 ]
+    }
+  ]
+}

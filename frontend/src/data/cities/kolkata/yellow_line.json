@@ -1,0 +1,82 @@
+{
+  "id": "yellow_line",
+  "cityName": "Kolkata",
+  "systemName": "Kolkata Metro",
+  "lineName": "Yellow Line",
+  "color": "#facc15",
+  "startTerminal": "Noapara",
+  "endTerminal": "Barasat",
+  "totalStations": 10,
+  "stations": [
+    {
+      "id": "kol_yellow_1",
+      "code": "NOA",
+      "name": "Noapara",
+      "hindiName": "Noapara",
+      "coordinates": [ 22.6402, 88.3888 ]
+    },
+    {
+      "id": "kol_yellow_2",
+      "code": "DDC",
+      "name": "Dum Dum Cantonment",
+      "hindiName": "Dum Dum Cantonment",
+      "coordinates": [ 22.6310, 88.4060 ]
+    },
+    {
+      "id": "kol_yellow_3",
+      "code": "JSR",
+      "name": "Jessore Road",
+      "hindiName": "Jessore Road",
+      "coordinates": [ 22.6370, 88.4200 ]
+    },
+    {
+      "id": "kol_yellow_4",
+      "code": "BMB",
+      "name": "Biman Bandar",
+      "hindiName": "Biman Bandar",
+      "coordinates": [ 22.6430, 88.4350 ]
+    },
+    {
+      "id": "kol_yellow_5",
+      "code": "BTI",
+      "name": "Birati",
+      "hindiName": "Birati",
+      "coordinates": [ 22.6580, 88.4410 ]
+    },
+    {
+      "id": "kol_yellow_6",
+      "code": "MCN",
+      "name": "Michael Nagar",
+      "hindiName": "Michael Nagar",
+      "coordinates": [ 22.6700, 88.4470 ]
+    },
+    {
+      "id": "kol_yellow_7",
+      "code": "NBP",
+      "name": "New Barrackpore",
+      "hindiName": "New Barrackpore",
+      "coordinates": [ 22.6820, 88.4520 ]
+    },
+    {
+      "id": "kol_yellow_8",
+      "code": "MDG",
+      "name": "Madhyamgram",
+      "hindiName": "Madhyamgram",
+      "coordinates": [ 22.6980, 88.4600 ]
+    },
+    {
+      "id": "kol_yellow_9",
+      "code": "HDP",
+      "name": "Hridaypur",
+      "hindiName": "Hridaypur",
+      "coordinates": [ 22.7120, 88.4700 ]
+    },
+    {
+      "id": "kol_yellow_10",
+      "code": "BST",
+      "name": "Barasat",
+      "hindiName": "Barasat",
+      "coordinates": [ 22.7230, 88.4790 ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CITY_CATALOG } from "../data/cities/index";
+import heroImg from "../images/heroImg.png";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -20,8 +21,8 @@ export default function HomePage() {
     <div className="home-container">
       <style>{`
         .home-container {
-          padding: 100px 3rem 3rem 3rem;
-          min-height: 100vh;
+          padding: 0 3rem 3rem 3rem;
+          
           background-color: #0b0f19;
           color: #f8fafc;
           font-family: system-ui, -apple-system, sans-serif;
@@ -60,6 +61,21 @@ export default function HomePage() {
           display: flex;
           gap: 1rem;
           margin-bottom: 3.5rem;
+        }
+        .hero-graphic-box {
+          display:flex;
+          align-items:center;
+          width: 100%;
+          height: 250px;
+          overflow: hidden;
+          border-radius: 12px;
+        }
+
+        .hero-graphic-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
         }
 
         .btn-primary {
@@ -283,9 +299,9 @@ export default function HomePage() {
             {/* Uses React Router to navigate directly to the Delhi Yellow Line info/play page */}
             <button
               className="btn-primary"
-              onClick={() => navigate("/delhi/yellow_line")}
+              onClick={() => navigate("/mumbai/line_1")}
             >
-              Start on Yellow Line
+              Start on Blue Line
             </button>
             <button
               className="btn-secondary"
@@ -317,7 +333,7 @@ export default function HomePage() {
 
         {/* Train Graphic Placeholder */}
         <div className="hero-graphic-box">
-          <span>🚆</span>
+          <img src={heroImg} alt="Hero" />
         </div>
       </section>
 

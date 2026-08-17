@@ -1,0 +1,24 @@
+{
+  "id": "green_line",
+  "cityName": "Kolkata",
+  "systemName": "Kolkata Metro",
+  "lineName": "Green Line",
+  "color": "#22c55e",
+  "startTerminal": "Howrah Maidan",
+  "endTerminal": "Salt Lake Sector V",
+  "totalStations": 12,
+  "stations": [
+    { "id": "kol_green_1", "code": "HWM", "name": "Howrah Maidan", "hindiName": "Howrah Maidan", "coordinates": [ 22.5878, 88.3374 ] },
+    { "id": "kol_green_2", "code": "HWH", "name": "Howrah", "hindiName": "Howrah", "coordinates": [ 22.5840, 88.3433 ] },
+    { "id": "kol_green_3", "code": "MHK", "name": "Mahakaran", "hindiName": "Mahakaran", "coordinates": [ 22.5765, 88.3477 ] },
+    { "id": "kol_green_4", "code": "ESP", "name": "Esplanade", "hindiName": "Esplanade", "coordinates": [ 22.5649, 88.3517 ] },
+    { "id": "kol_green_5", "code": "SDA", "name": "Sealdah", "hindiName": "Sealdah", "coordinates": [ 22.5684, 88.3705 ] },
+    { "id": "kol_green_6", "code": "PHB", "name": "Phoolbagan", "hindiName": "Phoolbagan", "coordinates": [ 22.5670, 88.3942 ] },
+    { "id": "kol_green_7", "code": "SLS", "name": "Salt Lake Stadium", "hindiName": "Salt Lake Stadium", "coordinates": [ 22.5702, 88.4069 ] },
+    { "id": "kol_green_8", "code": "BGC", "name": "Bengal Chemical", "hindiName": "Bengal Chemical", "coordinates": [ 22.5756, 88.4116 ] },
+    { "id": "kol_green_9", "code": "CTC", "name": "City Centre", "hindiName": "City Centre", "coordinates": [ 22.5835, 88.4168 ] },
+    { "id": "kol_green_10", "code": "CPA", "name": "Central Park", "hindiName": "Central Park", "coordinates": [ 22.5855, 88.4239 ] },
+    { "id": "kol_green_11", "code": "KAR", "name": "Karunamoyee", "hindiName": "Karunamoyee", "coordinates": [ 22.5786, 88.4283 ] },
+    { "id": "kol_green_12", "code": "SLV", "name": "Salt Lake Sector V", "hindiName": "Salt Lake Sector V", "coordinates": [ 22.5801, 88.4357 ] }
+  ]
+}

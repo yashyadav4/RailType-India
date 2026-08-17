@@ -1,0 +1,131 @@
+{
+  "id": "line_2a",
+  "cityName": "Mumbai",
+  "systemName": "Mumbai Metro",
+  "lineName": "Yellow Line 2A",
+  "color": "#facc15",
+  "startTerminal": "Dahisar East",
+  "endTerminal": "Andheri West",
+  "totalStations": 17,
+  "stations": [
+    {
+      "id": "line_2a_1",
+      "code": "DHS",
+      "name": "Dahisar East",
+      "hindiName": "Dahisar East",
+      "coordinates": [ 19.2500, 72.8658 ]
+    },
+    {
+      "id": "line_2a_2",
+      "code": "ANN",
+      "name": "Anand Nagar",
+      "hindiName": "Anand Nagar",
+      "coordinates": [ 19.2458, 72.8601 ]
+    },
+    {
+      "id": "line_2a_3",
+      "code": "KND",
+      "name": "Kandarpada",
+      "hindiName": "Kandarpada",
+      "coordinates": [ 19.2410, 72.8550 ]
+    },
+    {
+      "id": "line_2a_4",
+      "code": "MND",
+      "name": "Mandapeshwar",
+      "hindiName": "Mandapeshwar",
+      "coordinates": [ 19.2365, 72.8502 ]
+    },
+    {
+      "id": "line_2a_5",
+      "code": "EKS",
+      "name": "Eksar",
+      "hindiName": "Eksar",
+      "coordinates": [ 19.2310, 72.8468 ]
+    },
+    {
+      "id": "line_2a_6",
+      "code": "BOR",
+      "name": "Borivali West",
+      "hindiName": "Borivali West",
+      "coordinates": [ 19.2255, 72.8432 ]
+    },
+    {
+      "id": "line_2a_7",
+      "code": "PHE",
+      "name": "Pahadi Eksar",
+      "hindiName": "Pahadi Eksar",
+      "coordinates": [ 19.2170, 72.8390 ]
+    },
+    {
+      "id": "line_2a_8",
+      "code": "KNW",
+      "name": "Kandivali West",
+      "hindiName": "Kandivali West",
+      "coordinates": [ 19.2085, 72.8360 ]
+    },
+    {
+      "id": "line_2a_9",
+      "code": "DAH",
+      "name": "Dahanukarwadi",
+      "hindiName": "Dahanukarwadi",
+      "coordinates": [ 19.2025, 72.8340 ]
+    },
+    {
+      "id": "line_2a_10",
+      "code": "VAL",
+      "name": "Valnai",
+      "hindiName": "Valnai",
+      "coordinates": [ 19.1950, 72.8325 ]
+    },
+    {
+      "id": "line_2a_11",
+      "code": "MLW",
+      "name": "Malad West",
+      "hindiName": "Malad West",
+      "coordinates": [ 19.1865, 72.8315 ]
+    },
+    {
+      "id": "line_2a_12",
+      "code": "LML",
+      "name": "Lower Malad",
+      "hindiName": "Lower Malad",
+      "coordinates": [ 19.1780, 72.8310 ]
+    },
+    {
+      "id": "line_2a_13",
+      "code": "PHG",
+      "name": "Pahadi Goregaon",
+      "hindiName": "Pahadi Goregaon",
+      "coordinates": [ 19.1700, 72.8315 ]
+    },
+    {
+      "id": "line_2a_14",
+      "code": "GRW",
+      "name": "Goregaon West",
+      "hindiName": "Goregaon West",
+      "coordinates": [ 19.1620, 72.8320 ]
+    },
+    {
+      "id": "line_2a_15",
+      "code": "OSH",
+      "name": "Oshiwara",
+      "hindiName": "Oshiwara",
+      "coordinates": [ 19.1520, 72.8325 ]
+    },
+    {
+      "id": "line_2a_16",
+      "code": "LWO",
+      "name": "Lower Oshiwara",
+      "hindiName": "Lower Oshiwara",
+      "coordinates": [ 19.1430, 72.8328 ]
+    },
+    {
+      "id": "line_2a_17",
+      "code": "ANW",
+      "name": "Andheri West",
+      "hindiName": "Andheri West",
+      "coordinates": [ 19.1350, 72.8330 ]
+    }
+  ]
+}

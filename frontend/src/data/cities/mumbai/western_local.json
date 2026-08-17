@@ -1,0 +1,166 @@
+{
+  "id": "western_local",
+  "cityName": "Mumbai",
+  "systemName": "Mumbai Suburban",
+  "lineName": "Western Line",
+  "color": "#9333ea",
+  "startTerminal": "Churchgate",
+  "endTerminal": "Borivali",
+  "totalStations": 22,
+  "stations": [
+    {
+      "id": "western_local_1",
+      "code": "CCG",
+      "name": "Churchgate",
+      "hindiName": "Churchgate",
+      "coordinates": [ 18.9322, 72.8276 ]
+    },
+    {
+      "id": "western_local_2",
+      "code": "MEL",
+      "name": "Marine Lines",
+      "hindiName": "Marine Lines",
+      "coordinates": [ 18.9443, 72.8247 ]
+    },
+    {
+      "id": "western_local_3",
+      "code": "CYR",
+      "name": "Charni Road",
+      "hindiName": "Charni Road",
+      "coordinates": [ 18.9519, 72.8184 ]
+    },
+    {
+      "id": "western_local_4",
+      "code": "GTR",
+      "name": "Grant Road",
+      "hindiName": "Grant Road",
+      "coordinates": [ 18.9620, 72.8159 ]
+    },
+    {
+      "id": "western_local_5",
+      "code": "BCT",
+      "name": "Mumbai Central",
+      "hindiName": "Mumbai Central",
+      "coordinates": [ 18.9698, 72.8194 ]
+    },
+    {
+      "id": "western_local_6",
+      "code": "MX",
+      "name": "Mahalaxmi",
+      "hindiName": "Mahalaxmi",
+      "coordinates": [ 18.9827, 72.8244 ]
+    },
+    {
+      "id": "western_local_7",
+      "code": "PL",
+      "name": "Lower Parel",
+      "hindiName": "Lower Parel",
+      "coordinates": [ 18.9953, 72.8300 ]
+    },
+    {
+      "id": "western_local_8",
+      "code": "PBHD",
+      "name": "Prabhadevi",
+      "hindiName": "Prabhadevi",
+      "coordinates": [ 19.0145, 72.8278 ]
+    },
+    {
+      "id": "western_local_9",
+      "code": "DDR",
+      "name": "Dadar",
+      "hindiName": "Dadar",
+      "coordinates": [ 19.0183, 72.8427 ]
+    },
+    {
+      "id": "western_local_10",
+      "code": "MRU",
+      "name": "Matunga Road",
+      "hindiName": "Matunga Road",
+      "coordinates": [ 19.0287, 72.8459 ]
+    },
+    {
+      "id": "western_local_11",
+      "code": "MM",
+      "name": "Mahim Junction",
+      "hindiName": "Mahim Junction",
+      "coordinates": [ 19.0408, 72.8465 ]
+    },
+    {
+      "id": "western_local_12",
+      "code": "BA",
+      "name": "Bandra",
+      "hindiName": "Bandra",
+      "coordinates": [ 19.0544, 72.8402 ]
+    },
+    {
+      "id": "western_local_13",
+      "code": "KHAR",
+      "name": "Khar Road",
+      "hindiName": "Khar Road",
+      "coordinates": [ 19.0699, 72.8400 ]
+    },
+    {
+      "id": "western_local_14",
+      "code": "STC",
+      "name": "Santacruz",
+      "hindiName": "Santacruz",
+      "coordinates": [ 19.0818, 72.8415 ]
+    },
+    {
+      "id": "western_local_15",
+      "code": "VLP",
+      "name": "Vile Parle",
+      "hindiName": "Vile Parle",
+      "coordinates": [ 19.0993, 72.8439 ]
+    },
+    {
+      "id": "western_local_16",
+      "code": "ADH",
+      "name": "Andheri",
+      "hindiName": "Andheri",
+      "coordinates": [ 19.1197, 72.8466 ]
+    },
+    {
+      "id": "western_local_17",
+      "code": "JOS",
+      "name": "Jogeshwari",
+      "hindiName": "Jogeshwari",
+      "coordinates": [ 19.1378, 72.8494 ]
+    },
+    {
+      "id": "western_local_18",
+      "code": "RMAR",
+      "name": "Ram Mandir",
+      "hindiName": "Ram Mandir",
+      "coordinates": [ 19.1515, 72.8497 ]
+    },
+    {
+      "id": "western_local_19",
+      "code": "GMN",
+      "name": "Goregaon",
+      "hindiName": "Goregaon",
+      "coordinates": [ 19.1645, 72.8488 ]
+    },
+    {
+      "id": "western_local_20",
+      "code": "MDD",
+      "name": "Malad",
+      "hindiName": "Malad",
+      "coordinates": [ 19.1865, 72.8487 ]
+    },
+    {
+      "id": "western_local_21",
+      "code": "KILE",
+      "name": "Kandivali",
+      "hindiName": "Kandivali",
+      "coordinates": [ 19.2037, 72.8514 ]
+    },
+    {
+      "id": "western_local_22",
+      "code": "BVI",
+      "name": "Borivali",
+      "hindiName": "Borivali",
+      "coordinates": [ 19.2291, 72.8573 ]
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "id": "line_7",
+  "cityName": "Mumbai",
+  "systemName": "Mumbai Metro",
+  "lineName": "Red Line 7",
+  "color": "#ef4444",
+  "startTerminal": "Dahisar East",
+  "endTerminal": "Gundavali",
+  "totalStations": 14,
+  "stations": [
+    {
+      "id": "line_7_1",
+      "code": "DHS",
+      "name": "Dahisar East",
+      "hindiName": "Dahisar East",
+      "coordinates": [ 19.2500, 72.8658 ]
+    },
+    {
+      "id": "line_7_2",
+      "code": "OVR",
+      "name": "Ovaripada",
+      "hindiName": "Ovaripada",
+      "coordinates": [ 19.2415, 72.8645 ]
+    },
+    {
+      "id": "line_7_3",
+      "code": "NTP",
+      "name": "National Park",
+      "hindiName": "National Park",
+      "coordinates": [ 19.2290, 72.8635 ]
+    },
+    {
+      "id": "line_7_4",
+      "code": "DVP",
+      "name": "Devipada",
+      "hindiName": "Devipada",
+      "coordinates": [ 19.2210, 72.8630 ]
+    },
+    {
+      "id": "line_7_5",
+      "code": "MAG",
+      "name": "Magathane",
+      "hindiName": "Magathane",
+      "coordinates": [ 19.2135, 72.8625 ]
+    },
+    {
+      "id": "line_7_6",
+      "code": "POI",
+      "name": "Poisar",
+      "hindiName": "Poisar",
+      "coordinates": [ 19.2045, 72.8620 ]
+    },
+    {
+      "id": "line_7_7",
+      "code": "AKU",
+      "name": "Akurli",
+      "hindiName": "Akurli",
+      "coordinates": [ 19.1960, 72.8615 ]
+    },
+    {
+      "id": "line_7_8",
+      "code": "KUR",
+      "name": "Kurar",
+      "hindiName": "Kurar",
+      "coordinates": [ 19.1840, 72.8600 ]
+    },
+    {
+      "id": "line_7_9",
+      "code": "DIN",
+      "name": "Dindoshi",
+      "hindiName": "Dindoshi",
+      "coordinates": [ 19.1740, 72.8585 ]
+    },
+    {
+      "id": "line_7_10",
+      "code": "AAR",
+      "name": "Aarey",
+      "hindiName": "Aarey",
+      "coordinates": [ 19.1630, 72.8560 ]
+    },
+    {
+      "id": "line_7_11",
+      "code": "GRE",
+      "name": "Goregaon East",
+      "hindiName": "Goregaon East",
+      "coordinates": [ 19.1550, 72.8545 ]
+    },
+    {
+      "id": "line_7_12",
+      "code": "JGE",
+      "name": "Jogeshwari East",
+      "hindiName": "Jogeshwari East",
+      "coordinates": [ 19.1435, 72.8525 ]
+    },
+    {
+      "id": "line_7_13",
+      "code": "MOG",
+      "name": "Mogra",
+      "hindiName": "Mogra",
+      "coordinates": [ 19.1295, 72.8520 ]
+    },
+    {
+      "id": "line_7_14",
+      "code": "GUN",
+      "name": "Gundavali",
+      "hindiName": "Gundavali",
+      "coordinates": [ 19.1197, 72.8530 ]
+    }
+  ]
+}
