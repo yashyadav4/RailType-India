@@ -13,370 +13,296 @@
       "code": "YL-01",
       "name": "Samaypur Badli",
       "hindiName": "Samaypur Badli",
-      "coordinates": [
-        28.744616,
-        77.138265
-      ]
+      "localName": "समयपुर बादली",
+      "coordinates": [28.744616, 77.138265]
     },
     {
       "id": "yellow_line_2",
       "code": "YL-02",
       "name": "Rohini Sector 18-19",
       "hindiName": "Rohini Sector 18-19",
-      "coordinates": [
-        28.738348,
-        77.139832
-      ]
+      "localName": "रोहिणी सेक्टर 18-19",
+      "coordinates": [28.738348, 77.139832]
     },
     {
       "id": "yellow_line_3",
       "code": "YL-03",
       "name": "Haiderpur Badli Mor",
       "hindiName": "Haiderpur Badli Mor",
-      "coordinates": [
-        28.730121,
-        77.149403
-      ]
+      "localName": "हैदरपुर बादली मोड़",
+      "coordinates": [28.730121, 77.149403]
     },
     {
       "id": "yellow_line_4",
       "code": "YL-04",
       "name": "Jahangirpuri",
       "hindiName": "Jahangirpuri",
-      "coordinates": [
-        28.72592,
-        77.16267
-      ]
+      "localName": "जहांगीरपुरी",
+      "coordinates": [28.72592, 77.16267]
     },
     {
       "id": "yellow_line_5",
       "code": "YL-05",
       "name": "Adarsh Nagar",
       "hindiName": "Adarsh Nagar",
-      "coordinates": [
-        28.71642,
-        77.17046
-      ]
+      "localName": "आदर्श नगर",
+      "coordinates": [28.71642, 77.17046]
     },
     {
       "id": "yellow_line_6",
       "code": "YL-06",
       "name": "Azadpur",
       "hindiName": "Azadpur",
-      "coordinates": [
-        28.70696,
-        77.18053
-      ]
+      "localName": "आज़ादपुर",
+      "coordinates": [28.70696, 77.18053]
     },
     {
       "id": "yellow_line_7",
       "code": "YL-07",
       "name": "Model Town",
       "hindiName": "Model Town",
-      "coordinates": [
-        28.70278,
-        77.19363
-      ]
+      "localName": "मॉडल टाउन",
+      "coordinates": [28.70278, 77.19363]
     },
     {
       "id": "yellow_line_8",
       "code": "YL-08",
       "name": "Guru Tegh Bahadur Nagar",
       "hindiName": "Guru Tegh Bahadur Nagar",
-      "coordinates": [
-        28.69785,
-        77.20722
-      ]
+      "localName": "गुरु तेग बहादुर नगर",
+      "coordinates": [28.69785, 77.20722]
     },
     {
       "id": "yellow_line_9",
       "code": "YL-09",
       "name": "Vishwavidyalaya",
       "hindiName": "Vishwavidyalaya",
-      "coordinates": [
-        28.6948,
-        77.21483
-      ]
+      "localName": "विश्वविद्यालय",
+      "coordinates": [28.6948, 77.21483]
     },
     {
       "id": "yellow_line_10",
       "code": "YL-10",
       "name": "Vidhan Sabha",
       "hindiName": "Vidhan Sabha",
-      "coordinates": [
-        28.68802,
-        77.2214
-      ]
+      "localName": "विधान सभा",
+      "coordinates": [28.68802, 77.2214]
     },
     {
       "id": "yellow_line_11",
       "code": "YL-11",
       "name": "Civil Lines",
       "hindiName": "Civil Lines",
-      "coordinates": [
-        28.676851,
-        77.22503
-      ]
+      "localName": "सिविल लाइंस",
+      "coordinates": [28.676851, 77.22503]
     },
     {
       "id": "yellow_line_12",
       "code": "YL-12",
       "name": "Kashmere Gate",
       "hindiName": "Kashmere Gate",
-      "coordinates": [
-        28.6675,
-        77.22817
-      ]
+      "localName": "कश्मीरी गेट",
+      "coordinates": [28.6675, 77.22817]
     },
     {
       "id": "yellow_line_13",
       "code": "YL-13",
       "name": "Chandni Chowk",
       "hindiName": "Chandni Chowk",
-      "coordinates": [
-        28.65785,
-        77.23014
-      ]
+      "localName": "चांदनी चौक",
+      "coordinates": [28.65785, 77.23014]
     },
     {
       "id": "yellow_line_14",
       "code": "YL-14",
       "name": "Chawri Bazar",
       "hindiName": "Chawri Bazar",
-      "coordinates": [
-        28.64931,
-        77.22637
-      ]
+      "localName": "चावड़ी बाज़ार",
+      "coordinates": [28.64931, 77.22637]
     },
     {
       "id": "yellow_line_15",
       "code": "YL-15",
       "name": "New Delhi",
       "hindiName": "New Delhi",
-      "coordinates": [
-        28.64307,
-        77.22144
-      ]
+      "localName": "नई दिल्ली",
+      "coordinates": [28.64307, 77.22144]
     },
     {
       "id": "yellow_line_16",
       "code": "YL-16",
       "name": "Rajiv Chowk",
       "hindiName": "Rajiv Chowk",
-      "coordinates": [
-        28.63282,
-        77.21826
-      ]
+      "localName": "राजीव चौक",
+      "coordinates": [28.63282, 77.21826]
     },
     {
       "id": "yellow_line_17",
       "code": "YL-17",
       "name": "Patel Chowk",
       "hindiName": "Patel Chowk",
-      "coordinates": [
-        28.62295,
-        77.21389
-      ]
+      "localName": "पटेल चौक",
+      "coordinates": [28.62295, 77.21389]
     },
     {
       "id": "yellow_line_18",
       "code": "YL-18",
       "name": "Central Secretariat",
       "hindiName": "Central Secretariat",
-      "coordinates": [
-        28.61474,
-        77.21191
-      ]
+      "localName": "केंद्रीय सचिवालय",
+      "coordinates": [28.61474, 77.21191]
     },
     {
       "id": "yellow_line_19",
       "code": "YL-19",
       "name": "Udyog Bhawan",
       "hindiName": "Udyog Bhawan",
-      "coordinates": [
-        28.61166,
-        77.21198
-      ]
+      "localName": "उद्योग भवन",
+      "coordinates": [28.61166, 77.21198]
     },
     {
       "id": "yellow_line_20",
       "code": "YL-20",
       "name": "Lok Kalyan Marg",
       "hindiName": "Lok Kalyan Marg",
-      "coordinates": [
-        28.59726,
-        77.21088
-      ]
+      "localName": "लोक कल्याण मार्ग",
+      "coordinates": [28.59726, 77.21088]
     },
     {
       "id": "yellow_line_21",
       "code": "YL-21",
       "name": "Jor Bagh",
       "hindiName": "Jor Bagh",
-      "coordinates": [
-        28.58708,
-        77.21209
-      ]
+      "localName": "जोर बाग",
+      "coordinates": [28.58708, 77.21209]
     },
     {
       "id": "yellow_line_22",
       "code": "YL-22",
       "name": "Dilli Haat INA",
       "hindiName": "Dilli Haat INA",
-      "coordinates": [
-        28.57526,
-        77.20935
-      ]
+      "localName": "दिल्ली हाट आईएनए",
+      "coordinates": [28.57526, 77.20935]
     },
     {
       "id": "yellow_line_23",
       "code": "YL-23",
       "name": "AIIMS",
       "hindiName": "AIIMS",
-      "coordinates": [
-        28.56892,
-        77.20771
-      ]
+      "localName": "एम्स",
+      "coordinates": [28.56892, 77.20771]
     },
     {
       "id": "yellow_line_24",
       "code": "YL-24",
       "name": "Green Park",
       "hindiName": "Green Park",
-      "coordinates": [
-        28.55979,
-        77.20682
-      ]
+      "localName": "ग्रीन पार्क",
+      "coordinates": [28.563, 77.206]
     },
     {
       "id": "yellow_line_25",
       "code": "YL-25",
       "name": "Hauz Khas",
       "hindiName": "Hauz Khas",
-      "coordinates": [
-        28.54335,
-        77.20667
-      ]
+      "localName": "हौज़ खास",
+      "coordinates": [28.544256, 77.206707]
     },
     {
       "id": "yellow_line_26",
       "code": "YL-26",
       "name": "Malviya Nagar",
       "hindiName": "Malviya Nagar",
-      "coordinates": [
-        28.52798,
-        77.20565
-      ]
+      "localName": "मालवीय नगर",
+      "coordinates": [28.528, 77.206]
     },
     {
       "id": "yellow_line_27",
       "code": "YL-27",
       "name": "Saket",
       "hindiName": "Saket",
-      "coordinates": [
-        28.5206,
-        77.20138
-      ]
+      "localName": "साकेत",
+      "coordinates": [28.520, 77.201]
     },
     {
       "id": "yellow_line_28",
       "code": "YL-28",
       "name": "Qutab Minar",
       "hindiName": "Qutab Minar",
-      "coordinates": [
-        28.51302,
-        77.18648
-      ]
+      "localName": "कुतुब मीनार",
+      "coordinates": [28.512, 77.186]
     },
     {
       "id": "yellow_line_29",
       "code": "YL-29",
       "name": "Chhattarpur",
       "hindiName": "Chhattarpur",
-      "coordinates": [
-        28.50671,
-        77.17484
-      ]
+      "localName": "छतरपुर",
+      "coordinates": [28.506, 77.175]
     },
     {
       "id": "yellow_line_30",
       "code": "YL-30",
       "name": "Sultanpur",
       "hindiName": "Sultanpur",
-      "coordinates": [
-        28.49927,
-        77.16153
-      ]
+      "localName": "सुल्तानपुर",
+      "coordinates": [28.499, 77.161]
     },
     {
       "id": "yellow_line_31",
       "code": "YL-31",
       "name": "Ghitorni",
       "hindiName": "Ghitorni",
-      "coordinates": [
-        28.49383,
-        77.14922
-      ]
+      "localName": "घिटोरनी",
+      "coordinates": [28.493, 77.149]
     },
     {
       "id": "yellow_line_32",
       "code": "YL-32",
       "name": "Arjan Garh",
       "hindiName": "Arjan Garh",
-      "coordinates": [
-        28.48076,
-        77.12583
-      ]
+      "localName": "अर्जन गढ़",
+      "coordinates": [28.479, 77.125]
     },
     {
       "id": "yellow_line_33",
       "code": "YL-33",
       "name": "Guru Dronacharya",
       "hindiName": "Guru Dronacharya",
-      "coordinates": [
-        28.48203,
-        77.10232
-      ]
+      "localName": "गुरु द्रोणाचार्य",
+      "coordinates": [28.482, 77.103]
     },
     {
       "id": "yellow_line_34",
       "code": "YL-34",
       "name": "Sikandarpur",
       "hindiName": "Sikandarpur",
-      "coordinates": [
-        28.48182,
-        77.09235
-      ]
+      "localName": "सिकंदरपुर",
+      "coordinates": [28.481, 77.091]
     },
     {
       "id": "yellow_line_35",
       "code": "YL-35",
       "name": "MG Road",
       "hindiName": "MG Road",
-      "coordinates": [
-        28.47957,
-        77.08006
-      ]
+      "localName": "एमजी रोड",
+      "coordinates": [28.480, 77.081]
     },
     {
       "id": "yellow_line_36",
       "code": "YL-36",
       "name": "IFFCO Chowk",
       "hindiName": "IFFCO Chowk",
-      "coordinates": [
-        28.47209,
-        77.07175
-      ]
+      "localName": "इफ्को चौक",
+      "coordinates": [28.470, 77.072]
     },
     {
       "id": "yellow_line_37",
       "code": "YL-37",
       "name": "Huda City Centre",
       "hindiName": "Huda City Centre",
-      "coordinates": [
-        28.45927,
-        77.07268
-      ]
+      "localName": "हुडा सिटी सेंटर",
+      "coordinates": [28.459, 77.072]
     }
   ]
 }

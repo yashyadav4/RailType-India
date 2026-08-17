@@ -13,250 +13,200 @@
       "code": "ML-01",
       "name": "Janak Puri West",
       "hindiName": "Janak Puri West",
-      "coordinates": [
-        28.62895,
-        77.077923
-      ]
+      "localName": "जनक पुरी वेस्ट",
+      "coordinates": [28.62895, 77.077923]
     },
     {
       "id": "magenta_line_2",
       "code": "ML-02",
       "name": "Dabri Mor - Janakpuri South",
       "hindiName": "Dabri Mor - Janakpuri South",
-      "coordinates": [
-        28.615755,
-        77.085178
-      ]
+      "localName": "डाबरी मोड़ - जनकपुरी साउथ",
+      "coordinates": [28.615755, 77.085178]
     },
     {
       "id": "magenta_line_3",
       "code": "ML-03",
       "name": "Dashrath Puri",
       "hindiName": "Dashrath Puri",
-      "coordinates": [
-        28.601875,
-        77.082356
-      ]
+      "localName": "दशरथ पुरी",
+      "coordinates": [28.601875, 77.082356]
     },
     {
       "id": "magenta_line_4",
       "code": "ML-04",
       "name": "Palam",
       "hindiName": "Palam",
-      "coordinates": [
-        28.591893,
-        77.082824
-      ]
+      "localName": "पालम",
+      "coordinates": [28.591893, 77.082824]
     },
     {
       "id": "magenta_line_5",
       "code": "ML-05",
       "name": "Sadar Bazaar Cantonment",
       "hindiName": "Sadar Bazaar Cantonment",
-      "coordinates": [
-        28.577151,
-        77.111153
-      ]
+      "localName": "सदर बाज़ार कैंटोनमेंट",
+      "coordinates": [28.577151, 77.111153]
     },
     {
       "id": "magenta_line_6",
       "code": "ML-06",
       "name": "Terminal 1 IGI Airport",
       "hindiName": "Terminal 1 IGI Airport",
-      "coordinates": [
-        28.566831,
-        77.130984
-      ]
+      "localName": "टर्मिनल 1 आईजीआई एयरपोर्ट",
+      "coordinates": [28.566831, 77.130984]
     },
     {
       "id": "magenta_line_7",
       "code": "ML-07",
       "name": "Shankar Vihar",
       "hindiName": "Shankar Vihar",
-      "coordinates": [
-        28.557439,
-        77.139665
-      ]
+      "localName": "शंकर विहार",
+      "coordinates": [28.557439, 77.139665]
     },
     {
       "id": "magenta_line_8",
       "code": "ML-08",
       "name": "Vasant Vihar",
       "hindiName": "Vasant Vihar",
-      "coordinates": [
-        28.560691,
-        77.160791
-      ]
+      "localName": "वसंत विहार",
+      "coordinates": [28.560691, 77.160791]
     },
     {
       "id": "magenta_line_9",
       "code": "ML-09",
       "name": "Munirka",
       "hindiName": "Munirka",
-      "coordinates": [
-        28.554886,
-        77.171084
-      ]
+      "localName": "मुनिरका",
+      "coordinates": [28.554886, 77.171084]
     },
     {
       "id": "magenta_line_10",
       "code": "ML-10",
       "name": "RK Puram",
       "hindiName": "RK Puram",
-      "coordinates": [
-        28.551426,
-        77.184701
-      ]
+      "localName": "आरके पुरम",
+      "coordinates": [28.551426, 77.184701]
     },
     {
       "id": "magenta_line_11",
       "code": "ML-11",
       "name": "IIT Delhi",
       "hindiName": "IIT Delhi",
-      "coordinates": [
-        28.544788,
-        77.18987
-      ]
+      "localName": "आईआईटी दिल्ली",
+      "coordinates": [28.544788, 77.18987]
     },
     {
       "id": "magenta_line_12",
       "code": "ML-12",
       "name": "Hauz Khas",
       "hindiName": "Hauz Khas",
-      "coordinates": [
-        28.544256,
-        77.206707
-      ]
+      "localName": "हौज़ खास",
+      "coordinates": [28.544256, 77.206707]
     },
     {
       "id": "magenta_line_13",
       "code": "ML-13",
       "name": "Panchsheel Park",
       "hindiName": "Panchsheel Park",
-      "coordinates": [
-        28.543353,
-        77.214076
-      ]
+      "localName": "पंचशील पार्क",
+      "coordinates": [28.543353, 77.214076]
     },
     {
       "id": "magenta_line_14",
       "code": "ML-14",
       "name": "Chirag Delhi",
       "hindiName": "Chirag Delhi",
-      "coordinates": [
-        28.538141,
-        77.228069
-      ]
+      "localName": "चिराग दिल्ली",
+      "coordinates": [28.538141, 77.228069]
     },
     {
       "id": "magenta_line_15",
       "code": "ML-15",
       "name": "Greater Kailash",
       "hindiName": "Greater Kailash",
-      "coordinates": [
-        28.541878,
-        77.238455
-      ]
+      "localName": "ग्रेटर कैलाश",
+      "coordinates": [28.541878, 77.238455]
     },
     {
       "id": "magenta_line_16",
       "code": "ML-16",
       "name": "Nehru Enclave",
       "hindiName": "Nehru Enclave",
-      "coordinates": [
-        28.546058,
-        77.251506
-      ]
+      "localName": "नेहरू एन्क्लेव",
+      "coordinates": [28.546058, 77.251506]
     },
     {
       "id": "magenta_line_17",
       "code": "ML-17",
       "name": "Kalkaji Mandir",
       "hindiName": "Kalkaji Mandir",
-      "coordinates": [
-        28.549775,
-        77.260667
-      ]
+      "localName": "कालकाजी मंदिर",
+      "coordinates": [28.549775, 77.260667]
     },
     {
       "id": "magenta_line_18",
       "code": "ML-18",
       "name": "Okhla NSIC",
       "hindiName": "Okhla NSIC",
-      "coordinates": [
-        28.554483,
-        77.264849
-      ]
+      "localName": "ओखला एनएसआईसी",
+      "coordinates": [28.554483, 77.264849]
     },
     {
       "id": "magenta_line_19",
       "code": "ML-19",
       "name": "Sukhdev Vihar",
       "hindiName": "Sukhdev Vihar",
-      "coordinates": [
-        28.559748,
-        77.2749
-      ]
+      "localName": "सुखदेव विहार",
+      "coordinates": [28.559748, 77.2749]
     },
     {
       "id": "magenta_line_20",
       "code": "ML-20",
       "name": "JAMIA MILLIA ISLAMIA",
       "hindiName": "JAMIA MILLIA ISLAMIA",
-      "coordinates": [
-        28.55849,
-        77.281165
-      ]
+      "localName": "जामिया मिल्लिया इस्लामिया",
+      "coordinates": [28.55849, 77.281165]
     },
     {
       "id": "magenta_line_21",
       "code": "ML-21",
       "name": "Okhla Vihar",
       "hindiName": "Okhla Vihar",
-      "coordinates": [
-        28.5613,
-        77.29193
-      ]
+      "localName": "ओखला विहार",
+      "coordinates": [28.5613, 77.29193]
     },
     {
       "id": "magenta_line_22",
       "code": "ML-22",
       "name": "Jasola Vihar Shaheen Bagh",
       "hindiName": "Jasola Vihar Shaheen Bagh",
-      "coordinates": [
-        28.545828,
-        77.296658
-      ]
+      "localName": "जसोला विहार शाहीन बाग",
+      "coordinates": [28.545828, 77.296658]
     },
     {
       "id": "magenta_line_23",
       "code": "ML-23",
       "name": "Kalindi Kunj",
       "hindiName": "Kalindi Kunj",
-      "coordinates": [
-        28.545219,
-        77.305989
-      ]
+      "localName": "कालिंदी कुंज",
+      "coordinates": [28.545219, 77.305]
     },
     {
       "id": "magenta_line_24",
       "code": "ML-24",
       "name": "Okhla Bird Sanctuary",
       "hindiName": "Okhla Bird Sanctuary",
-      "coordinates": [
-        28.552942,
-        77.321595
-      ]
+      "localName": "ओखला बर्ड सैंक्चुअरी",
+      "coordinates": [28.552, 77.322]
     },
     {
       "id": "magenta_line_25",
       "code": "ML-25",
       "name": "Botanical Garden",
       "hindiName": "Botanical Garden",
-      "coordinates": [
-        28.563896,
-        77.334332
-      ]
+      "localName": "बॉटनिकल गार्डन",
+      "coordinates": [28.564, 77.334]
     }
   ]
 }

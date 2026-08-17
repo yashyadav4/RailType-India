@@ -13,6 +13,7 @@
       "code": "JOK",
       "name": "Joka",
       "hindiName": "Joka",
+      "localName": "জোকা",
       "coordinates": [ 22.4640, 88.3070 ]
     },
     {
@@ -20,6 +21,7 @@
       "code": "TKP",
       "name": "Thakurpukur",
       "hindiName": "Thakurpukur",
+      "localName": "ঠাকুরপুকুর",
       "coordinates": [ 22.4740, 88.3090 ]
     },
     {
@@ -27,6 +29,7 @@
       "code": "SKB",
       "name": "Sakherbazar",
       "hindiName": "Sakherbazar",
+      "localName": "শখেরবাজার",
       "coordinates": [ 22.4830, 88.3120 ]
     },
     {
@@ -34,6 +37,7 @@
       "code": "BHC",
       "name": "Behala Chowrasta",
       "hindiName": "Behala Chowrasta",
+      "localName": "বেহালা চৌরাস্তা",
       "coordinates": [ 22.4930, 88.3150 ]
     },
     {
@@ -41,6 +45,7 @@
       "code": "BHB",
       "name": "Behala Bazar",
       "hindiName": "Behala Bazar",
+      "localName": "বেহালা বাজার",
       "coordinates": [ 22.5020, 88.3170 ]
     },
     {
@@ -48,6 +53,7 @@
       "code": "TAR",
       "name": "Taratala",
       "hindiName": "Taratala",
+      "localName": "তারাতলা",
       "coordinates": [ 22.5110, 88.3190 ]
     },
     {
@@ -55,6 +61,7 @@
       "code": "MJH",
       "name": "Majerhat",
       "hindiName": "Majerhat",
+      "localName": "মাঝেরহাট",
       "coordinates": [ 22.5220, 88.3260 ]
     },
     {
@@ -62,6 +69,7 @@
       "code": "MMP",
       "name": "Mominpur",
       "hindiName": "Mominpur",
+      "localName": "মোমিনপুর",
       "coordinates": [ 22.5320, 88.3300 ]
     },
     {
@@ -69,6 +77,7 @@
       "code": "KDP",
       "name": "Kidderpore",
       "hindiName": "Kidderpore",
+      "localName": "খিদিরপুর",
       "coordinates": [ 22.5440, 88.3320 ]
     },
     {
@@ -76,6 +85,7 @@
       "code": "VIC",
       "name": "Victoria",
       "hindiName": "Victoria",
+      "localName": "ভিক্টোরিয়া",
       "coordinates": [ 22.5490, 88.3400 ]
     },
     {
@@ -83,6 +93,7 @@
       "code": "PAR",
       "name": "Park Street",
       "hindiName": "Park Street",
+      "localName": "পার্ক স্ট্রিট",
       "coordinates": [ 22.5530, 88.3490 ]
     },
     {
@@ -90,6 +101,7 @@
       "code": "ESP",
       "name": "Esplanade",
       "hindiName": "Esplanade",
+      "localName": "এসপ্ল্যানেড",
       "coordinates": [ 22.5649, 88.3517 ]
     }
   ]

@@ -12,119 +12,119 @@
       "id": "monorail_1",
       "code": "CHB",
       "name": "Chembur",
-      "hindiName": "Chembur",
+      "localName": "चेंबूर",
       "coordinates": [ 19.0528, 72.8993 ]
     },
     {
       "id": "monorail_2",
       "code": "VNP",
       "name": "VNP and RC Marg Junction",
-      "hindiName": "VNP and RC Marg Junction",
+      "localName": "व्हीएनपी आणि आरसी मार्ग जंक्शन",
       "coordinates": [ 19.0475, 72.8953 ]
     },
     {
       "id": "monorail_3",
       "code": "FER",
       "name": "Fertilizer Township",
-      "hindiName": "Fertilizer Township",
+      "localName": "फर्टिलायझर टाऊनशिप",
       "coordinates": [ 19.0401, 72.8902 ]
     },
     {
       "id": "monorail_4",
       "code": "BPC",
       "name": "Bharat Petroleum",
-      "hindiName": "Bharat Petroleum",
+      "localName": "भारत पेट्रोलियम",
       "coordinates": [ 19.0345, 72.8850 ]
     },
     {
       "id": "monorail_5",
       "code": "MYS",
       "name": "Mysore Colony",
-      "hindiName": "Mysore Colony",
+      "localName": "म्हैसूर कॉलनी",
       "coordinates": [ 19.0280, 72.8820 ]
     },
     {
       "id": "monorail_6",
       "code": "BKP",
       "name": "Bhakti Park",
-      "hindiName": "Bhakti Park",
+      "localName": "भक्ती पार्क",
       "coordinates": [ 19.0210, 72.8760 ]
     },
     {
       "id": "monorail_7",
       "code": "WDD",
       "name": "Wadala Depot",
-      "hindiName": "Wadala Depot",
+      "localName": "वडाळा आगार",
       "coordinates": [ 19.0150, 72.8730 ]
     },
     {
       "id": "monorail_8",
       "code": "GTB",
       "name": "GTB Nagar",
-      "hindiName": "GTB Nagar",
+      "localName": "जीटीबी नगर",
       "coordinates": [ 19.0205, 72.8655 ]
     },
     {
       "id": "monorail_9",
       "code": "AAN",
       "name": "Acharya Atre Nagar",
-      "hindiName": "Acharya Atre Nagar",
+      "localName": "आचार्य अत्रे नगर",
       "coordinates": [ 19.0230, 72.8610 ]
     },
     {
       "id": "monorail_10",
       "code": "WDB",
       "name": "Wadala Bridge",
-      "hindiName": "Wadala Bridge",
+      "localName": "वडाळा पूल",
       "coordinates": [ 19.0185, 72.8590 ]
     },
     {
       "id": "monorail_11",
       "code": "DDP",
       "name": "Dadar",
-      "hindiName": "Dadar",
+      "localName": "दादर",
       "coordinates": [ 19.0160, 72.8480 ]
     },
     {
       "id": "monorail_12",
       "code": "NAI",
       "name": "Naigaon",
-      "hindiName": "Naigaon",
+      "localName": "नायगाव",
       "coordinates": [ 19.0110, 72.8465 ]
     },
     {
       "id": "monorail_13",
       "code": "AMB",
       "name": "Ambedkar Nagar",
-      "hindiName": "Ambedkar Nagar",
+      "localName": "आंबेडकर नगर",
       "coordinates": [ 19.0035, 72.8400 ]
     },
     {
       "id": "monorail_14",
       "code": "MNT",
       "name": "Mint Colony",
-      "hindiName": "Mint Colony",
+      "localName": "मिंट कॉलनी",
       "coordinates": [ 18.9975, 72.8395 ]
     },
     {
       "id": "monorail_15",
       "code": "LPR",
       "name": "Lower Parel",
-      "hindiName": "Lower Parel",
+      "localName": "लोअर परळ",
       "coordinates": [ 18.9940, 72.8300 ]
     },
     {
       "id": "monorail_16",
       "code": "CHI",
       "name": "Chinchpokli",
-      "hindiName": "Chinchpokli",
+      "localName": "चिंचपोकळी",
       "coordinates": [ 18.9860, 72.8335 ]
     },
     {
       "id": "monorail_17",
       "code": "JAC",
       "name": "Jacob Circle",
-      "hindiName": "Jacob Circle",
+      "localName": "जेकब सर्कल",
       "coordinates": [ 18.9825, 72.8270 ]
     }
   ]

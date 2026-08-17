@@ -12,154 +12,154 @@
       "id": "western_local_1",
       "code": "CCG",
       "name": "Churchgate",
-      "hindiName": "Churchgate",
+      "localName": "चर्चगेट",
       "coordinates": [ 18.9322, 72.8276 ]
     },
     {
       "id": "western_local_2",
       "code": "MEL",
       "name": "Marine Lines",
-      "hindiName": "Marine Lines",
+      "localName": "मरीन लाईन्स",
       "coordinates": [ 18.9443, 72.8247 ]
     },
     {
       "id": "western_local_3",
       "code": "CYR",
       "name": "Charni Road",
-      "hindiName": "Charni Road",
+      "localName": "चर्नी रोड",
       "coordinates": [ 18.9519, 72.8184 ]
     },
     {
       "id": "western_local_4",
       "code": "GTR",
       "name": "Grant Road",
-      "hindiName": "Grant Road",
+      "localName": "ग्रँट रोड",
       "coordinates": [ 18.9620, 72.8159 ]
     },
     {
       "id": "western_local_5",
       "code": "BCT",
       "name": "Mumbai Central",
-      "hindiName": "Mumbai Central",
+      "localName": "मुंबई सेंट्रल",
       "coordinates": [ 18.9698, 72.8194 ]
     },
     {
       "id": "western_local_6",
       "code": "MX",
       "name": "Mahalaxmi",
-      "hindiName": "Mahalaxmi",
+      "localName": "महालक्ष्मी",
       "coordinates": [ 18.9827, 72.8244 ]
     },
     {
       "id": "western_local_7",
       "code": "PL",
       "name": "Lower Parel",
-      "hindiName": "Lower Parel",
+      "localName": "लोअर परळ",
       "coordinates": [ 18.9953, 72.8300 ]
     },
     {
       "id": "western_local_8",
       "code": "PBHD",
       "name": "Prabhadevi",
-      "hindiName": "Prabhadevi",
+      "localName": "प्रभादेवी",
       "coordinates": [ 19.0145, 72.8278 ]
     },
     {
       "id": "western_local_9",
       "code": "DDR",
       "name": "Dadar",
-      "hindiName": "Dadar",
+      "localName": "दादर",
       "coordinates": [ 19.0183, 72.8427 ]
     },
     {
       "id": "western_local_10",
       "code": "MRU",
       "name": "Matunga Road",
-      "hindiName": "Matunga Road",
+      "localName": "माटुंगा रोड",
       "coordinates": [ 19.0287, 72.8459 ]
     },
     {
       "id": "western_local_11",
       "code": "MM",
       "name": "Mahim Junction",
-      "hindiName": "Mahim Junction",
+      "localName": "माहिम जंक्शन",
       "coordinates": [ 19.0408, 72.8465 ]
     },
     {
       "id": "western_local_12",
       "code": "BA",
       "name": "Bandra",
-      "hindiName": "Bandra",
+      "localName": "वांद्रे",
       "coordinates": [ 19.0544, 72.8402 ]
     },
     {
       "id": "western_local_13",
       "code": "KHAR",
       "name": "Khar Road",
-      "hindiName": "Khar Road",
+      "localName": "खार रोड",
       "coordinates": [ 19.0699, 72.8400 ]
     },
     {
       "id": "western_local_14",
       "code": "STC",
       "name": "Santacruz",
-      "hindiName": "Santacruz",
+      "localName": "सांताक्रूझ",
       "coordinates": [ 19.0818, 72.8415 ]
     },
     {
       "id": "western_local_15",
       "code": "VLP",
       "name": "Vile Parle",
-      "hindiName": "Vile Parle",
+      "localName": "विलेपार्ले",
       "coordinates": [ 19.0993, 72.8439 ]
     },
     {
       "id": "western_local_16",
       "code": "ADH",
       "name": "Andheri",
-      "hindiName": "Andheri",
+      "localName": "अंधेरी",
       "coordinates": [ 19.1197, 72.8466 ]
     },
     {
       "id": "western_local_17",
       "code": "JOS",
       "name": "Jogeshwari",
-      "hindiName": "Jogeshwari",
+      "localName": "जोगेश्वरी",
       "coordinates": [ 19.1378, 72.8494 ]
     },
     {
       "id": "western_local_18",
       "code": "RMAR",
       "name": "Ram Mandir",
-      "hindiName": "Ram Mandir",
+      "localName": "राम मंदिर",
       "coordinates": [ 19.1515, 72.8497 ]
     },
     {
       "id": "western_local_19",
       "code": "GMN",
       "name": "Goregaon",
-      "hindiName": "Goregaon",
+      "localName": "गोरेगाव",
       "coordinates": [ 19.1645, 72.8488 ]
     },
     {
       "id": "western_local_20",
       "code": "MDD",
       "name": "Malad",
-      "hindiName": "Malad",
+      "localName": "मालाड",
       "coordinates": [ 19.1865, 72.8487 ]
     },
     {
       "id": "western_local_21",
       "code": "KILE",
       "name": "Kandivali",
-      "hindiName": "Kandivali",
+      "localName": "कांदिवली",
       "coordinates": [ 19.2037, 72.8514 ]
     },
     {
       "id": "western_local_22",
       "code": "BVI",
       "name": "Borivali",
-      "hindiName": "Borivali",
+      "localName": "बोरीवली",
       "coordinates": [ 19.2291, 72.8573 ]
     }
   ]

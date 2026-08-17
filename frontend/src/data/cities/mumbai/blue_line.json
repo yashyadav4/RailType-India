@@ -1,5 +1,5 @@
 {
-  "id": "line_1",
+  "id": "blue_line",
   "cityName": "Mumbai",
   "systemName": "Mumbai Metro",
   "lineName": "Blue Line 1",
@@ -12,84 +12,84 @@
       "id": "line_1_1",
       "code": "VER",
       "name": "Versova",
-      "hindiName": "Versova",
+      "localName": "वर्सोवा",
       "coordinates": [ 19.1278, 72.8188 ]
     },
     {
       "id": "line_1_2",
       "code": "DNN",
-      "name": "D.N. Nagar",
-      "hindiName": "D.N. Nagar",
+      "name": "DN Nagar",
+      "localName": "डीएन नगर",
       "coordinates": [ 19.1245, 72.8315 ]
     },
     {
       "id": "line_1_3",
       "code": "AZD",
       "name": "Azad Nagar",
-      "hindiName": "Azad Nagar",
+      "localName": "आझाद नगर",
       "coordinates": [ 19.1221, 72.8398 ]
     },
     {
       "id": "line_1_4",
       "code": "AND",
       "name": "Andheri",
-      "hindiName": "Andheri",
+      "localName": "अंधेरी",
       "coordinates": [ 19.1197, 72.8466 ]
     },
     {
       "id": "line_1_5",
       "code": "WEH",
       "name": "Western Express Highway",
-      "hindiName": "Western Express Highway",
+      "localName": "पश्चिम द्रुतगती महामार्ग",
       "coordinates": [ 19.1158, 72.8550 ]
     },
     {
       "id": "line_1_6",
       "code": "CHK",
       "name": "Chakala",
-      "hindiName": "Chakala",
+      "localName": "चकाला",
       "coordinates": [ 19.1118, 72.8624 ]
     },
     {
       "id": "line_1_7",
       "code": "APR",
       "name": "Airport Road",
-      "hindiName": "Airport Road",
+      "localName": "विमानतळ रस्ता",
       "coordinates": [ 19.1084, 72.8732 ]
     },
     {
       "id": "line_1_8",
       "code": "MAR",
       "name": "Marol Naka",
-      "hindiName": "Marol Naka",
+      "localName": "मरोळ नाका",
       "coordinates": [ 19.1051, 72.8791 ]
     },
     {
       "id": "line_1_9",
       "code": "SAK",
       "name": "Saki Naka",
-      "hindiName": "Saki Naka",
+      "localName": "साकी नाका",
       "coordinates": [ 19.0988, 72.8837 ]
     },
     {
       "id": "line_1_10",
       "code": "ASA",
       "name": "Asalpha",
-      "hindiName": "Asalpha",
+      "localName": "असल्फा",
       "coordinates": [ 19.0963, 72.8943 ]
     },
     {
       "id": "line_1_11",
       "code": "JAG",
       "name": "Jagruti Nagar",
-      "hindiName": "Jagruti Nagar",
+      "localName": "जागृती नगर",
       "coordinates": [ 19.0908, 72.9056 ]
     },
     {
       "id": "line_1_12",
       "code": "GHA",
       "name": "Ghatkopar",
-      "hindiName": "Ghatkopar",
+      "localName": "घाटकोपर",
       "coordinates": [ 19.0858, 72.9084 ]
     }
   ]

@@ -93,7 +93,7 @@ export const CITY_CATALOG = {
     name: "Mumbai",
     lines: [
       {
-        id: "line_1",
+        id: "blue_line",
         name: "Blue Line 1",
         color: "#3b82f6",
         stations: 12,
@@ -102,7 +102,7 @@ export const CITY_CATALOG = {
         type: "Metro",
       },
       {
-        id: "line_2a",
+        id: "yellow_line",
         name: "Yellow Line 2A",
         color: "#facc15",
         stations: 17,
@@ -111,7 +111,7 @@ export const CITY_CATALOG = {
         type: "Metro",
       },
       {
-        id: "line_7",
+        id: "red_line",
         name: "Red Line 7",
         color: "#ef4444",
         stations: 14,

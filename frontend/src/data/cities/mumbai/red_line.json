@@ -1,5 +1,5 @@
 {
-  "id": "line_7",
+  "id": "red_line",
   "cityName": "Mumbai",
   "systemName": "Mumbai Metro",
   "lineName": "Red Line 7",
@@ -12,98 +12,98 @@
       "id": "line_7_1",
       "code": "DHS",
       "name": "Dahisar East",
-      "hindiName": "Dahisar East",
+      "localName": "दहिसर पूर्व",
       "coordinates": [ 19.2500, 72.8658 ]
     },
     {
       "id": "line_7_2",
       "code": "OVR",
       "name": "Ovaripada",
-      "hindiName": "Ovaripada",
+      "localName": "ओवरीपाडा",
       "coordinates": [ 19.2415, 72.8645 ]
     },
     {
       "id": "line_7_3",
       "code": "NTP",
       "name": "National Park",
-      "hindiName": "National Park",
+      "localName": "राष्ट्रीय उद्यान",
       "coordinates": [ 19.2290, 72.8635 ]
     },
     {
       "id": "line_7_4",
       "code": "DVP",
       "name": "Devipada",
-      "hindiName": "Devipada",
+      "localName": "देवीपाडा",
       "coordinates": [ 19.2210, 72.8630 ]
     },
     {
       "id": "line_7_5",
       "code": "MAG",
       "name": "Magathane",
-      "hindiName": "Magathane",
+      "localName": "मागाठाणे",
       "coordinates": [ 19.2135, 72.8625 ]
     },
     {
       "id": "line_7_6",
       "code": "POI",
       "name": "Poisar",
-      "hindiName": "Poisar",
+      "localName": "पोईसर",
       "coordinates": [ 19.2045, 72.8620 ]
     },
     {
       "id": "line_7_7",
       "code": "AKU",
       "name": "Akurli",
-      "hindiName": "Akurli",
+      "localName": "आकुर्ली",
       "coordinates": [ 19.1960, 72.8615 ]
     },
     {
       "id": "line_7_8",
       "code": "KUR",
       "name": "Kurar",
-      "hindiName": "Kurar",
+      "localName": "कुरार",
       "coordinates": [ 19.1840, 72.8600 ]
     },
     {
       "id": "line_7_9",
       "code": "DIN",
       "name": "Dindoshi",
-      "hindiName": "Dindoshi",
+      "localName": "दिंडोशी",
       "coordinates": [ 19.1740, 72.8585 ]
     },
     {
       "id": "line_7_10",
       "code": "AAR",
       "name": "Aarey",
-      "hindiName": "Aarey",
+      "localName": "आरे",
       "coordinates": [ 19.1630, 72.8560 ]
     },
     {
       "id": "line_7_11",
       "code": "GRE",
       "name": "Goregaon East",
-      "hindiName": "Goregaon East",
+      "localName": "गोरेगाव पूर्व",
       "coordinates": [ 19.1550, 72.8545 ]
     },
     {
       "id": "line_7_12",
       "code": "JGE",
       "name": "Jogeshwari East",
-      "hindiName": "Jogeshwari East",
+      "localName": "जोगेश्वरी पूर्व",
       "coordinates": [ 19.1435, 72.8525 ]
     },
     {
       "id": "line_7_13",
       "code": "MOG",
       "name": "Mogra",
-      "hindiName": "Mogra",
+      "localName": "मोगरा",
       "coordinates": [ 19.1295, 72.8520 ]
     },
     {
       "id": "line_7_14",
       "code": "GUN",
       "name": "Gundavali",
-      "hindiName": "Gundavali",
+      "localName": "गुंदवली",
       "coordinates": [ 19.1197, 72.8530 ]
     }
   ]

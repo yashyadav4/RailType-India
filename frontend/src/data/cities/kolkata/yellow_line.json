@@ -13,6 +13,7 @@
       "code": "NOA",
       "name": "Noapara",
       "hindiName": "Noapara",
+      "localName": "নোয়াপাড়া",
       "coordinates": [ 22.6402, 88.3888 ]
     },
     {
@@ -20,6 +21,7 @@
       "code": "DDC",
       "name": "Dum Dum Cantonment",
       "hindiName": "Dum Dum Cantonment",
+      "localName": "দমদম ক্যান্টনমেন্ট",
       "coordinates": [ 22.6310, 88.4060 ]
     },
     {
@@ -27,6 +29,7 @@
       "code": "JSR",
       "name": "Jessore Road",
       "hindiName": "Jessore Road",
+      "localName": "যশোর রোড",
       "coordinates": [ 22.6370, 88.4200 ]
     },
     {
@@ -34,6 +37,7 @@
       "code": "BMB",
       "name": "Biman Bandar",
       "hindiName": "Biman Bandar",
+      "localName": "বিমান বন্দর",
       "coordinates": [ 22.6430, 88.4350 ]
     },
     {
@@ -41,6 +45,7 @@
       "code": "BTI",
       "name": "Birati",
       "hindiName": "Birati",
+      "localName": "বিরাটি",
       "coordinates": [ 22.6580, 88.4410 ]
     },
     {
@@ -48,6 +53,7 @@
       "code": "MCN",
       "name": "Michael Nagar",
       "hindiName": "Michael Nagar",
+      "localName": "মাইকেল নগর",
       "coordinates": [ 22.6700, 88.4470 ]
     },
     {
@@ -55,6 +61,7 @@
       "code": "NBP",
       "name": "New Barrackpore",
       "hindiName": "New Barrackpore",
+      "localName": "নিউ ব্যারাকপুর",
       "coordinates": [ 22.6820, 88.4520 ]
     },
     {
@@ -62,6 +69,7 @@
       "code": "MDG",
       "name": "Madhyamgram",
       "hindiName": "Madhyamgram",
+      "localName": "মধ্যমগ্রাম",
       "coordinates": [ 22.6980, 88.4600 ]
     },
     {
@@ -69,6 +77,7 @@
       "code": "HDP",
       "name": "Hridaypur",
       "hindiName": "Hridaypur",
+      "localName": "হৃদয়পুর",
       "coordinates": [ 22.7120, 88.4700 ]
     },
     {
@@ -76,6 +85,7 @@
       "code": "BST",
       "name": "Barasat",
       "hindiName": "Barasat",
+      "localName": "বারাসাত",
       "coordinates": [ 22.7230, 88.4790 ]
     }
   ]

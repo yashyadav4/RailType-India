@@ -13,6 +13,7 @@
       "code": "KVS",
       "name": "Kavi Subhash",
       "hindiName": "Kavi Subhash",
+      "localName": "কবি সুভাষ",
       "coordinates": [ 22.4719, 88.3995 ]
     },
     {
@@ -20,6 +21,7 @@
       "code": "SJR",
       "name": "Satyajit Ray",
       "hindiName": "Satyajit Ray",
+      "localName": "সত্যজিৎ রায়",
       "coordinates": [ 22.4810, 88.4000 ]
     },
     {
@@ -27,6 +29,7 @@
       "code": "JTN",
       "name": "Jyotirindra Nandi",
       "hindiName": "Jyotirindra Nandi",
+      "localName": "জ্যোতিরিন্দ্র নন্দী",
       "coordinates": [ 22.4900, 88.4010 ]
     },
     {
@@ -34,6 +37,7 @@
       "code": "KVK",
       "name": "Kavi Sukanta",
       "hindiName": "Kavi Sukanta",
+      "localName": "কবি সুকান্ত",
       "coordinates": [ 22.5020, 88.4010 ]
     },
     {
@@ -41,6 +45,7 @@
       "code": "HMK",
       "name": "Hemanta Mukhopadhyay",
       "hindiName": "Hemanta Mukhopadhyay",
+      "localName": "হেমন্ত মুখোপাধ্যায়",
       "coordinates": [ 22.5140, 88.4020 ]
     },
     {
@@ -48,6 +53,7 @@
       "code": "VPB",
       "name": "VIP Bazar",
       "hindiName": "VIP Bazar",
+      "localName": "ভিআইপি বাজার",
       "coordinates": [ 22.5250, 88.4020 ]
     },
     {
@@ -55,6 +61,7 @@
       "code": "RWG",
       "name": "Ritwik Ghatak",
       "hindiName": "Ritwik Ghatak",
+      "localName": "ঋত্বিক ঘটক",
       "coordinates": [ 22.5380, 88.4020 ]
     },
     {
@@ -62,6 +69,7 @@
       "code": "BSG",
       "name": "Barun Sengupta",
       "hindiName": "Barun Sengupta",
+      "localName": "বরুণ সেনগুপ্ত",
       "coordinates": [ 22.5450, 88.4010 ]
     },
     {
@@ -69,6 +77,7 @@
       "code": "BGH",
       "name": "Beliaghata",
       "hindiName": "Beliaghata",
+      "localName": "বেলেঘাটা",
       "coordinates": [ 22.5590, 88.4030 ]
     },
     {
@@ -76,6 +85,7 @@
       "code": "GKG",
       "name": "Gour Kishore Ghosh",
       "hindiName": "Gour Kishore Ghosh",
+      "localName": "গৌরকিশোর ঘোষ",
       "coordinates": [ 22.5690, 88.4060 ]
     },
     {
@@ -83,6 +93,7 @@
       "code": "NCP",
       "name": "Nicco Park",
       "hindiName": "Nicco Park",
+      "localName": "নিকো পার্ক",
       "coordinates": [ 22.5710, 88.4210 ]
     },
     {
@@ -90,6 +101,7 @@
       "code": "SLV",
       "name": "Salt Lake Sector V",
       "hindiName": "Salt Lake Sector V",
+      "localName": "সল্ট লেক সেক্টর ৫",
       "coordinates": [ 22.5801, 88.4357 ]
     }
   ]

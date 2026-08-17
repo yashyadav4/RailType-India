@@ -13,80 +13,64 @@
       "code": "BLB-01",
       "name": "Yamuna Bank",
       "hindiName": "Yamuna Bank",
-      "coordinates": [
-        28.62331,
-        77.26792
-      ]
+      "localName": "यमुना बैंक",
+      "coordinates": [28.62331, 77.26792]
     },
     {
       "id": "blue_line_branch_2",
       "code": "BLB-02",
       "name": "Laxmi Nagar",
       "hindiName": "Laxmi Nagar",
-      "coordinates": [
-        28.63064,
-        77.27749
-      ]
+      "localName": "लक्ष्मी नगर",
+      "coordinates": [28.63064, 77.27749]
     },
     {
       "id": "blue_line_branch_3",
       "code": "BLB-03",
       "name": "Nirman Vihar",
       "hindiName": "Nirman Vihar",
-      "coordinates": [
-        28.63663,
-        77.28683
-      ]
+      "localName": "निर्माण विहार",
+      "coordinates": [28.63663, 77.28683]
     },
     {
       "id": "blue_line_branch_4",
       "code": "BLB-04",
       "name": "Preet Vihar",
       "hindiName": "Preet Vihar",
-      "coordinates": [
-        28.64171,
-        77.29543
-      ]
+      "localName": "प्रीत विहार",
+      "coordinates": [28.64171, 77.29543]
     },
     {
       "id": "blue_line_branch_5",
       "code": "BLB-05",
       "name": "Karkar Duma",
       "hindiName": "Karkar Duma",
-      "coordinates": [
-        28.64849,
-        77.30558
-      ]
+      "localName": "करकरदूमा",
+      "coordinates": [28.64849, 77.30558]
     },
     {
       "id": "blue_line_branch_6",
       "code": "BLB-06",
       "name": "Anand Vihar",
       "hindiName": "Anand Vihar",
-      "coordinates": [
-        28.64695,
-        77.31603
-      ]
+      "localName": "आनंद विहार",
+      "coordinates": [28.64695, 77.31603]
     },
     {
       "id": "blue_line_branch_7",
       "code": "BLB-07",
       "name": "Kaushambi",
       "hindiName": "Kaushambi",
-      "coordinates": [
-        28.64544,
-        77.32432
-      ]
+      "localName": "कौशांबी",
+      "coordinates": [28.64544, 77.32432]
     },
     {
       "id": "blue_line_branch_8",
       "code": "BLB-08",
       "name": "Vaishali",
       "hindiName": "Vaishali",
-      "coordinates": [
-        28.64997,
-        77.33974
-      ]
+      "localName": "वैशाली",
+      "coordinates": [28.64997, 77.33974]
     }
   ]
 }

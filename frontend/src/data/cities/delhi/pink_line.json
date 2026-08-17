@@ -13,362 +13,288 @@
       "code": "PL-01",
       "name": "Majlis Park",
       "hindiName": "Majlis Park",
-      "coordinates": [
-        28.724431,
-        77.181964
-      ]
+      "localName": "मजलिस पार्क",
+      "coordinates": [28.724431, 77.181964]
     },
     {
       "id": "pink_line_2",
       "code": "PL-02",
       "name": "Azadpur",
       "hindiName": "Azadpur",
-      "coordinates": [
-        28.707657,
-        77.175547
-      ]
+      "localName": "आज़ादपुर",
+      "coordinates": [28.707657, 77.175547]
     },
     {
       "id": "pink_line_3",
       "code": "PL-03",
       "name": "Shalimar Bagh",
       "hindiName": "Shalimar Bagh",
-      "coordinates": [
-        28.717453,
-        77.150867
-      ]
+      "localName": "शालीमार बाग",
+      "coordinates": [28.717453, 77.150867]
     },
     {
       "id": "pink_line_4",
       "code": "PL-04",
       "name": "Netaji Subash Place",
       "hindiName": "Netaji Subash Place",
-      "coordinates": [
-        28.696052,
-        77.15264
-      ]
+      "localName": "नेताजी सुभाष प्लेस",
+      "coordinates": [28.696052, 77.15264]
     },
     {
       "id": "pink_line_5",
       "code": "PL-05",
       "name": "Shakurpur",
       "hindiName": "Shakurpur",
-      "coordinates": [
-        28.685767,
-        77.149609
-      ]
+      "localName": "शकूरपुर",
+      "coordinates": [28.685767, 77.149609]
     },
     {
       "id": "pink_line_6",
       "code": "PL-06",
       "name": "Punjabi Bagh West",
       "hindiName": "Punjabi Bagh West",
-      "coordinates": [
-        28.67032,
-        77.142088
-      ]
+      "localName": "पंजाबी बाग वेस्ट",
+      "coordinates": [28.67032, 77.142088]
     },
     {
       "id": "pink_line_7",
       "code": "PL-07",
       "name": "ESI BASAI DARAPUR",
       "hindiName": "ESI BASAI DARAPUR",
-      "coordinates": [
-        28.658074,
-        77.127268
-      ]
+      "localName": "ईएसआई बसई दारापुर",
+      "coordinates": [28.658074, 77.127268]
     },
     {
       "id": "pink_line_8",
       "code": "PL-08",
       "name": "Rajouri Garden",
       "hindiName": "Rajouri Garden",
-      "coordinates": [
-        28.642152,
-        77.11606
-      ]
+      "localName": "राजौरी गार्डन",
+      "coordinates": [28.642152, 77.11606]
     },
     {
       "id": "pink_line_9",
       "code": "PL-09",
       "name": "Maya Puri",
       "hindiName": "Maya Puri",
-      "coordinates": [
-        28.637179,
-        77.129733
-      ]
+      "localName": "मायापुरी",
+      "coordinates": [28.637179, 77.129733]
     },
     {
       "id": "pink_line_10",
       "code": "PL-10",
       "name": "Naraina Vihar",
       "hindiName": "Naraina Vihar",
-      "coordinates": [
-        28.627337,
-        77.140317
-      ]
+      "localName": "नरैना विहार",
+      "coordinates": [28.627337, 77.140317]
     },
     {
       "id": "pink_line_11",
       "code": "PL-11",
       "name": "Delhi Cantt",
       "hindiName": "Delhi Cantt",
-      "coordinates": [
-        28.593833,
-        77.134979
-      ]
+      "localName": "दिल्ली कैंट",
+      "coordinates": [28.593833, 77.134979]
     },
     {
       "id": "pink_line_12",
       "code": "PL-12",
       "name": "Durgabai Deshmukh South Campus",
       "hindiName": "Durgabai Deshmukh South Campus",
-      "coordinates": [
-        28.589438,
-        77.169082
-      ]
+      "localName": "दुर्गाबाई देशमुख साउथ कैंपस",
+      "coordinates": [28.589438, 77.169082]
     },
     {
       "id": "pink_line_13",
       "code": "PL-13",
       "name": "Sir Vishweshwaraiah Moti Bagh",
       "hindiName": "Sir Vishweshwaraiah Moti Bagh",
-      "coordinates": [
-        28.578533,
-        77.175741
-      ]
+      "localName": "सर विश्वेश्वरैया मोती बाग",
+      "coordinates": [28.578533, 77.175741]
     },
     {
       "id": "pink_line_14",
       "code": "PL-14",
       "name": "Bhikaji Cama Place",
       "hindiName": "Bhikaji Cama Place",
-      "coordinates": [
-        28.5679,
-        77.187016
-      ]
+      "localName": "भीकाजी कामा प्लेस",
+      "coordinates": [28.5679, 77.187016]
     },
     {
       "id": "pink_line_15",
       "code": "PL-15",
       "name": "Sarojini Nagar",
       "hindiName": "Sarojini Nagar",
-      "coordinates": [
-        28.574157,
-        77.19537
-      ]
+      "localName": "सरोजिनी नगर",
+      "coordinates": [28.574157, 77.19537]
     },
     {
       "id": "pink_line_16",
       "code": "PL-16",
       "name": "Dilli Haat INA",
       "hindiName": "Dilli Haat INA",
-      "coordinates": [
-        28.574408,
-        77.210241
-      ]
+      "localName": "दिल्ली हाट आईएनए",
+      "coordinates": [28.574408, 77.210241]
     },
-    
     {
       "id": "pink_line_18",
       "code": "PL-18",
       "name": "Lajpat Nagar",
       "hindiName": "Lajpat Nagar",
-      "coordinates": [
-        28.57079,
-        77.23653
-      ]
+      "localName": "लाजपत नगर",
+      "coordinates": [28.57079, 77.23653]
     },
     {
       "id": "pink_line_19",
       "code": "PL-19",
       "name": "Vinobapuri",
       "hindiName": "Vinobapuri",
-      "coordinates": [
-        28.566976,
-        77.249191
-      ]
+      "localName": "विनोबापुरी",
+      "coordinates": [28.566976, 77.249191]
     },
     {
       "id": "pink_line_20",
       "code": "PL-20",
       "name": "Ashram",
       "hindiName": "Ashram",
-      "coordinates": [
-        28.572423,
-        77.258598
-      ]
+      "localName": "आश्रम",
+      "coordinates": [28.572423, 77.258598]
     },
     {
       "id": "pink_line_21",
       "code": "PL-21",
       "name": "Sarai Kale Khan Hazrat Nizamuddin",
       "hindiName": "Sarai Kale Khan Hazrat Nizamuddin",
-      "coordinates": [
-        28.588749,
-        77.257249
-      ]
+      "localName": "सराय काले खां हज़रत निज़ामुद्दीन",
+      "coordinates": [28.588749, 77.257249]
     },
     {
       "id": "pink_line_22",
       "code": "PL-22",
       "name": "Mayur Vihar Phase-1",
       "hindiName": "Mayur Vihar Phase-1",
-      "coordinates": [
-        28.603133,
-        77.292589
-      ]
+      "localName": "मयूर विहार फेज-1",
+      "coordinates": [28.603133, 77.292589]
     },
     {
       "id": "pink_line_23",
       "code": "PL-23",
       "name": "Mayur Vihar Pocket I",
       "hindiName": "Mayur Vihar Pocket I",
-      "coordinates": [
-        28.605862,
-        77.298702
-      ]
+      "localName": "मयूर विहार पॉकेट I",
+      "coordinates": [28.605862, 77.298702]
     },
     {
       "id": "pink_line_24",
       "code": "PL-24",
       "name": "Trilokpuri Sanjay Lake",
       "hindiName": "Trilokpuri Sanjay Lake",
-      "coordinates": [
-        28.613453,
-        77.308855
-      ]
+      "localName": "त्रिलोकपुरी संजय झील",
+      "coordinates": [28.613453, 77.308855]
     },
     {
       "id": "pink_line_25",
       "code": "PL-25",
       "name": "Vinod Nagar East",
       "hindiName": "Vinod Nagar East",
-      "coordinates": [
-        28.620044,
-        77.305407
-      ]
+      "localName": "विनोद नगर ईस्ट",
+      "coordinates": [28.6205, 77.3157]
     },
     {
       "id": "pink_line_26",
       "code": "PL-26",
       "name": "Mandawali - West Vinod Nagar",
       "hindiName": "Mandawali - West Vinod Nagar",
-      "coordinates": [
-        28.624971,
-        77.304491
-      ]
+      "localName": "मंडावली - वेस्ट विनोद नगर",
+      "coordinates": [28.6263, 77.3198]
     },
     {
       "id": "pink_line_27",
       "code": "PL-27",
       "name": "IP Extension",
       "hindiName": "IP Extension",
-      "coordinates": [
-        28.628899,
-        77.310198
-      ]
+      "localName": "आईपी एक्सटेंशन",
+      "coordinates": [28.6319, 77.3239]
     },
     {
       "id": "pink_line_28",
       "code": "PL-28",
       "name": "Anand Vihar",
       "hindiName": "Anand Vihar",
-      "coordinates": [
-        28.646753,
-        77.318004
-      ]
+      "localName": "आनंद विहार",
+      "coordinates": [28.64695, 77.31603]
     },
     {
       "id": "pink_line_29",
       "code": "PL-29",
       "name": "Karkar Duma",
       "hindiName": "Karkar Duma",
-      "coordinates": [
-        28.649162,
-        77.306208
-      ]
+      "localName": "करकरदूमा",
+      "coordinates": [28.64849, 77.30558]
     },
     {
       "id": "pink_line_30",
       "code": "PL-30",
       "name": "Karkarduma Court",
       "hindiName": "Karkarduma Court",
-      "coordinates": [
-        28.6536,
-        77.295788
-      ]
+      "localName": "करकरदूमा कोर्ट",
+      "coordinates": [28.6503, 77.3001]
     },
     {
       "id": "pink_line_31",
       "code": "PL-31",
       "name": "Krishna Nagar",
       "hindiName": "Krishna Nagar",
-      "coordinates": [
-        28.657846,
-        77.290185
-      ]
+      "localName": "कृष्णा नगर",
+      "coordinates": [28.6572, 77.2871]
     },
     {
       "id": "pink_line_32",
       "code": "PL-32",
       "name": "East Azad Nagar",
       "hindiName": "East Azad Nagar",
-      "coordinates": [
-        28.664696,
-        77.284881
-      ]
+      "localName": "ईस्ट आज़ाद नगर",
+      "coordinates": [28.665, 77.277]
     },
     {
       "id": "pink_line_33",
       "code": "PL-33",
       "name": "Welcome",
       "hindiName": "Welcome",
-      "coordinates": [
-        28.6718,
-        77.27756
-      ]
+      "localName": "वेलकम",
+      "coordinates": [28.6718, 77.27756]
     },
     {
       "id": "pink_line_34",
       "code": "PL-34",
       "name": "Jaffrabad",
       "hindiName": "Jaffrabad",
-      "coordinates": [
-        28.682682,
-        77.274805
-      ]
+      "localName": "जाफराबाद",
+      "coordinates": [28.675, 77.282]
     },
     {
       "id": "pink_line_35",
       "code": "PL-35",
       "name": "Maujpur",
       "hindiName": "Maujpur",
-      "coordinates": [
-        28.691978,
-        77.279624
-      ]
+      "localName": "मौजपुर",
+      "coordinates": [28.68, 77.29]
     },
     {
       "id": "pink_line_36",
       "code": "PL-36",
       "name": "Gokulpuri",
       "hindiName": "Gokulpuri",
-      "coordinates": [
-        28.702475,
-        77.286125
-      ]
+      "localName": "गोकुलपुरी",
+      "coordinates": [28.702, 77.298]
     },
     {
       "id": "pink_line_37",
       "code": "PL-37",
       "name": "Johri Enclave",
       "hindiName": "Johri Enclave",
-      "coordinates": [
-        28.71288,
-        77.286125
-      ]
+      "localName": "जौहरी एन्क्लेव",
+      "coordinates": [28.725, 77.31]
     }
-    
   ]
 }

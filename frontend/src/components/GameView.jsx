@@ -492,88 +492,174 @@ export default function GameView() {
       <div
         style={{
           position: "absolute",
-          bottom: "1.5rem",
+          bottom: "2rem",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "0.6rem",
+          gap: "1rem",
           zIndex: 10,
         }}
       >
         <div
           className={shake ? "shake-animation" : ""}
           style={{
-            backgroundColor: "#fefcf3",
-            borderRadius: "28px",
-            width: "520px",
+            backgroundColor: "#f4f3ec", // Matched to the soft cream of the reference image
+            borderRadius: "32px",
+            width: "700px", // Widened to support the new horizontal layout
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
             overflow: "hidden",
             transition: "transform 0.1s ease",
           }}
         >
+          {/* Main Content Area (Row Layout) */}
           <div
-            style={{ padding: "0.5rem 1rem 1rem 1rem", textAlign: "center" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "2.5rem 3rem",
+              gap: "2.5rem",
+            }}
           >
+            {/* Left: Station Code Box (Mimicking the JY/30 box) */}
+            <div
+              style={{
+                border: `5px solid ${routeData.color || "#f97316"}`,
+                borderRadius: "18px",
+                width: "65px",
+                height: "65px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "800",
+                color: "#1a1a1a",
+                backgroundColor: "#ffffff",
+                flexShrink: 0,
+              }}
+            >
+              {/* If the code has a hyphen (like ML-01), stack it like the reference image */}
+              {currentStation?.code?.includes("-") ? (
+                <>
+                  <span style={{ fontSize: "1rem", lineHeight: "1.2" }}>
+                    {currentStation.code.split("-")[0]}
+                  </span>
+                  <span style={{ fontSize: "1.6rem", lineHeight: "1" }}>
+                    {currentStation.code.split("-")[1]}
+                  </span>
+                </>
+              ) : (
+                <span
+                  style={{
+                    fontSize:
+                      currentStation?.code?.length > 4 ? "1rem" : "1.3rem",
+                  }}
+                >
+                  {currentStation?.code}
+                </span>
+              )}
+            </div>
+
+            {/* Right: Text Information block */}
             <div
               style={{
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "1rem",
-                marginBottom: "0.5rem",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                width: "100%",
               }}
             >
+              {/* Local Name (Massive, equivalent to the Kanji) */}
               <div
                 style={{
-                  border: `3px solid ${routeData.color || "#f97316"}`,
-                  borderRadius: "12px",
-                  padding: "4px 10px",
-                  fontWeight: "bold",
-                  color: "#000",
-                  fontSize: "1.1rem",
+                  fontSize: "2.0rem",
+                  fontWeight: "900",
+                  color: "#1a1a1a",
+                  lineHeight: "1.1",
+                  marginBottom: "0.5rem",
+                  fontFamily: "system-ui, -apple-system, sans-serif",
                 }}
               >
-                {currentStation.code}
+                {currentStation?.localName || currentStation?.name}
               </div>
-            </div>
-            <div
-              style={{
-                fontSize: "2.2rem",
-                fontWeight: "bold",
-                fontFamily: "monospace",
-                letterSpacing: "2px",
-                margin: "1.5rem 0",
-              }}
-            >
-              {renderStyledStationName()}
+
+              {/* English Name (Small, Uppercase, Spaced Out) */}
+              <div
+                style={{
+                  fontSize: "0.95rem",
+                  fontWeight: "700",
+                  color: "#737373",
+                  letterSpacing: "4px",
+                  textTransform: "uppercase",
+                  marginBottom: "2rem",
+                }}
+              >
+                {currentStation?.name}
+              </div>
+
+              {/* Typing Render Component (Monospace styling preserved) */}
+              <div
+                style={{
+                  fontSize: "2.2rem",
+                  fontWeight: "bold",
+                  fontFamily: "monospace",
+                  letterSpacing: "2px",
+                  color: "#555",
+                  display: "flex",
+                  alignItems: "center",
+
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {renderStyledStationName()}
+              </div>
             </div>
           </div>
 
+          {/* Bottom Bar */}
           <div
             style={{
               backgroundColor: routeData.color || "#f97316",
-              color: "#ffffff",
-              padding: "0.8rem 1.5rem",
+              color: "#ffffff", // Kept white to remain legible on dark routes like the Blue/Purple line
+              padding: "1rem 2rem",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               fontWeight: "bold",
-              fontSize: "0.9rem",
+              fontSize: "1rem",
             }}
           >
-            <span>◀ {prevStation}</span>
-            <span style={{ fontSize: "0.8rem", opacity: 0.9 }}>
+            <span style={{ flex: 1, textAlign: "left" }}>
+              ◀ {prevStation || "---"}
+            </span>
+            <span
+              style={{
+                fontSize: "0.85rem",
+                opacity: 0.9,
+                flex: 1,
+                textAlign: "center",
+              }}
+            >
               Next Station
             </span>
-            <span>{nextStation} ▶</span>
+            <span style={{ flex: 1, textAlign: "right" }}>
+              {nextStation || "---"} ▶
+            </span>
           </div>
         </div>
+
+        {/* Helper Text */}
         <div
-          style={{ color: "#94a3b8", fontSize: "0.85rem", textAlign: "center" }}
+          style={{
+            color: "#94a3b8",
+            fontSize: "0.9rem",
+            textAlign: "center",
+            marginTop: "0.5rem",
+          }}
         >
-          Wrong keys are ignored — type the exact station name.
+          Wrong keys are ignored — just type the correct letter, no backspace
+          needed.
         </div>
       </div>
 
