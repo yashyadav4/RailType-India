@@ -10,11 +10,11 @@ export default function AppLayout() {
   const isPlaying = location.pathname.endsWith("/play");
 
   return (
-    <div style={{ backgroundColor: "#0b0f19", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: "var(--void)", minHeight: "100vh", transition: "background-color .25s ease" }}>
       <Navbar />
 
       {/* This div automatically pushes your page content down below the frosted glass */}
-      <div style={{ paddingTop: isPlaying ? "0" : "100px" }}>
+      <div style={{ paddingTop: isPlaying ? "0" : "64px" }}>
         {/* <Outlet /> is a placeholder. React Router swaps this out for HomePage, SummaryPage, etc. */}
         <Outlet />
       </div>

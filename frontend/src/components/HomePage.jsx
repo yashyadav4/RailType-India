@@ -1,128 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Moon, ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Train,
+  MapPin,
+  Keyboard,
+  Gauge,
+  Play,
+  Star,
+  ChevronRight,
+} from "lucide-react";
 import { CITY_CATALOG } from "../data/cities/index";
 
-// npm i lucide-react
-// Fonts: IBM Plex Sans + IBM Plex Mono, loaded via @import below for a zero-config
-// drop-in. For production, prefer preloading them as <link> tags in index.html instead
-// (faster first paint) — see the comment above the <style> block.
-
 // ---------------------------------------------------------------------------
-// Sample rows for the hero departure board. This is a decorative flourish, not
-// live data — swap the names for a handful of real stations from CITY_CATALOG,
-// or wire it up to actually rotate through your catalog if you want it to stay
-// in sync automatically (see the commented alternative below the array).
+// useCountUp — eased number counter
 // ---------------------------------------------------------------------------
-const BOARD_ROWS = [
-  {
-    code: "YL",
-    color: "#F2C94C",
-    city: "DELHI",
-    names: ["RAJIV CHOWK", "KASHMERE GATE"],
-  },
-  {
-    code: "M1",
-    color: "#4C8DF2",
-    city: "MUMBAI",
-    names: ["GHATKOPAR", "ANDHERI"],
-  },
-  {
-    code: "PPL",
-    color: "#9B6BD9",
-    city: "BENGALURU",
-    names: ["MG ROAD", "BAIYYAPPANAHALLI"],
-  },
-  {
-    code: "BL",
-    color: "#5FBF6B",
-    city: "CHENNAI",
-    names: ["ESPLANADE", "AIRPORT"],
-  },
-];
-// Alternative: derive rows straight from your catalog so the board can never
-// drift out of sync with real data —
-//   const BOARD_ROWS = cities.slice(0, 4).map((c) => ({
-//     code: c.lines[0]?.code, color: c.lines[0]?.color, city: c.name.toUpperCase(),
-//     names: [c.lines[0]?.terminals?.split("⇄")[0]?.trim(), c.lines[0]?.terminals?.split("⇄")[1]?.trim()],
-//   }));
-
-const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-function scrambleTo(el, target, duration = 700) {
-  if (!el) return;
-  const chars = target.split("");
-  const totalFrames = Math.round(duration / 40);
-  const revealAt = chars.map((_, i) =>
-    Math.round(totalFrames * (i / chars.length)),
-  );
-  let frame = 0;
-  const iv = setInterval(() => {
-    frame++;
-    el.textContent = chars
-      .map((c, i) => {
-        if (c === " ") return " ";
-        return frame > revealAt[i]
-          ? c
-          : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-      })
-      .join("");
-    if (frame > totalFrames) {
-      clearInterval(iv);
-      el.textContent = target;
-    }
-  }, 40);
-  return iv;
-}
-
-/** Signature hero element: a split-flap departure board, styled after the
- *  Solari boards still found at older Indian railway stations. Purely
- *  decorative — cycles a handful of station names on a timer. */
-function DepartureBoard() {
-  const rowRefs = useRef([]);
-  const rowIdx = useRef(BOARD_ROWS.map(() => 0));
-
-  useEffect(() => {
-    BOARD_ROWS.forEach((row, i) =>
-      scrambleTo(rowRefs.current[i], row.names[0]),
-    );
-    const interval = setInterval(() => {
-      BOARD_ROWS.forEach((row, i) => {
-        setTimeout(() => {
-          rowIdx.current[i] = (rowIdx.current[i] + 1) % row.names.length;
-          scrambleTo(rowRefs.current[i], row.names[rowIdx.current[i]]);
-        }, i * 220);
-      });
-    }, 4200);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="board" aria-hidden="true">
-      <div className="board-head">
-        <span>Platform 1 · Now boarding</span>
-        <span className="live">on time</span>
-      </div>
-      <div className="board-rows">
-        {BOARD_ROWS.map((row, i) => (
-          <div className="board-row" key={row.code + i}>
-            <span className="row-code" style={{ background: row.color }}>
-              {row.code}
-            </span>
-            <span
-              className="row-name"
-              ref={(el) => (rowRefs.current[i] = el)}
-            />
-            <span className="row-city">{row.city}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/** Counts a number up from 0 on mount, eased — used for the hero stat strip. */
-function useCountUp(target, duration = 900) {
+function useCountUp(target, duration = 1400) {
   const [value, setValue] = useState(0);
   useEffect(() => {
     let raf;
@@ -138,367 +31,759 @@ function useCountUp(target, duration = 900) {
   return value;
 }
 
-function useTheme() {
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === "undefined") return "dark";
-    const saved = window.localStorage.getItem("railtype-theme");
-    if (saved) return saved;
-    return window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
-  });
+// ---------------------------------------------------------------------------
+// Typing animation — types and erases station names
+// ---------------------------------------------------------------------------
+const CYCLING_STATIONS = [
+  "RAJIV CHOWK",
+  "ANDHERI",
+  "MG ROAD",
+  "HOWRAH MAIDAN",
+  "GHATKOPAR",
+  "SILK INSTITUTE",
+];
+
+function TypingWord() {
+  const [wordIdx, setWordIdx] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState("typing");
+
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    window.localStorage.setItem("railtype-theme", theme);
-  }, [theme]);
-  return [theme, setTheme];
+    const word = CYCLING_STATIONS[wordIdx];
+    let timeout;
+    if (phase === "typing") {
+      if (displayed.length < word.length) {
+        timeout = setTimeout(
+          () => setDisplayed(word.slice(0, displayed.length + 1)),
+          75
+        );
+      } else {
+        timeout = setTimeout(() => setPhase("pausing"), 1600);
+      }
+    } else if (phase === "pausing") {
+      timeout = setTimeout(() => setPhase("erasing"), 500);
+    } else {
+      if (displayed.length > 0) {
+        timeout = setTimeout(
+          () => setDisplayed(displayed.slice(0, -1)),
+          40
+        );
+      } else {
+        setWordIdx((i) => (i + 1) % CYCLING_STATIONS.length);
+        setPhase("typing");
+      }
+    }
+    return () => clearTimeout(timeout);
+  }, [displayed, phase, wordIdx]);
+
+  return (
+    <span className="hp-typing-word">
+      {displayed}
+      <span className="hp-typing-cursor" />
+    </span>
+  );
 }
 
+// ---------------------------------------------------------------------------
+// Scroll-driven train background — train moves right→left as you scroll
+// ---------------------------------------------------------------------------
+function TrainBackground() {
+  const [scrollPct, setScrollPct] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollPct(h > 0 ? window.scrollY / h : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Train starts at 50% (center) and moves to -30% (left) as page scrolls
+  const trainX = 80 - scrollPct * 80;
+  // Train starts in middle of hero initially (~25% down) and moves to ~85%
+  const trainY = 25 + scrollPct * 60;
+  
+  // Train "comes out" (scales vertically and horizontally) as it moves down
+  const trainScale = 1.05 + scrollPct * 0.45;
+  // Starts more visible and gets slightly clearer
+  const opacity = 0.6 + scrollPct * 0.25;
+
+  return (
+    <div className="hp-train-bg" aria-hidden="true">
+      {/* Track line */}
+      <svg
+        className="hp-tracks"
+        viewBox="0 0 1200 40"
+        preserveAspectRatio="none"
+        style={{ top: `${trainY}%` }}
+      >
+        {/* Rail lines */}
+        <line x1="0" y1="18" x2="1200" y2="18" stroke="var(--ink-muted)" strokeWidth="2" opacity=".3" />
+        <line x1="0" y1="26" x2="1200" y2="26" stroke="var(--ink-muted)" strokeWidth="2" opacity=".3" />
+        {/* Ties */}
+        {Array.from({ length: 60 }, (_, i) => (
+          <rect
+            key={i}
+            x={i * 20 + 2}
+            y="14"
+            width="8"
+            height="16"
+            rx="1"
+            fill="var(--ink-muted)"
+            opacity=".25"
+          />
+        ))}
+      </svg>
+
+      {/* Train SVG */}
+      <div
+        className="hp-train-sprite"
+        style={{
+          left: `${trainX}%`,
+          top: `${trainY}%`,
+          transform: `translate(-50%, -50%) scale(${trainScale})`,
+          opacity: opacity,
+        }}
+      >
+        <svg
+          width="180"
+          height="60"
+          viewBox="0 0 180 60"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Body */}
+          <rect x="8" y="10" width="164" height="34" rx="8" fill="var(--panel)" stroke="var(--border)" strokeWidth="1.5" />
+          {/* Stripe */}
+          <rect x="8" y="28" width="164" height="6" fill="var(--marigold)" opacity=".7" />
+          {/* Front */}
+          <path d="M172 10 Q180 27 172 44" fill="var(--marigold)" opacity=".9" />
+          {/* Windows */}
+          <rect x="20" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          <rect x="40" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          <rect x="60" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          <rect x="80" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          <rect x="100" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          <rect x="120" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          <rect x="140" y="15" width="14" height="10" rx="2" fill="var(--teal)" opacity=".5" />
+          {/* Door */}
+          <rect x="54" y="30" width="10" height="14" rx="1" fill="var(--ink-muted)" opacity=".3" />
+          <rect x="110" y="30" width="10" height="14" rx="1" fill="var(--ink-muted)" opacity=".3" />
+          {/* Wheels */}
+          <circle cx="35" cy="48" r="5" fill="var(--ink-muted)" />
+          <circle cx="35" cy="48" r="2" fill="var(--panel)" />
+          <circle cx="85" cy="48" r="5" fill="var(--ink-muted)" />
+          <circle cx="85" cy="48" r="2" fill="var(--panel)" />
+          <circle cx="145" cy="48" r="5" fill="var(--ink-muted)" />
+          <circle cx="145" cy="48" r="2" fill="var(--panel)" />
+          {/* Headlight */}
+          <circle cx="175" cy="20" r="3" fill="var(--marigold)" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Featured line card
+// ---------------------------------------------------------------------------
+const FEATURED_LINES = [
+  { cityId: "delhi", lineId: "yellow_line" },
+  { cityId: "mumbai", lineId: "blue_line" },
+  { cityId: "bengaluru", lineId: "purple_line" },
+  { cityId: "kolkata", lineId: "blue_line" },
+];
+
+function FeaturedCard({ cityId, lineId }) {
+  const navigate = useNavigate();
+  const city = CITY_CATALOG[cityId];
+  const line = city?.lines.find((l) => l.id === lineId);
+  if (!city || !line) return null;
+
+  return (
+    <button
+      className="hp-fcard"
+      style={{ "--lc": line.color }}
+      onClick={() => navigate(`/${cityId}/${lineId}`)}
+    >
+      <div className="hp-fcard-strip" />
+      <div className="hp-fcard-top">
+        <span className="hp-fcard-badge">
+          {line.code || line.name.slice(0, 2).toUpperCase()}
+        </span>
+        <span className="hp-fcard-city">{city.name}</span>
+      </div>
+      <div className="hp-fcard-name">{line.name}</div>
+      <div className="hp-fcard-term">{line.terminals}</div>
+      <div className="hp-fcard-foot">
+        <span className="hp-fcard-stops">
+          <MapPin size={10} /> {line.stations} stations
+        </span>
+        <span className="hp-fcard-play">
+          Play <Play size={12} fill="currentColor" />
+        </span>
+      </div>
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main page
+// ---------------------------------------------------------------------------
 export default function HomePage() {
   const navigate = useNavigate();
-  const [theme, setTheme] = useTheme();
-
   const cities = Object.values(CITY_CATALOG);
   const totalLines = cities.reduce((acc, c) => acc + c.lines.length, 0);
   const totalStations = cities.reduce(
-    (acc, c) => acc + c.lines.reduce((lAcc, l) => lAcc + l.stations, 0),
-    0,
+    (acc, c) => acc + c.lines.reduce((s, l) => s + l.stations, 0),
+    0
   );
 
   const linesCount = useCountUp(totalLines);
   const stationsCount = useCountUp(totalStations);
   const citiesCount = useCountUp(cities.length);
 
-  // Feature the first line from the catalog instead of hardcoding a route,
-  // so the hero CTA never points at a line that's been removed or renamed.
   const featuredCity = cities[0];
   const featuredLine = featuredCity?.lines?.[0];
 
   return (
-    <div className="home-container">
-      {/* For faster first paint in production, move this @import into two
-          <link rel="preconnect"> + <link rel="stylesheet"> tags in index.html
-          instead — @import blocks rendering until the font CSS resolves. */}
+    <div className="hp">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
 
-        /* ---------- Tokens ---------- */
-        .home-container, .home-container[data-theme="dark"] {
-          --void: #120f0c;
-          --panel: #1c1712;
-          --panel-raised: #251e16;
-          --border: #382c1e;
-          --ink: #f3ede2;
-          --ink-muted: #a89c89;
-          --marigold: #f2a900;
-          --marigold-ink: #14100b;
-          --teal: #2dd4bf;
-          --shadow: 0 24px 48px -16px rgba(0,0,0,0.55);
+        :root, [data-theme="dark"] {
+          --void:        #120f0c;
+          --panel:       #1c1712;
+          --panel-raised:#251e16;
+          --border:      #382c1e;
+          --ink:         #f3ede2;
+          --ink-muted:   #a89c89;
+          --marigold:    #f2a900;
+          --marigold-dk: #c98b00;
+          --marigold-ink:#14100b;
+          --teal:        #2dd4bf;
+          --shadow-sm:   0 4px 16px rgba(0,0,0,.4);
+          --shadow-md:   0 16px 40px rgba(0,0,0,.55);
         }
-        .home-container[data-theme="light"] {
-          --void: #eef1ee;
-          --panel: #ffffff;
-          --panel-raised: #f6f5f0;
-          --border: #dcdad0;
-          --ink: #17130f;
-          --ink-muted: #6b6459;
-          --marigold: #b3790a;
-          --marigold-ink: #ffffff;
-          --teal: #0e8a79;
-          --shadow: 0 24px 48px -20px rgba(23,19,15,0.16);
+        [data-theme="light"] {
+          --void:        #eef1ee;
+          --panel:       #ffffff;
+          --panel-raised:#f6f5f0;
+          --border:      #dcdad0;
+          --ink:         #17130f;
+          --ink-muted:   #6b6459;
+          --marigold:    #b3790a;
+          --marigold-dk: #8a5c06;
+          --marigold-ink:#ffffff;
+          --teal:        #0e8a79;
+          --shadow-sm:   0 4px 16px rgba(23,19,15,.10);
+          --shadow-md:   0 16px 40px rgba(23,19,15,.16);
         }
 
-        .home-container {
-          background-color: var(--void);
+        .hp {
+          position: relative;
+          background: var(--void);
           color: var(--ink);
-          font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
-          transition: background-color .25s ease, color .25s ease;
-          box-sizing: border-box;
+          font-family: "IBM Plex Sans", system-ui, sans-serif;
+          min-height: 100vh;
+          transition: background .25s, color .25s;
+          overflow-x: hidden;
         }
-        .home-container * { box-sizing: border-box; }
-        .home-container :focus-visible { outline: 2px solid var(--marigold); outline-offset: 3px; border-radius: 4px; }
-        .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+        .hp *, .hp *::before, .hp *::after { box-sizing: border-box; }
+        .hp :focus-visible { outline: 2px solid var(--marigold); outline-offset: 3px; border-radius: 4px; }
 
-        /* ---------- Nav ---------- */
-        .nav {
-          position: sticky; top: 0; z-index: 20;
-          backdrop-filter: blur(10px);
-          background: color-mix(in srgb, var(--void) 82%, transparent);
+        /* ====== TRAIN BACKGROUND (behind everything) ====== */
+        .hp-train-bg {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          overflow: hidden;
+        }
+        .hp-tracks {
+          position: absolute;
+          left: 0; right: 0;
+          width: 100%;
+          height: 40px;
+          transition: top .05s linear;
+        }
+        .hp-train-sprite {
+          position: absolute;
+          /* Transform and opacity are set dynamically inline */
+          transition: left .08s linear, top .05s linear, transform .1s linear, opacity .1s linear;
+          filter: drop-shadow(0 12px 24px rgba(0,0,0,.45));
+        }
+
+        /* All page content sits above the train */
+        .hp > *:not(.hp-train-bg) { position: relative; z-index: 1; }
+
+        /* ====== HERO ====== */
+        .hp-hero {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 5rem 2.5rem 4rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1.4rem;
+        }
+
+        .hp-station-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: .5rem;
+          font-family: "IBM Plex Mono", monospace;
+          font-size: .72rem;
+          font-weight: 700;
+          letter-spacing: .16em;
+          text-transform: uppercase;
+          color: var(--marigold);
+          background: color-mix(in srgb, var(--marigold) 10%, transparent);
+          border: 1px solid color-mix(in srgb, var(--marigold) 30%, transparent);
+          padding: .35rem .9rem;
+          border-radius: 4px;
+          width: fit-content;
+        }
+        .hp-dot-pulse {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: var(--teal);
+          animation: hp-pulse 1.8s ease-in-out infinite;
+        }
+        @keyframes hp-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+        .hp-hero-title {
+          font-size: clamp(2.8rem, 6.5vw, 5rem);
+          font-weight: 800;
+          line-height: 1.06;
+          letter-spacing: -.03em;
+          margin: 0;
+          max-width: 700px;
+        }
+        .hp-hero-title em { font-style: normal; color: var(--marigold); }
+
+        .hp-typing-line {
+          display: flex;
+          align-items: center;
+          gap: .7rem;
+          font-family: "IBM Plex Mono", monospace;
+          font-size: clamp(1rem, 2vw, 1.35rem);
+          font-weight: 600;
+          color: var(--ink-muted);
+        }
+        .hp-typing-prefix { color: var(--teal); }
+        .hp-typing-word { color: var(--ink); min-width: 200px; }
+        .hp-typing-cursor {
+          display: inline-block;
+          width: 2px; height: 1.2em;
+          background: var(--marigold);
+          margin-left: 2px;
+          vertical-align: middle;
+          animation: hp-blink .85s step-end infinite;
+        }
+        @keyframes hp-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        .hp-hero-sub {
+          color: var(--ink-muted);
+          font-size: 1.05rem;
+          line-height: 1.7;
+          max-width: 560px;
+          margin: 0;
+        }
+
+        .hp-ctas {
+          display: flex; gap: .9rem; flex-wrap: wrap;
+        }
+        .hp-btn {
+          font-family: inherit;
+          font-size: .95rem;
+          font-weight: 700;
+          padding: .85rem 1.7rem;
+          border-radius: 10px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: .5rem;
+          border: 1px solid transparent;
+          transition: transform .15s, box-shadow .15s, border-color .15s;
+          text-decoration: none;
+        }
+        .hp-btn-pri { background: var(--marigold); color: var(--marigold-ink); }
+        .hp-btn-pri:hover { transform: translateY(-2px); box-shadow: 0 8px 28px color-mix(in srgb, var(--marigold) 40%, transparent); }
+        .hp-btn-sec { background: var(--panel); color: var(--ink); border-color: var(--border); }
+        .hp-btn-sec:hover { border-color: var(--marigold); }
+        .hp-btn-ghost { background: transparent; color: var(--marigold); border: none; padding: .6rem 0; font-weight: 700; }
+        .hp-btn-ghost:hover { text-decoration: underline; }
+
+        .hp-stats {
+          display: flex; gap: 2.5rem; flex-wrap: wrap;
+          padding-top: 1.4rem;
+          border-top: 1px solid var(--border);
+        }
+        .hp-stat-val {
+          font-family: "IBM Plex Mono", monospace;
+          font-size: 2rem; font-weight: 700; line-height: 1;
+        }
+        .hp-stat-lbl {
+          font-size: .65rem; letter-spacing: .12em;
+          text-transform: uppercase; color: var(--ink-muted); font-weight: 600;
+          margin-top: 4px;
+        }
+        .hp-stat-div { width: 1px; background: var(--border); align-self: stretch; }
+
+        /* ====== HOW IT WORKS ====== */
+        .hp-how {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 4rem 2.5rem;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 3.5rem;
+          align-items: center;
+        }
+
+        .hp-how-img {
+          position: relative;
+          border-radius: 18px;
+          overflow: hidden;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow-md);
+        }
+        .hp-how-img img { width: 100%; display: block; }
+        .hp-how-img-tag {
+          position: absolute;
+          bottom: .8rem; left: .8rem;
+          background: color-mix(in srgb, var(--void) 85%, transparent);
+          backdrop-filter: blur(8px);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: .45rem .8rem;
+          font-size: .72rem;
+          color: var(--ink-muted);
+          display: flex; align-items: center; gap: .4rem;
+        }
+        .hp-how-img-tag .hp-tag-dot {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: var(--teal);
+          animation: hp-pulse 1.8s ease-in-out infinite;
+        }
+
+        .hp-section-tag {
+          font-size: .72rem; font-weight: 700;
+          letter-spacing: .14em; text-transform: uppercase;
+          color: var(--marigold); margin-bottom: .8rem;
+        }
+        .hp-how-title {
+          font-size: clamp(1.6rem, 3vw, 2.3rem);
+          font-weight: 800; letter-spacing: -.02em;
+          line-height: 1.12; margin: 0 0 1rem;
+        }
+        .hp-how-title em { font-style: normal; color: var(--marigold); }
+        .hp-how-desc {
+          color: var(--ink-muted);
+          font-size: .95rem; line-height: 1.75;
+          margin: 0 0 1.8rem;
+        }
+
+        .hp-steps { display: flex; flex-direction: column; gap: .85rem; }
+        .hp-step { display: flex; align-items: flex-start; gap: .9rem; }
+        .hp-step-icon {
+          width: 34px; height: 34px; border-radius: 9px;
+          background: color-mix(in srgb, var(--marigold) 12%, transparent);
+          border: 1px solid color-mix(in srgb, var(--marigold) 30%, transparent);
+          color: var(--marigold);
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; margin-top: 1px;
+        }
+        .hp-step-title { font-weight: 700; font-size: .93rem; margin-bottom: 2px; }
+        .hp-step-desc { color: var(--ink-muted); font-size: .82rem; line-height: 1.55; }
+
+        /* ====== FEATURED LINES ====== */
+        .hp-featured {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 0 2.5rem 4rem;
+        }
+        .hp-featured-head {
+          display: flex; align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1.4rem;
+          padding-bottom: .9rem;
           border-bottom: 1px solid var(--border);
-          padding: 1.1rem 3rem;
-          display: flex; align-items: center; justify-content: space-between;
+          gap: 1rem; flex-wrap: wrap;
         }
-        .wordmark { display: flex; align-items: baseline; gap: .5rem; font-weight: 700; font-size: 1.05rem; letter-spacing: .08em; }
-        .wordmark .dot { color: var(--marigold); }
-        .wordmark small { font-family: "IBM Plex Sans", sans-serif; font-weight: 500; font-size: .72rem; color: var(--ink-muted); letter-spacing: 0; }
-        .nav-links { display: flex; align-items: center; gap: 1.8rem; }
-        .nav-links a { text-decoration: none; font-size: .88rem; color: var(--ink-muted); font-weight: 500; cursor: pointer; }
-        .nav-links a:hover { color: var(--ink); }
-        .theme-btn {
-          width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel);
-          display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink);
-          transition: border-color .15s ease, transform .15s ease;
+        .hp-featured-title {
+          font-size: 1.4rem; font-weight: 800;
+          letter-spacing: -.01em; margin: 0;
+          display: flex; align-items: center; gap: .5rem;
         }
-        .theme-btn:hover { border-color: var(--marigold); transform: translateY(-1px); }
+        .hp-featured-title svg { color: var(--marigold); }
+        .hp-featured-count {
+          font-family: "IBM Plex Mono", monospace;
+          font-size: .74rem; color: var(--ink-muted); white-space: nowrap;
+        }
 
-        /* ---------- Hero ---------- */
-        .hero {
-          max-width: 1180px; margin: 0 auto; padding: 4rem 3rem 3rem;
-          display: grid; grid-template-columns: 1.15fr .85fr; gap: 3.5rem; align-items: center;
+        .hp-fgrid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: .9rem;
+          margin-bottom: 1.6rem;
         }
-        .eyebrow {
-          display: inline-flex; align-items: center; gap: .5rem; font-size: .78rem; letter-spacing: .12em;
-          text-transform: uppercase; color: var(--marigold); font-weight: 600; margin-bottom: 1.1rem;
-        }
-        .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--marigold); }
-        .hero-title { font-size: clamp(2.3rem, 4.4vw, 3.6rem); line-height: 1.06; font-weight: 800; letter-spacing: -.02em; margin: 0 0 1.3rem; }
-        .hero-title em { color: var(--marigold); font-style: normal; }
-        .hero-subtitle { color: var(--ink-muted); font-size: 1.05rem; line-height: 1.65; max-width: 520px; margin: 0 0 2.1rem; }
-        .hero-cta-group { display: flex; gap: .9rem; margin-bottom: 2.6rem; flex-wrap: wrap; }
-        .btn {
-          font-family: inherit; font-size: .95rem; font-weight: 600; padding: .85rem 1.5rem; border-radius: 10px;
-          cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; border: 1px solid transparent;
-          transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
-        }
-        .btn-primary { background: var(--marigold); color: var(--marigold-ink); }
-        .btn-primary:hover { transform: translateY(-2px); }
-        .btn-secondary { background: transparent; color: var(--ink); border-color: var(--border); }
-        .btn-secondary:hover { border-color: var(--marigold); }
 
-        .hero-stats { display: flex; gap: 2.4rem; border-top: 1px solid var(--border); padding-top: 1.4rem; }
-        .stat-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600; margin-bottom: 3px; }
-        .stat-value { font-size: 1.7rem; font-weight: 700; }
-
-        /* ---------- Departure board ---------- */
-        .board { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; position: relative; }
-        .board-head {
-          display: flex; align-items: center; justify-content: space-between; padding: .8rem 1.1rem;
-          border-bottom: 1px solid var(--border); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted);
+        .hp-fcard {
+          background: var(--panel);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 1.1rem;
+          cursor: pointer;
+          text-align: left;
+          font-family: inherit;
+          color: var(--ink);
+          display: flex;
+          flex-direction: column;
+          gap: .4rem;
+          position: relative;
+          overflow: hidden;
+          transition: transform .15s, border-color .18s, box-shadow .18s;
         }
-        .board-head .live { display: flex; align-items: center; gap: .4rem; color: var(--teal); }
-        .board-head .live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: railtype-pulse 1.8s ease-in-out infinite; }
-        @keyframes railtype-pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-        .board-rows { padding: .4rem 0; position: relative; }
-        .board-rows::after {
-          content: ""; position: absolute; inset: 0; pointer-events: none;
-          background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 41px,
-            color-mix(in srgb, var(--ink) 6%, transparent) 41px, color-mix(in srgb, var(--ink) 6%, transparent) 42px);
+        .hp-fcard-strip {
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 3px;
+          background: var(--lc, var(--marigold));
         }
-        .board-row { display: grid; grid-template-columns: 34px 1fr 76px; align-items: center; gap: .8rem; padding: .55rem 1.1rem; font-family: "IBM Plex Mono", monospace; }
-        .row-code { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: .68rem; font-weight: 700; color: #14100b; }
-        .row-name { font-size: .96rem; font-weight: 600; letter-spacing: .04em; white-space: nowrap; overflow: hidden; }
-        .row-city { font-size: .68rem; color: var(--ink-muted); text-align: right; letter-spacing: .06em; }
-
-        /* ---------- City sections ---------- */
-        .section { max-width: 1180px; margin: 5rem auto; padding: 0 3rem; }
-        .city-group { margin-bottom: 3.6rem; }
-        .city-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: .8rem; }
-        .city-title { font-size: 1.9rem; font-weight: 800; letter-spacing: -.01em; margin: 0; }
-        .city-operator { color: var(--marigold); font-size: .88rem; font-weight: 600; }
-        .city-count { margin-left: auto; font-size: .78rem; color: var(--ink-muted); font-family: "IBM Plex Mono", monospace; }
-
-        .routes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.1rem; }
-        .route-card {
-          background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem; cursor: pointer;
-          position: relative; overflow: hidden; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
-          display: flex; flex-direction: column; justify-content: space-between; min-height: 175px;
+        .hp-fcard:hover {
+          transform: translateY(-3px);
+          border-color: var(--lc, var(--marigold));
+          box-shadow: 0 6px 20px color-mix(in srgb, var(--lc, var(--marigold)) 22%, transparent);
         }
-        .route-card:hover, .route-card:focus-visible { transform: translateY(-4px); border-color: var(--line-color, var(--marigold)); box-shadow: var(--shadow); }
-        .route-strip { position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--line-color, var(--marigold)); }
-        .rivet { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
-        .rivet.tl { top: 10px; left: 10px; } .rivet.tr { top: 10px; right: 10px; }
-
-        .route-head { display: flex; align-items: center; gap: .9rem; margin-top: .3rem; margin-bottom: 1.1rem; }
-        .route-badge {
-          width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-          font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: .78rem; color: #14100b;
-          background: var(--line-color, var(--marigold)); flex-shrink: 0;
+        .hp-fcard-top { display: flex; align-items: center; gap: .5rem; margin-top: .2rem; }
+        .hp-fcard-badge {
+          background: var(--lc, var(--marigold));
+          color: #14100b;
+          font-family: "IBM Plex Mono", monospace;
+          font-weight: 700; font-size: .67rem;
+          padding: .2rem .5rem; border-radius: 5px;
+          letter-spacing: .04em;
         }
-        .route-title { font-size: 1.14rem; font-weight: 700; }
-        .route-type { font-size: .76rem; color: var(--ink-muted); margin-top: 1px; }
-        .route-terminals { font-size: .84rem; color: var(--ink-muted); margin-bottom: 1.3rem; line-height: 1.45; }
-
-        .route-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
-        .route-pill { background: var(--panel-raised); color: var(--ink-muted); padding: .32rem .65rem; border-radius: 7px; font-size: .74rem; font-weight: 600; font-family: "IBM Plex Mono", monospace; }
-        .route-play-btn { color: var(--marigold); font-weight: 700; font-size: .88rem; display: flex; align-items: center; gap: 4px; transition: gap .15s ease; }
-        .route-card:hover .route-play-btn { gap: 8px; }
-
-        @media (max-width: 900px) {
-          .hero { grid-template-columns: 1fr; padding-top: 2.6rem; }
-          .board { order: -1; }
+        .hp-fcard-city { font-size: .7rem; color: var(--ink-muted); font-weight: 600; }
+        .hp-fcard-name { font-size: 1rem; font-weight: 700; }
+        .hp-fcard-term { font-size: .76rem; color: var(--ink-muted); line-height: 1.5; flex: 1; }
+        .hp-fcard-foot { display: flex; align-items: center; justify-content: space-between; margin-top: .3rem; }
+        .hp-fcard-stops {
+          display: inline-flex; align-items: center; gap: .3rem;
+          font-size: .71rem; color: var(--ink-muted);
+          font-family: "IBM Plex Mono", monospace; font-weight: 600;
         }
-        @media (max-width: 640px) {
-          .nav, .hero, .section { padding-left: 1.2rem; padding-right: 1.2rem; }
-          .nav-links a:not(.theme-btn) { display: none; }
-          .hero-cta-group { flex-direction: column; }
-          .btn { justify-content: center; }
-          .hero-stats { gap: 1.4rem; flex-wrap: wrap; }
-          .routes-grid { grid-template-columns: 1fr; }
-          .city-count { display: none; }
+        .hp-fcard-play {
+          display: inline-flex; align-items: center; gap: .3rem;
+          font-size: .8rem; font-weight: 700; color: var(--marigold);
+          transition: gap .15s;
+        }
+        .hp-fcard:hover .hp-fcard-play { gap: .5rem; }
+
+        .hp-browse-cta {
+          text-align: center;
+        }
+
+        /* ====== FOOTER ====== */
+        .hp-footer {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 2.2rem 2.5rem 3rem;
+          display: flex; align-items: center;
+          justify-content: space-between;
+          gap: 1rem; flex-wrap: wrap;
+          border-top: 1px solid var(--border);
+        }
+        .hp-footer-copy { font-size: .78rem; color: var(--ink-muted); line-height: 1.6; margin: 0; }
+        .hp-footer-tag {
+          display: inline-flex; align-items: center; gap: .4rem;
+          font-family: "IBM Plex Mono", monospace;
+          font-size: .7rem; font-weight: 700;
+          color: var(--marigold); letter-spacing: .06em;
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 860px) {
+          .hp-how { grid-template-columns: 1fr; gap: 2rem; }
+          .hp-how-img { max-width: 420px; margin: 0 auto; }
+          .hp-train-bg { display: none; }
+        }
+        @media (max-width: 600px) {
+          .hp-hero { padding: 3.5rem 1.2rem 2.5rem; }
+          .hp-featured, .hp-how { padding-left: 1.2rem; padding-right: 1.2rem; }
+          .hp-hero-title { font-size: 2.3rem; }
+          .hp-stats { gap: 1.4rem; }
+          .hp-stat-div { display: none; }
+          .hp-fgrid { grid-template-columns: 1fr; }
+          .hp-footer { flex-direction: column; text-align: center; padding-left: 1.2rem; padding-right: 1.2rem; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .home-container * { animation: none !important; transition: none !important; }
+          .hp *, .hp *::before, .hp *::after { animation: none !important; transition: none !important; }
+          .hp-train-bg { display: none; }
         }
       `}</style>
 
-      {/* Nav */}
-      <nav className="nav">
-        <div className="wordmark">
-          RAILTYPE<span className="dot">.</span>
-          <small>type your way across India's railways</small>
-        </div>
-        <div className="nav-links">
-          <a
-            onClick={() =>
-              document
-                .getElementById("routes-section")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Lines
-          </a>
-          <button
-            className="theme-btn"
-            aria-label="Toggle theme"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        </div>
-      </nav>
+      {/* ═══ Scroll-driven train background ═══ */}
+      <TrainBackground />
 
-      {/* Hero */}
-      <section className="hero">
-        <div>
-          <div className="eyebrow">
-            {cities.length} cities · live station data
-          </div>
-          <h1 className="hero-title">
-            Type your way across <em>India's</em> railways
-          </h1>
-          <p className="hero-subtitle">
-            Pick a line, tap in like you're through the gate, and type each
-            station in order. Every correct name pulls the train one stop closer
-            to the terminus.
-          </p>
+      {/* ═══ HERO ═══ */}
+      <section className="hp-hero">
+        <div className="hp-station-tag">
+          <span className="hp-dot-pulse" />
+          Now boarding · {cities.length} cities active
+        </div>
 
-          <div className="hero-cta-group">
-            {featuredLine && (
-              <button
-                className="btn btn-primary"
-                onClick={() =>
-                  navigate(`/${featuredCity.id}/${featuredLine.id}`)
-                }
-              >
-                Start on {featuredLine.name}
-              </button>
-            )}
+        <h1 className="hp-hero-title">
+          Type your way across<br />
+          <em>India's railways</em>
+        </h1>
+
+        <div className="hp-typing-line">
+          <span className="hp-typing-prefix">Next stop →</span>
+          <TypingWord />
+        </div>
+
+        <p className="hp-hero-sub">
+          Pick a metro line, type every station name in order, and race the
+          train to the terminus. Real networks, real stations, real fun.
+        </p>
+
+        <div className="hp-ctas">
+          {featuredLine && (
             <button
-              className="btn btn-secondary"
+              className="hp-btn hp-btn-pri"
               onClick={() =>
-                document
-                  .getElementById("routes-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                navigate(`/${featuredCity.id}/${featuredLine.id}`)
               }
             >
-              Browse all lines
+              <Play size={15} fill="currentColor" />
+              Start on {featuredLine.name}
             </button>
-          </div>
+          )}
+          <button
+            className="hp-btn hp-btn-sec"
+            onClick={() => navigate("/lines")}
+          >
+            Browse all lines <ArrowRight size={15} />
+          </button>
+        </div>
 
-          <div className="hero-stats">
-            <div>
-              <div className="stat-label">Lines</div>
-              <div className="stat-value mono">{linesCount}</div>
-            </div>
-            <div>
-              <div className="stat-label">Stations</div>
-              <div className="stat-value mono">{stationsCount}+</div>
-            </div>
-            <div>
-              <div className="stat-label">Cities</div>
-              <div className="stat-value mono">{citiesCount}</div>
-            </div>
+        <div className="hp-stats">
+          <div>
+            <div className="hp-stat-val">{citiesCount}</div>
+            <div className="hp-stat-lbl">Cities</div>
+          </div>
+          <div className="hp-stat-div" />
+          <div>
+            <div className="hp-stat-val">{linesCount}</div>
+            <div className="hp-stat-lbl">Lines</div>
+          </div>
+          <div className="hp-stat-div" />
+          <div>
+            <div className="hp-stat-val">{stationsCount}+</div>
+            <div className="hp-stat-lbl">Stations</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ HOW IT WORKS ═══ */}
+      <section className="hp-how">
+        <div className="hp-how-img">
+          <img
+            src="/metro_network_map.png"
+            alt="India metro rail network map"
+            loading="lazy"
+          />
+          <div className="hp-how-img-tag">
+            <span className="hp-tag-dot" /> {totalLines} lines across India
           </div>
         </div>
 
-        <DepartureBoard />
-      </section>
-
-      {/* Cities & lines */}
-      <section className="section" id="routes-section">
-        {cities.map((city) => {
-          const lineStations = city.lines.reduce((a, l) => a + l.stations, 0);
-          return (
-            <div key={city.id} className="city-group">
-              <div className="city-header">
-                <h2 className="city-title">{city.name}</h2>
-                <span className="city-operator">{city.operator}</span>
-                <span className="city-count">
-                  {city.lines.length} lines · {lineStations} stations
-                </span>
-              </div>
-
-              <div className="routes-grid">
-                {city.lines.map((line) => (
-                  <div
-                    key={line.id}
-                    className="route-card"
-                    role="button"
-                    tabIndex={0}
-                    style={{ "--line-color": line.color }}
-                    onClick={() => navigate(`/${city.id}/${line.id}`)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && navigate(`/${city.id}/${line.id}`)
-                    }
-                  >
-                    <span className="rivet tl" />
-                    <span className="rivet tr" />
-                    <div className="route-strip" />
-                    <div>
-                      <div className="route-head">
-                        <div className="route-badge">{line.code}</div>
-                        <div>
-                          <div className="route-title">{line.name}</div>
-                          <div className="route-type">{line.type}</div>
-                        </div>
-                      </div>
-                      <div className="route-terminals">{line.terminals}</div>
-                    </div>
-
-                    <div className="route-footer">
-                      <span className="route-pill">
-                        {line.stations} stations
-                      </span>
-                      <span className="route-play-btn">
-                        Play <ArrowRight size={15} />
-                      </span>
-                    </div>
-                  </div>
-                ))}
+        <div>
+          <div className="hp-section-tag">How it works</div>
+          <h2 className="hp-how-title">
+            Pick a line. Type the <em>stations</em>.<br />Reach the terminus.
+          </h2>
+          <p className="hp-how-desc">
+            Every keystroke counts. The next station's name lights up — type it
+            correctly and the train pulls forward one stop. A wrong key simply
+            doesn't move you, so there's nothing to undo. Finish the line and
+            see your time, WPM and accuracy.
+          </p>
+          <div className="hp-steps">
+            <div className="hp-step">
+              <div className="hp-step-icon"><Train size={16} /></div>
+              <div>
+                <div className="hp-step-title">1 · Choose your line</div>
+                <div className="hp-step-desc">
+                  Delhi, Mumbai, Bengaluru, Kolkata — pick any metro line from
+                  {" "}{totalLines} routes across {cities.length} cities.
+                </div>
               </div>
             </div>
-          );
-        })}
+            <div className="hp-step">
+              <div className="hp-step-icon"><Keyboard size={16} /></div>
+              <div>
+                <div className="hp-step-title">2 · Type to advance</div>
+                <div className="hp-step-desc">
+                  The next station name appears. Spell it right and the train
+                  moves forward. No backspace, no penalties — just pure typing.
+                </div>
+              </div>
+            </div>
+            <div className="hp-step">
+              <div className="hp-step-icon"><Gauge size={16} /></div>
+              <div>
+                <div className="hp-step-title">3 · Finish & review</div>
+                <div className="hp-step-desc">
+                  Reach the terminus and see your total time, words per minute,
+                  accuracy and a split for every station.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <footer
-        style={{
-          borderTop: "1px solid var(--border)",
-          padding: "2.4rem 3rem 3rem",
-        }}
-      >
-        <p
-          style={{
-            color: "var(--ink-muted)",
-            fontSize: ".82rem",
-            maxWidth: 560,
-            lineHeight: 1.6,
-            margin: 0,
-          }}
-        >
-          Fan-made typing game. Station names are public facts; not affiliated
+      {/* ═══ FEATURED LINES ═══ */}
+      <section className="hp-featured">
+        <div className="hp-featured-head">
+          <h2 className="hp-featured-title">
+            <Train size={20} /> Start with one of these
+          </h2>
+          <span className="hp-featured-count">
+            Featured routes
+          </span>
+        </div>
+
+        <div className="hp-fgrid">
+          {FEATURED_LINES.map((fl) => (
+            <FeaturedCard
+              key={`${fl.cityId}-${fl.lineId}`}
+              cityId={fl.cityId}
+              lineId={fl.lineId}
+            />
+          ))}
+        </div>
+
+        <div className="hp-browse-cta">
+          <button className="hp-btn hp-btn-sec" onClick={() => navigate("/lines")}>
+            See all {totalLines} line guides <ChevronRight size={16} />
+          </button>
+        </div>
+      </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="hp-footer">
+        <p className="hp-footer-copy">
+          Fan-made typing game · Station names are public facts · Not affiliated
           with any metro or railway operator.
         </p>
+        <div className="hp-footer-tag">
+          <Star size={12} fill="currentColor" /> RAILTYPE.INDIA
+        </div>
       </footer>
     </div>
   );
