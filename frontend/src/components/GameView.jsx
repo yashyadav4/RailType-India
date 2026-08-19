@@ -1,7 +1,141 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { loadRouteData } from "../data/cities/index";
 import MapView from "./MapView";
+
+// ── Subtle Sound Engine (Web Audio API) ─────────────────────────────
+let _audioCtx = null;
+let _noiseBuffer = null; // Pre-generated, reused across all keypresses
+
+const getAudioCtx = () => {
+  if (!_audioCtx) {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Pre-generate a 50ms white noise buffer once
+    const len = Math.floor(_audioCtx.sampleRate * 0.05);
+    _noiseBuffer = _audioCtx.createBuffer(1, len, _audioCtx.sampleRate);
+    const ch = _noiseBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+  }
+  if (_audioCtx.state === "suspended") _audioCtx.resume();
+  return _audioCtx;
+};
+
+/**
+ * Mechanical keyboard sound — models 4 acoustic layers of a real Cherry MX switch:
+ *  1. Click transient  — the sharp snap of the switch leaf engaging (~3ms)
+ *  2. Spring ping       — brief metallic resonance from the coil spring (~15ms)
+ *  3. Bottom-out thud   — low thump when the stem hits the housing floor (~20ms)
+ *  4. Plate resonance   — the mounting plate ringing very briefly (~10ms)
+ *
+ * Each keypress is subtly randomized in pitch so repeated typing feels organic.
+ */
+const playTypeClick = () => {
+  const ctx = getAudioCtx();
+  const t = ctx.currentTime;
+  const r = () => 0.93 + Math.random() * 0.14;
+
+  // ── 1. Key contact "tock" (the mechanical signature) ──
+  // Mid-frequency bandpass noise — crisp but not shrill
+  const tockNoise = ctx.createBufferSource();
+  tockNoise.buffer = _noiseBuffer;
+  const tockBPF = ctx.createBiquadFilter();
+  tockBPF.type = "bandpass";
+  tockBPF.frequency.value = 2500 * r();
+  tockBPF.Q.value = 1.8;
+  const tockGain = ctx.createGain();
+  tockGain.gain.setValueAtTime(0.09, t);
+  tockGain.gain.exponentialRampToValueAtTime(0.001, t + 0.012);
+  tockNoise.connect(tockBPF).connect(tockGain).connect(ctx.destination);
+  tockNoise.start(t);
+  tockNoise.stop(t + 0.012);
+
+  // ── 2. Bottom-out thump ──
+  // Moderate low-end punch — not sub-bassy, just grounded
+  const thudOsc = ctx.createOscillator();
+  const thudGain = ctx.createGain();
+  thudOsc.type = "sine";
+  thudOsc.frequency.setValueAtTime(180 * r(), t);
+  thudOsc.frequency.exponentialRampToValueAtTime(70, t + 0.03);
+  thudGain.gain.setValueAtTime(0.065, t);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  thudOsc.connect(thudGain).connect(ctx.destination);
+  thudOsc.start(t);
+  thudOsc.stop(t + 0.03);
+
+  // ── 3. Plate ring (subtle high-end definition) ──
+  // A tiny bit of higher frequency to keep it crisp and "mechanical"
+  const ringNoise = ctx.createBufferSource();
+  ringNoise.buffer = _noiseBuffer;
+  const ringBPF = ctx.createBiquadFilter();
+  ringBPF.type = "bandpass";
+  ringBPF.frequency.value = 4500 * r();
+  ringBPF.Q.value = 4;
+  const ringGain = ctx.createGain();
+  ringGain.gain.setValueAtTime(0.025, t);
+  ringGain.gain.exponentialRampToValueAtTime(0.001, t + 0.008);
+  ringNoise.connect(ringBPF).connect(ringGain).connect(ctx.destination);
+  ringNoise.start(t);
+  ringNoise.stop(t + 0.008);
+};
+
+/**
+ * Station complete — 3-note ascending arpeggio (C5 → E5 → G5)
+ * with a warm sine base + soft triangle harmonic overlay
+ */
+const playSuccessChime = () => {
+  const ctx = getAudioCtx();
+  const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+
+  notes.forEach((freq, i) => {
+    const t = ctx.currentTime + i * 0.1;
+
+    // Warm sine base note
+    const osc1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.value = freq;
+    g1.gain.setValueAtTime(0.07, t);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    osc1.connect(g1).connect(ctx.destination);
+    osc1.start(t);
+    osc1.stop(t + 0.25);
+
+    // Soft triangle shimmer one octave up
+    const osc2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    osc2.type = "triangle";
+    osc2.frequency.value = freq * 2;
+    g2.gain.setValueAtTime(0.025, t);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    osc2.connect(g2).connect(ctx.destination);
+    osc2.start(t);
+    osc2.stop(t + 0.2);
+  });
+};
+
+/** Quick low-freq buzz for wrong key */
+const playErrorBuzz = () => {
+  const ctx = getAudioCtx();
+  const t = ctx.currentTime;
+
+  // Dissonant dual-oscillator buzz
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc1.type = "square";
+  osc2.type = "sawtooth";
+  osc1.frequency.value = 180;
+  osc2.frequency.value = 220;
+  gain.gain.setValueAtTime(0.035, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(ctx.destination);
+  osc1.start(t);
+  osc2.start(t);
+  osc1.stop(t + 0.1);
+  osc2.stop(t + 0.1);
+};
 
 export default function GameView() {
   const { cityId, lineId } = useParams();
@@ -164,8 +298,8 @@ export default function GameView() {
         style={{
           height: "100vh",
           width: "100vw",
-          backgroundColor: "#0b0f19",
-          color: "#f8fafc",
+          backgroundColor: "var(--void)",
+          color: "var(--ink)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -211,6 +345,7 @@ export default function GameView() {
     if (typedChar.toLowerCase() !== expectedChar.toLowerCase()) {
       totalMistakesRef.current += 1;
       currentStationMistakesRef.current += 1;
+      playErrorBuzz();
       setShake(true);
       setTimeout(() => setShake(false), 300);
       return;
@@ -218,11 +353,13 @@ export default function GameView() {
 
     // ON CORRECT KEYSTROKE
     correctKeystrokesRef.current += 1;
+    playTypeClick();
     setUserInput(value);
 
     // ON STATION COMPLETE
     if (value.toLowerCase() === targetStation.toLowerCase()) {
       const stationTimeMs = now - currentStationStartTimeRef.current;
+      playSuccessChime();
 
       // Save split data silently
       splitsRef.current.push({
@@ -249,8 +386,8 @@ export default function GameView() {
 
   const renderStyledStationName = () => {
     return targetStation.split("").map((char, index) => {
-      let colorClass = "#94a3b8";
-      if (index < userInput.length) colorClass = "#16a34a";
+      let colorClass = "var(--ink-muted)";
+      if (index < userInput.length) colorClass = "var(--teal)";
       const isCursor = index === userInput.length;
 
       return (
@@ -263,7 +400,7 @@ export default function GameView() {
                 top: "10%",
                 bottom: "10%",
                 width: "3px",
-                backgroundColor: "#16a34a",
+                backgroundColor: "var(--teal)",
                 borderRadius: "2px",
               }}
             />
@@ -281,8 +418,8 @@ export default function GameView() {
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
-        fontFamily: "sans-serif",
-        backgroundColor: "#0b0f19",
+        fontFamily: "inherit",
+        backgroundColor: "var(--void)",
       }}
       onClick={() => inputRef.current?.focus()}
     >
@@ -314,7 +451,7 @@ export default function GameView() {
           style={{
             position: "absolute",
             inset: 0,
-            backgroundColor: "rgba(11, 15, 25, 0.65)",
+            backgroundColor: "color-mix(in srgb, var(--void) 75%, transparent)",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
             zIndex: 100,
@@ -326,30 +463,31 @@ export default function GameView() {
         >
           <div
             style={{
-              backgroundColor: "#292742",
-              border: "1px solid rgba(255, 255, 255, 0.05)",
+              backgroundColor: "var(--panel)",
+              border: "1px solid var(--border)",
               borderRadius: "20px",
               padding: "3rem 4rem",
               textAlign: "center",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              boxShadow: "var(--shadow-md)",
               animation: "popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             }}
           >
             <div
               style={{
-                color: "#94a3b8",
+                color: "var(--ink-muted)",
                 fontSize: "0.85rem",
                 letterSpacing: "3px",
                 fontWeight: "700",
                 textTransform: "uppercase",
                 marginBottom: "1rem",
+                fontFamily: "inherit",
               }}
             >
               Final Stop
             </div>
             <h2
               style={{
-                color: "#ffffff",
+                color: "var(--ink)",
                 fontSize: "2.2rem",
                 margin: "0 0 2rem 0",
                 fontWeight: "800",
@@ -359,9 +497,9 @@ export default function GameView() {
             </h2>
             <div
               style={{
-                color: "#facc15",
+                color: "var(--marigold)",
                 fontSize: "3.5rem",
-                fontFamily: "monospace",
+                fontFamily: '"JetBrains Mono", monospace',
                 fontWeight: "bold",
                 letterSpacing: "2px",
               }}
@@ -386,7 +524,7 @@ export default function GameView() {
           alignItems: "center",
           padding: "1.2rem 2.5rem",
           background:
-            "linear-gradient(to bottom, rgba(11,15,25,0.95), rgba(11,15,25,0))",
+            "linear-gradient(to bottom, var(--void), transparent)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -394,7 +532,7 @@ export default function GameView() {
             style={{
               width: "42px",
               height: "42px",
-              backgroundColor: routeData.color || "#f97316",
+              backgroundColor: routeData.color || "var(--marigold)",
               borderRadius: "10px",
               display: "flex",
               alignItems: "center",
@@ -405,10 +543,10 @@ export default function GameView() {
             🚂
           </div>
           <div>
-            <h3 style={{ margin: 0, color: "#f8fafc", fontSize: "1.1rem" }}>
+            <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "1.1rem" }}>
               {routeData.systemName.toUpperCase()}
             </h3>
-            <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.8rem" }}>
+            <p style={{ margin: 0, color: "var(--ink-muted)", fontSize: "0.8rem" }}>
               {routeData.startTerminal} → {routeData.endTerminal}
             </p>
           </div>
@@ -420,8 +558,8 @@ export default function GameView() {
           style={{
             fontSize: "2.2rem",
             fontWeight: "bold",
-            color: "#facc15",
-            fontFamily: "monospace",
+            color: "var(--lc, var(--marigold))",
+            fontFamily: '"JetBrains Mono", monospace',
             letterSpacing: "2px",
           }}
         >
@@ -434,14 +572,14 @@ export default function GameView() {
             display: "flex",
             alignItems: "center",
             gap: "2rem",
-            color: "#f8fafc",
+            color: "var(--ink)",
           }}
         >
           <div style={{ textAlign: "right" }}>
             <span
               style={{
                 fontSize: "0.75rem",
-                color: "#94a3b8",
+                color: "var(--ink-muted)",
                 display: "block",
               }}
             >
@@ -455,7 +593,7 @@ export default function GameView() {
             <span
               style={{
                 fontSize: "0.75rem",
-                color: "#94a3b8",
+                color: "var(--ink-muted)",
                 display: "block",
               }}
             >
@@ -472,7 +610,7 @@ export default function GameView() {
             <span
               style={{
                 fontSize: "0.75rem",
-                color: "#94a3b8",
+                color: "var(--ink-muted)",
                 display: "block",
               }}
             >
@@ -505,10 +643,11 @@ export default function GameView() {
         <div
           className={shake ? "shake-animation" : ""}
           style={{
-            backgroundColor: "#f4f3ec", // Matched to the soft cream of the reference image
+            backgroundColor: "var(--panel-raised)",
+            border: "1px solid var(--border)",
             borderRadius: "32px",
-            width: "700px", // Widened to support the new horizontal layout
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
+            width: "700px",
+            boxShadow: "var(--shadow-md)",
             overflow: "hidden",
             transition: "transform 0.1s ease",
           }}
@@ -525,7 +664,7 @@ export default function GameView() {
             {/* Left: Station Code Box (Mimicking the JY/30 box) */}
             <div
               style={{
-                border: `5px solid ${routeData.color || "#f97316"}`,
+                border: `5px solid ${routeData.color || "var(--marigold)"}`,
                 borderRadius: "18px",
                 width: "65px",
                 height: "65px",
@@ -534,15 +673,16 @@ export default function GameView() {
                 alignItems: "center",
                 justifyContent: "center",
                 fontWeight: "800",
-                color: "#1a1a1a",
-                backgroundColor: "#ffffff",
+                color: "var(--panel-raised)",
+                backgroundColor: routeData.color || "var(--marigold)",
+                fontFamily: '"JetBrains Mono", monospace',
                 flexShrink: 0,
               }}
             >
               {/* If the code has a hyphen (like ML-01), stack it like the reference image */}
               {currentStation?.code?.includes("-") ? (
                 <>
-                  <span style={{ fontSize: "1rem", lineHeight: "1.2" }}>
+                  <span style={{ fontSize: "1rem", lineHeight: "1.2", letterSpacing: "1px" }}>
                     {currentStation.code.split("-")[0]}
                   </span>
                   <span style={{ fontSize: "1.6rem", lineHeight: "1" }}>
@@ -575,10 +715,10 @@ export default function GameView() {
                 style={{
                   fontSize: "2.0rem",
                   fontWeight: "900",
-                  color: "#1a1a1a",
+                  color: "var(--ink)",
                   lineHeight: "1.1",
                   marginBottom: "0.5rem",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
+                  fontFamily: "inherit",
                 }}
               >
                 {currentStation?.localName || currentStation?.name}
@@ -589,7 +729,7 @@ export default function GameView() {
                 style={{
                   fontSize: "0.95rem",
                   fontWeight: "700",
-                  color: "#737373",
+                  color: "var(--ink-muted)",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
                   marginBottom: "2rem",
@@ -603,12 +743,11 @@ export default function GameView() {
                 style={{
                   fontSize: "2.2rem",
                   fontWeight: "bold",
-                  fontFamily: "monospace",
+                  fontFamily: '"JetBrains Mono", monospace',
                   letterSpacing: "2px",
-                  color: "#555",
+                  color: "var(--ink-muted)",
                   display: "flex",
                   alignItems: "center",
-
                   whiteSpace: "pre-wrap",
                 }}
               >
@@ -620,14 +759,15 @@ export default function GameView() {
           {/* Bottom Bar */}
           <div
             style={{
-              backgroundColor: routeData.color || "#f97316",
-              color: "#ffffff", // Kept white to remain legible on dark routes like the Blue/Purple line
+              backgroundColor: routeData.color || "var(--marigold)",
+              color: "#14100b", // Keeping dark ink for good contrast on bright train line colors
               padding: "1rem 2rem",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               fontWeight: "bold",
               fontSize: "1rem",
+              fontFamily: '"JetBrains Mono", monospace',
             }}
           >
             <span style={{ flex: 1, textAlign: "left" }}>
@@ -652,10 +792,11 @@ export default function GameView() {
         {/* Helper Text */}
         <div
           style={{
-            color: "#94a3b8",
+            color: "var(--ink-muted)",
             fontSize: "0.9rem",
             textAlign: "center",
             marginTop: "0.5rem",
+            fontFamily: "inherit",
           }}
         >
           Wrong keys are ignored — just type the correct letter, no backspace

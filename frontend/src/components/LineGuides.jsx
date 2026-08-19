@@ -23,15 +23,23 @@ function CityCard({ city }) {
     <div className={`lg-city${open ? " open" : ""}`}>
       <button className="lg-city-hd" onClick={() => setOpen((o) => !o)}>
         <div className="lg-city-left">
-          <div className="lg-city-icon"><Train size={18} /></div>
+          <div className="lg-city-icon">
+            <Train size={18} />
+          </div>
           <div>
             <div className="lg-city-name">{city.name}</div>
             {city.operator && <div className="lg-city-op">{city.operator}</div>}
           </div>
         </div>
         <div className="lg-city-right">
-          <span className="lg-pill"><Layout size={11} />{city.lines.length} lines</span>
-          <span className="lg-pill"><MapPin size={11} />{totalStations} stations</span>
+          <span className="lg-pill">
+            <Layout size={11} />
+            {city.lines.length} lines
+          </span>
+          <span className="lg-pill">
+            <MapPin size={11} />
+            {totalStations} stations
+          </span>
           {open ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
         </div>
       </button>
@@ -47,14 +55,21 @@ function CityCard({ city }) {
             >
               <div className="lg-tile-strip" />
               <div className="lg-tile-top">
-                <span className="lg-badge">{line.code || line.name.slice(0, 2).toUpperCase()}</span>
+                <span className="lg-badge">
+                  {line.code || line.name.slice(0, 2).toUpperCase()}
+                </span>
                 <span className="lg-type">{line.type}</span>
               </div>
               <div className="lg-tile-name">{line.name}</div>
               <div className="lg-tile-term">{line.terminals}</div>
               <div className="lg-tile-foot">
-                <span className="lg-stops"><MapPin size={10} />{line.stations} stops</span>
-                <span className="lg-play">Play <Play size={11} fill="currentColor" /></span>
+                <span className="lg-stops">
+                  <MapPin size={10} />
+                  {line.stations} stops
+                </span>
+                <span className="lg-play">
+                  Play <Play size={11} fill="currentColor" />
+                </span>
               </div>
             </button>
           ))}
@@ -73,43 +88,17 @@ export default function LineGuides() {
   const totalLines = cities.reduce((a, c) => a + c.lines.length, 0);
   const totalStations = cities.reduce(
     (a, c) => a + c.lines.reduce((s, l) => s + l.stations, 0),
-    0
+    0,
   );
 
   return (
     <div className="lg">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
-
-        :root, [data-theme="dark"] {
-          --void:        #120f0c;
-          --panel:       #1c1712;
-          --panel-raised:#251e16;
-          --border:      #382c1e;
-          --ink:         #f3ede2;
-          --ink-muted:   #a89c89;
-          --marigold:    #f2a900;
-          --marigold-ink:#14100b;
-          --teal:        #2dd4bf;
-          --shadow-sm:   0 4px 16px rgba(0,0,0,.4);
-        }
-        [data-theme="light"] {
-          --void:        #eef1ee;
-          --panel:       #ffffff;
-          --panel-raised:#f6f5f0;
-          --border:      #dcdad0;
-          --ink:         #17130f;
-          --ink-muted:   #6b6459;
-          --marigold:    #b3790a;
-          --marigold-ink:#ffffff;
-          --teal:        #0e8a79;
-          --shadow-sm:   0 4px 16px rgba(23,19,15,.10);
-        }
 
         .lg {
           background: var(--void);
           color: var(--ink);
-          font-family: "IBM Plex Sans", system-ui, sans-serif;
+          font-family: inherit;
           min-height: 100vh;
           transition: background .25s, color .25s;
         }
@@ -146,7 +135,7 @@ export default function LineGuides() {
         }
         .lg-title svg { color: var(--marigold); }
         .lg-meta {
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-size: .76rem; color: var(--ink-muted);
           white-space: nowrap;
         }
@@ -184,7 +173,7 @@ export default function LineGuides() {
           display: flex; align-items: center; justify-content: center;
           color: var(--marigold); flex-shrink: 0;
         }
-        .lg-city-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -.01em; }
+        .lg-city-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -.01em; text-align:left; }
         .lg-city-op { font-size: .72rem; color: var(--marigold); font-weight: 600; margin-top: 2px; }
         .lg-city-right { display: flex; align-items: center; gap: .55rem; flex-shrink: 0; color: var(--ink-muted); }
         .lg-pill {
@@ -233,7 +222,7 @@ export default function LineGuides() {
         .lg-badge {
           background: var(--lc, var(--marigold));
           color: #14100b;
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-weight: 700; font-size: .67rem;
           padding: .2rem .5rem; border-radius: 5px;
           letter-spacing: .04em;
@@ -245,7 +234,7 @@ export default function LineGuides() {
         .lg-stops {
           display: inline-flex; align-items: center; gap: .3rem;
           font-size: .71rem; color: var(--ink-muted);
-          font-family: "IBM Plex Mono", monospace; font-weight: 600;
+          font-family: "JetBrains Mono", monospace; font-weight: 600;
         }
         .lg-play {
           display: inline-flex; align-items: center; gap: .3rem;
@@ -271,7 +260,8 @@ export default function LineGuides() {
             <Train size={22} /> Line Guides
           </h1>
           <span className="lg-meta">
-            {cities.length} cities · {totalLines} lines · {totalStations} stations
+            {cities.length} cities · {totalLines} lines · {totalStations}{" "}
+            stations
           </span>
         </div>
 

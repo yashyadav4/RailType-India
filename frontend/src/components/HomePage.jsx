@@ -251,42 +251,12 @@ export default function HomePage() {
   return (
     <div className="hp">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
-
-        :root, [data-theme="dark"] {
-          --void:        #120f0c;
-          --panel:       #1c1712;
-          --panel-raised:#251e16;
-          --border:      #382c1e;
-          --ink:         #f3ede2;
-          --ink-muted:   #a89c89;
-          --marigold:    #f2a900;
-          --marigold-dk: #c98b00;
-          --marigold-ink:#14100b;
-          --teal:        #2dd4bf;
-          --shadow-sm:   0 4px 16px rgba(0,0,0,.4);
-          --shadow-md:   0 16px 40px rgba(0,0,0,.55);
-        }
-        [data-theme="light"] {
-          --void:        #eef1ee;
-          --panel:       #ffffff;
-          --panel-raised:#f6f5f0;
-          --border:      #dcdad0;
-          --ink:         #17130f;
-          --ink-muted:   #6b6459;
-          --marigold:    #b3790a;
-          --marigold-dk: #8a5c06;
-          --marigold-ink:#ffffff;
-          --teal:        #0e8a79;
-          --shadow-sm:   0 4px 16px rgba(23,19,15,.10);
-          --shadow-md:   0 16px 40px rgba(23,19,15,.16);
-        }
 
         .hp {
           position: relative;
           background: var(--void);
           color: var(--ink);
-          font-family: "IBM Plex Sans", system-ui, sans-serif;
+          font-family: inherit;
           min-height: 100vh;
           transition: background .25s, color .25s;
           overflow-x: hidden;
@@ -333,7 +303,7 @@ export default function HomePage() {
           display: inline-flex;
           align-items: center;
           gap: .5rem;
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-size: .72rem;
           font-weight: 700;
           letter-spacing: .16em;
@@ -366,7 +336,7 @@ export default function HomePage() {
           display: flex;
           align-items: center;
           gap: .7rem;
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-size: clamp(1rem, 2vw, 1.35rem);
           font-weight: 600;
           color: var(--ink-muted);
@@ -421,7 +391,7 @@ export default function HomePage() {
           border-top: 1px solid var(--border);
         }
         .hp-stat-val {
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-size: 2rem; font-weight: 700; line-height: 1;
         }
         .hp-stat-lbl {
@@ -519,7 +489,7 @@ export default function HomePage() {
         }
         .hp-featured-title svg { color: var(--marigold); }
         .hp-featured-count {
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-size: .74rem; color: var(--ink-muted); white-space: nowrap;
         }
 
@@ -561,7 +531,7 @@ export default function HomePage() {
         .hp-fcard-badge {
           background: var(--lc, var(--marigold));
           color: #14100b;
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-weight: 700; font-size: .67rem;
           padding: .2rem .5rem; border-radius: 5px;
           letter-spacing: .04em;
@@ -573,7 +543,7 @@ export default function HomePage() {
         .hp-fcard-stops {
           display: inline-flex; align-items: center; gap: .3rem;
           font-size: .71rem; color: var(--ink-muted);
-          font-family: "IBM Plex Mono", monospace; font-weight: 600;
+          font-family: "JetBrains Mono", monospace; font-weight: 600;
         }
         .hp-fcard-play {
           display: inline-flex; align-items: center; gap: .3rem;
@@ -599,7 +569,7 @@ export default function HomePage() {
         .hp-footer-copy { font-size: .78rem; color: var(--ink-muted); line-height: 1.6; margin: 0; }
         .hp-footer-tag {
           display: inline-flex; align-items: center; gap: .4rem;
-          font-family: "IBM Plex Mono", monospace;
+          font-family: "JetBrains Mono", monospace;
           font-size: .7rem; font-weight: 700;
           color: var(--marigold); letter-spacing: .06em;
         }
