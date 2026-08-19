@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, User } from "lucide-react";
 
 /* --------------------------------------------------------------------------
    useTheme — mirrors the exact same hook used in HomePage so both components
@@ -51,37 +51,6 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
-
-        /* ---- Custom train cursor ---- */
-        html {
-          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f2a900' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3' width='16' height='16' rx='2'/%3E%3Cpath d='M4 11h16'/%3E%3Cpath d='M12 3v8'/%3E%3Ccircle cx='8' cy='21' r='1'/%3E%3Ccircle cx='16' cy='21' r='1'/%3E%3Cpath d='M9 19h6'/%3E%3C/svg%3E") 12 12, auto;
-        }
-
-        /* ---- Global token definitions ---- */
-        :root, [data-theme="dark"] {
-          --void:        #120f0c;
-          --panel:       #1c1712;
-          --panel-raised:#251e16;
-          --border:      #382c1e;
-          --ink:         #f3ede2;
-          --ink-muted:   #a89c89;
-          --marigold:    #f2a900;
-          --marigold-ink:#14100b;
-          --teal:        #2dd4bf;
-        }
-        [data-theme="light"] {
-          --void:        #eef1ee;
-          --panel:       #ffffff;
-          --panel-raised:#f6f5f0;
-          --border:      #dcdad0;
-          --ink:         #17130f;
-          --ink-muted:   #6b6459;
-          --marigold:    #b3790a;
-          --marigold-ink:#ffffff;
-          --teal:        #0e8a79;
-        }
-
         /* ---- Navbar shell ---- */
         .rtnav {
           position: fixed;
@@ -96,7 +65,7 @@ export default function Navbar() {
           align-items: center;
           justify-content: space-between;
           padding: 0 3rem;
-          font-family: "IBM Plex Sans", system-ui, sans-serif;
+          font-family: inherit;
           transition: background 0.25s ease, border-color 0.25s ease;
         }
 
