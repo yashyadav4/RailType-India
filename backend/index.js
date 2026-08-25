@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
+import userRoutes from "./routers/userRoutes.js";
+import runRoutes from "./routers/runRoutes.js";
 dotenv.config({});
 const app = express();
 
@@ -14,6 +16,10 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+
+// API Routes
+app.use("/api/users", userRoutes);
+app.use("/api/runs", runRoutes);
 
 app.get("/home", (req, res) => {
   return res.status(200).json({

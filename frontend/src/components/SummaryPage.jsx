@@ -1,21 +1,49 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Repeat, LogIn, Award, MapPin } from "lucide-react";
 import { CITY_CATALOG } from "../data/cities/index";
+import { useAuth } from "../context/AuthContext";
+import { saveGuestRun } from "../utils/guestRuns";
 
 export default function SummaryPage() {
   const { cityId, lineId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, token } = useAuth();
+  const hasSavedRef = useRef(false);
 
   // Extract all telemetry data passed from GameView
   const {
     timeFormatted = "0:00.00",
+    timeMs = 0,
     cpm = 0,
     accuracy = 0,
     totalMistakes = 0,
     splits = [],
   } = location.state || {};
+
+  // Save the run on mount (once)
+  useEffect(() => {
+    if (hasSavedRef.current || !timeMs) return;
+    hasSavedRef.current = true;
+
+    const runData = { cityId, lineId, timeMs, accuracy, cpm, mistakes: totalMistakes };
+
+    if (user && token) {
+      // Logged in — save to backend
+      fetch("http://localhost:8000/api/runs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(runData),
+      }).catch((err) => console.error("Failed to save run:", err));
+    } else {
+      // Guest — save to localStorage
+      saveGuestRun(runData);
+    }
+  }, []);
 
   const wpm = Math.round(cpm / 5);
   const city = CITY_CATALOG[cityId];

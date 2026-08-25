@@ -53,6 +53,9 @@ export const googleLogin = async (req, res) => {
         email: user.email,
         picture: user.picture,
         badges: user.badges,
+        totalRuns: user.totalRuns || 0,
+        stamps: user.stamps || 0,
+        bests: user.bests || [],
       },
     });
   } catch (error) {
@@ -73,6 +76,32 @@ export const getUserProfile = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { name } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name: name.trim() },
+      { returnDocument: "after" }
+    ).select("-googleId");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error updating profile:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -8,64 +8,159 @@ import {
   Settings,
   LogOut,
   ArrowLeft,
+  Clock,
+  Target,
+  Zap,
+  AlertCircle,
+  Check,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { CITY_CATALOG } from "../data/cities/index";
 
+const API_BASE = "http://localhost:8000/api";
+
+// ── Helpers ──────────────────────────────────────────────────────────
+function formatTime(ms) {
+  const totalSecs = Math.floor(ms / 1000);
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  const millis = Math.floor((ms % 1000) / 10);
+  return `${mins}:${secs < 10 ? "0" : ""}${secs}.${millis < 10 ? "0" : ""}${millis}`;
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function lookupLine(cityId, lineId) {
+  const city = CITY_CATALOG[cityId];
+  if (!city) return { name: lineId, color: "var(--marigold)", cityName: cityId };
+  const line = city.lines.find((l) => l.id === lineId);
+  return {
+    name: line?.name || lineId,
+    color: line?.color || "var(--marigold)",
+    cityName: city.name,
+  };
+}
+
+// ── Main Component ───────────────────────────────────────────────────
 export default function ProfileDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const { user, token, loading, logout, setUser } = useAuth();
 
-  // Mock user data for UI testing
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Run history state
+  const [runs, setRuns] = useState([]);
+  const [runsLoading, setRunsLoading] = useState(true);
 
+  // Settings state
+  const [displayName, setDisplayName] = useState("");
+  const [saveStatus, setSaveStatus] = useState(null); // null | "saving" | "saved" | "error"
+
+  // Redirect if not logged in
   useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
+    if (!loading && !user) {
+      navigate("/");
+    }
+  }, [loading, user, navigate]);
 
-      if (!token) {
-        navigate("/");
-        return;
-      }
-
+  // Fetch runs on mount
+  useEffect(() => {
+    if (!token) return;
+    const fetchRuns = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await fetch(`${API_BASE}/runs/mine`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-
-        const data = await res.json();
-
         if (res.ok) {
-          setUser(data);
-        } else {
-          localStorage.removeItem("token");
-          navigate("/");
+          const data = await res.json();
+          setRuns(data);
         }
-      } catch (error) {
-        console.error("Failed to fetch profile");
+      } catch (err) {
+        console.error("Failed to fetch runs:", err);
       } finally {
-        setLoading(false);
+        setRunsLoading(false);
       }
     };
-    fetchProfile();
-  }, [navigate]);
+    fetchRuns();
+  }, [token]);
+
+  // Sync display name when user loads
+  useEffect(() => {
+    if (user?.name) setDisplayName(user.name);
+  }, [user]);
+
   if (loading) {
     return (
-      <div
-        style={{ color: "var(--ink)", padding: "4rem", textAlign: "center" }}
-      >
+      <div style={{ color: "var(--ink)", padding: "4rem", textAlign: "center" }}>
         Loading Profile...
       </div>
     );
   }
   if (!user) return null;
+
+  // ── Derived Data ─────────────────────────────────────────────────
+  const recentRuns = runs.slice(0, 5);
+
+  // Compute unique lines played
+  const uniqueLines = new Set(runs.map((r) => `${r.cityId}/${r.lineId}`));
+
+  // Compute best per line
+  const bestsByLine = {};
+  runs.forEach((run) => {
+    const key = `${run.cityId}/${run.lineId}`;
+    if (!bestsByLine[key] || run.timeMs < bestsByLine[key].timeMs) {
+      bestsByLine[key] = run;
+    }
+  });
+  const bestsArray = Object.entries(bestsByLine)
+    .map(([key, run]) => {
+      const [cityId, lineId] = key.split("/");
+      const info = lookupLine(cityId, lineId);
+      const attempts = runs.filter(
+        (r) => r.cityId === cityId && r.lineId === lineId
+      ).length;
+      return { ...run, ...info, attempts };
+    })
+    .sort((a, b) => a.timeMs - b.timeMs);
+
+  // ── Handlers ─────────────────────────────────────────────────────
   const handleSignOut = () => {
-    // Clear local storage and redirect to home
-    localStorage.removeItem("token");
+    logout();
     navigate("/");
   };
 
+  const handleSaveSettings = async () => {
+    if (!displayName.trim()) return;
+    setSaveStatus("saving");
+    try {
+      const res = await fetch(`${API_BASE}/users/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: displayName.trim() }),
+      });
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUser(updatedUser);
+        setSaveStatus("saved");
+        setTimeout(() => setSaveStatus(null), 2000);
+      } else {
+        setSaveStatus("error");
+      }
+    } catch {
+      setSaveStatus("error");
+    }
+  };
+
+  // ── Render ───────────────────────────────────────────────────────
   return (
     <div
       style={{
@@ -76,7 +171,84 @@ export default function ProfileDashboard() {
         display: "flex",
       }}
     >
-      {/* 1. SIDEBAR NAVIGATION */}
+      <style>{`
+        .pd-run-row {
+          display: grid;
+          grid-template-columns: 36px 1fr 100px 80px 80px 70px 100px;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem 1.2rem;
+          border-bottom: 1px solid var(--border);
+          font-size: 0.9rem;
+          transition: background 0.15s;
+        }
+        .pd-run-row:hover {
+          background: color-mix(in srgb, var(--ink) 4%, transparent);
+        }
+        .pd-run-header {
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--ink-muted);
+          border-bottom: 2px solid var(--border);
+        }
+        .pd-run-header:hover { background: transparent; }
+        .pd-badge-card {
+          background: var(--panel);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.8rem;
+          text-align: center;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pd-badge-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px color-mix(in srgb, var(--void) 50%, transparent);
+        }
+        .pd-best-card {
+          background: var(--panel);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 1.8rem;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pd-best-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px color-mix(in srgb, var(--void) 50%, transparent);
+        }
+        .pd-empty {
+          text-align: center;
+          padding: 4rem 2rem;
+          color: var(--ink-muted);
+        }
+        .pd-empty-icon {
+          font-size: 3rem;
+          margin-bottom: 1rem;
+          opacity: 0.4;
+        }
+        .pd-input {
+          width: 100%;
+          padding: 0.8rem;
+          border-radius: 8px;
+          border: 1px solid var(--border);
+          background-color: var(--void);
+          color: var(--ink);
+          font-family: inherit;
+          font-size: 0.95rem;
+          transition: border-color 0.2s;
+          outline: none;
+        }
+        .pd-input:focus {
+          border-color: var(--marigold);
+        }
+      `}</style>
+
+      {/* ── SIDEBAR ──────────────────────────────────────────────── */}
       <aside
         style={{
           width: "280px",
@@ -87,7 +259,6 @@ export default function ProfileDashboard() {
           flexDirection: "column",
         }}
       >
-        {/* Back Button */}
         <button
           onClick={() => navigate("/")}
           style={{
@@ -105,7 +276,6 @@ export default function ProfileDashboard() {
           <ArrowLeft size={16} /> Back to Game
         </button>
 
-        {/* Profile Card */}
         <div
           style={{
             display: "flex",
@@ -134,7 +304,6 @@ export default function ProfileDashboard() {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
         <div
           style={{
             display: "flex",
@@ -176,17 +345,13 @@ export default function ProfileDashboard() {
         </div>
       </aside>
 
-      {/* 2. MAIN CONTENT AREA */}
+      {/* ── MAIN CONTENT ─────────────────────────────────────────── */}
       <main style={{ flex: 1, padding: "4rem", overflowY: "auto" }}>
+
+        {/* ═══════════ OVERVIEW TAB ═══════════ */}
         {activeTab === "overview" && (
           <div>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: "800",
-                margin: "0 0 2rem 0",
-              }}
-            >
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "800", margin: "0 0 2rem 0" }}>
               Overview
             </h2>
 
@@ -199,12 +364,12 @@ export default function ProfileDashboard() {
                 marginBottom: "3rem",
               }}
             >
-              <StatCard label="Total Runs" value={user.totalRuns} />
-              <StatCard label="Lines Ranked" value="4" />
-              <StatCard label="Stamps Collected" value={user.stamps} />
+              <StatCard label="Total Runs" value={user.totalRuns || runs.length} />
+              <StatCard label="Lines Played" value={uniqueLines.size} />
+              <StatCard label="Stamps Collected" value={user.stamps || 0} />
             </div>
 
-            {/* Quick Preview Sections */}
+            {/* Recent Runs + Stamps Preview */}
             <div
               style={{
                 display: "grid",
@@ -212,6 +377,7 @@ export default function ProfileDashboard() {
                 gap: "2rem",
               }}
             >
+              {/* Recent Runs */}
               <div
                 style={{
                   border: "1px solid var(--border)",
@@ -240,11 +406,60 @@ export default function ProfileDashboard() {
                     View All
                   </button>
                 </div>
-                <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem" }}>
-                  No runs recorded yet. Start playing!
-                </p>
+                {recentRuns.length === 0 ? (
+                  <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem" }}>
+                    No runs recorded yet. Start playing!
+                  </p>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+                    {recentRuns.slice(0, 3).map((run, i) => {
+                      const info = lookupLine(run.cityId, run.lineId);
+                      return (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.8rem",
+                            padding: "0.7rem 0",
+                            borderBottom: i < 2 ? "1px solid var(--border)" : "none",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "6px",
+                              height: "32px",
+                              borderRadius: "3px",
+                              backgroundColor: info.color,
+                              flexShrink: 0,
+                            }}
+                          />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: "600", fontSize: "0.9rem" }}>
+                              {info.name}
+                            </div>
+                            <div style={{ color: "var(--ink-muted)", fontSize: "0.75rem" }}>
+                              {info.cityName} · {formatDate(run.createdAt)}
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              fontFamily: '"JetBrains Mono", monospace',
+                              fontWeight: "700",
+                              fontSize: "0.95rem",
+                              color: "var(--marigold)",
+                            }}
+                          >
+                            {formatTime(run.timeMs)}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
+              {/* Recent Stamps */}
               <div
                 style={{
                   border: "1px solid var(--border)",
@@ -273,39 +488,348 @@ export default function ProfileDashboard() {
                     View All
                   </button>
                 </div>
-                <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem" }}>
-                  No stamps collected yet.
-                </p>
+                {(!user.badges || user.badges.length === 0) ? (
+                  <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem" }}>
+                    No stamps collected yet.
+                  </p>
+                ) : (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+                    {user.badges.slice(0, 6).map((badge, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          background: "color-mix(in srgb, var(--marigold) 12%, transparent)",
+                          border: "1px solid color-mix(in srgb, var(--marigold) 30%, transparent)",
+                          color: "var(--marigold)",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: "99px",
+                          fontSize: "0.8rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        🏅 {badge}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
 
+        {/* ═══════════ STAMP BOOK TAB ═══════════ */}
         {activeTab === "stamps" && (
           <div>
-            <h2 style={{ fontSize: "2.5rem", fontWeight: "800" }}>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "800", margin: "0 0 0.5rem 0" }}>
               Stamp Book
             </h2>
-            <p style={{ color: "var(--ink-muted)" }}>Coming soon...</p>
-          </div>
-        )}
-        {activeTab === "history" && (
-          <div>
-            <h2 style={{ fontSize: "2.5rem", fontWeight: "800" }}>
-              Run History
-            </h2>
-            <p style={{ color: "var(--ink-muted)" }}>Coming soon...</p>
-          </div>
-        )}
-        {activeTab === "bests" && (
-          <div>
-            <h2 style={{ fontSize: "2.5rem", fontWeight: "800" }}>
-              Best Per Line
-            </h2>
-            <p style={{ color: "var(--ink-muted)" }}>Coming soon...</p>
+            <p style={{ color: "var(--ink-muted)", marginBottom: "2rem" }}>
+              Badges and milestones you've earned on your journey.
+            </p>
+
+            {(!user.badges || user.badges.length === 0) ? (
+              <div className="pd-empty">
+                <div className="pd-empty-icon">🎫</div>
+                <h3 style={{ margin: "0 0 0.5rem", fontWeight: "700" }}>No stamps yet</h3>
+                <p style={{ maxWidth: "400px", margin: "0 auto" }}>
+                  Complete lines and hit milestones to start collecting stamps.
+                  Each line you complete earns you closer to your first badge!
+                </p>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                  gap: "1.2rem",
+                }}
+              >
+                {user.badges.map((badge, i) => (
+                  <div key={i} className="pd-badge-card">
+                    <div style={{ fontSize: "2.5rem" }}>🏅</div>
+                    <div style={{ fontWeight: "700", fontSize: "0.95rem" }}>
+                      {badge}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
+        {/* ═══════════ RUN HISTORY TAB ═══════════ */}
+        {activeTab === "history" && (
+          <div>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "800", margin: "0 0 0.5rem 0" }}>
+              Run History
+            </h2>
+            <p style={{ color: "var(--ink-muted)", marginBottom: "2rem" }}>
+              {runs.length > 0
+                ? `${runs.length} run${runs.length > 1 ? "s" : ""} recorded`
+                : "All your completed runs will appear here."}
+            </p>
+
+            {runsLoading ? (
+              <p style={{ color: "var(--ink-muted)" }}>Loading runs...</p>
+            ) : runs.length === 0 ? (
+              <div className="pd-empty">
+                <div className="pd-empty-icon">🚂</div>
+                <h3 style={{ margin: "0 0 0.5rem", fontWeight: "700" }}>No runs yet</h3>
+                <p style={{ maxWidth: "400px", margin: "0 auto" }}>
+                  Play a line to see your run history here. Each completed run is saved automatically.
+                </p>
+                <button
+                  onClick={() => navigate("/lines")}
+                  style={{
+                    marginTop: "1.5rem",
+                    padding: "0.8rem 2rem",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "var(--marigold)",
+                    color: "#14100b",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  Pick a line
+                </button>
+              </div>
+            ) : (
+              <div
+                style={{
+                  border: "1px solid var(--border)",
+                  borderRadius: "14px",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Table Header */}
+                <div className="pd-run-row pd-run-header">
+                  <span>#</span>
+                  <span>Line</span>
+                  <span>Time</span>
+                  <span>CPM</span>
+                  <span>Acc.</span>
+                  <span>Miss</span>
+                  <span>Date</span>
+                </div>
+
+                {/* Table Rows */}
+                {runs.map((run, i) => {
+                  const info = lookupLine(run.cityId, run.lineId);
+                  return (
+                    <div key={run._id || i} className="pd-run-row">
+                      <span
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          color: "var(--ink-muted)",
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                        <div
+                          style={{
+                            width: "5px",
+                            height: "28px",
+                            borderRadius: "3px",
+                            backgroundColor: info.color,
+                            flexShrink: 0,
+                          }}
+                        />
+                        <div>
+                          <div style={{ fontWeight: "600", fontSize: "0.88rem" }}>
+                            {info.name}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.72rem",
+                              color: "var(--ink-muted)",
+                            }}
+                          >
+                            {info.cityName}
+                          </div>
+                        </div>
+                      </div>
+
+                      <span
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontWeight: "600",
+                          color: "var(--marigold)",
+                        }}
+                      >
+                        {formatTime(run.timeMs)}
+                      </span>
+
+                      <span
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontWeight: "600",
+                        }}
+                      >
+                        {run.cpm}
+                      </span>
+
+                      <span
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontWeight: "600",
+                        }}
+                      >
+                        {run.accuracy}%
+                      </span>
+
+                      <span
+                        style={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          fontWeight: "600",
+                          color: run.mistakes > 0 ? "#ef4444" : "var(--ink-muted)",
+                        }}
+                      >
+                        {run.mistakes}
+                      </span>
+
+                      <span
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "var(--ink-muted)",
+                        }}
+                      >
+                        {formatDate(run.createdAt)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══════════ BEST PER LINE TAB ═══════════ */}
+        {activeTab === "bests" && (
+          <div>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "800", margin: "0 0 0.5rem 0" }}>
+              Best Per Line
+            </h2>
+            <p style={{ color: "var(--ink-muted)", marginBottom: "2rem" }}>
+              Your personal records for each line you've played.
+            </p>
+
+            {bestsArray.length === 0 ? (
+              <div className="pd-empty">
+                <div className="pd-empty-icon">🏆</div>
+                <h3 style={{ margin: "0 0 0.5rem", fontWeight: "700" }}>No records yet</h3>
+                <p style={{ maxWidth: "400px", margin: "0 auto" }}>
+                  Complete a line to set your first personal best.
+                </p>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                  gap: "1.5rem",
+                }}
+              >
+                {bestsArray.map((best, i) => (
+                  <div key={i} className="pd-best-card">
+                    {/* Color strip */}
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "4px",
+                        borderRadius: "2px",
+                        backgroundColor: best.color,
+                        marginBottom: "1.2rem",
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        marginBottom: "1.2rem",
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: "700", fontSize: "1.1rem" }}>
+                          {best.name}
+                        </div>
+                        <div
+                          style={{
+                            color: "var(--ink-muted)",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          {best.cityName}
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          background: "color-mix(in srgb, var(--marigold) 12%, transparent)",
+                          color: "var(--marigold)",
+                          padding: "0.3rem 0.7rem",
+                          borderRadius: "8px",
+                          fontSize: "0.75rem",
+                          fontWeight: "700",
+                        }}
+                      >
+                        {best.attempts} run{best.attempts > 1 ? "s" : ""}
+                      </div>
+                    </div>
+
+                    {/* Best time — hero number */}
+                    <div
+                      style={{
+                        fontFamily: '"JetBrains Mono", monospace',
+                        fontSize: "2rem",
+                        fontWeight: "800",
+                        color: best.color,
+                        marginBottom: "1rem",
+                        letterSpacing: "-0.02em",
+                      }}
+                    >
+                      {formatTime(best.timeMs)}
+                    </div>
+
+                    {/* Metrics row */}
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "1.5rem",
+                        borderTop: "1px solid var(--border)",
+                        paddingTop: "1rem",
+                      }}
+                    >
+                      <MetricMini
+                        icon={<Zap size={13} />}
+                        label="CPM"
+                        value={best.cpm}
+                      />
+                      <MetricMini
+                        icon={<Target size={13} />}
+                        label="Acc."
+                        value={`${best.accuracy}%`}
+                      />
+                      <MetricMini
+                        icon={<AlertCircle size={13} />}
+                        label="Miss"
+                        value={best.mistakes}
+                        bad={best.mistakes > 0}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══════════ SETTINGS TAB ═══════════ */}
         {activeTab === "settings" && (
           <div>
             <h2
@@ -319,60 +843,126 @@ export default function ProfileDashboard() {
             </h2>
             <div
               style={{
-                maxWidth: "400px",
+                maxWidth: "460px",
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "1.2rem",
               }}
             >
+              {/* Account info (read-only) */}
               <div>
                 <label
                   style={{
                     display: "block",
                     color: "var(--ink-muted)",
                     marginBottom: "0.5rem",
-                    fontSize: "0.9rem",
+                    fontSize: "0.82rem",
+                    fontWeight: "600",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  Email
+                </label>
+                <div
+                  style={{
+                    padding: "0.8rem",
+                    borderRadius: "8px",
+                    border: "1px solid var(--border)",
+                    backgroundColor: "var(--panel)",
+                    color: "var(--ink-muted)",
+                    fontSize: "0.95rem",
+                  }}
+                >
+                  {user.email}
+                </div>
+              </div>
+
+              {/* Display Name (editable) */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    color: "var(--ink-muted)",
+                    marginBottom: "0.5rem",
+                    fontSize: "0.82rem",
+                    fontWeight: "600",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
                   }}
                 >
                   Display Name
                 </label>
                 <input
                   type="text"
-                  defaultValue={user.name}
-                  style={{
-                    width: "100%",
-                    padding: "0.8rem",
-                    borderRadius: "8px",
-                    border: "1px solid var(--border)",
-                    backgroundColor: "var(--void)",
-                    color: "var(--ink)",
-                    fontFamily: "inherit",
-                  }}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="pd-input"
                 />
               </div>
+
+              {/* Save button with feedback */}
               <button
+                onClick={handleSaveSettings}
+                disabled={saveStatus === "saving"}
                 style={{
-                  backgroundColor: "var(--panel)",
-                  color: "var(--ink)",
-                  border: "1px solid var(--border)",
+                  backgroundColor:
+                    saveStatus === "saved"
+                      ? "#22c55e"
+                      : saveStatus === "error"
+                      ? "#ef4444"
+                      : "var(--marigold)",
+                  color: "#14100b",
+                  border: "none",
                   padding: "0.8rem",
                   borderRadius: "8px",
-                  cursor: "pointer",
+                  cursor: saveStatus === "saving" ? "wait" : "pointer",
                   fontWeight: "bold",
-                  marginTop: "1rem",
+                  fontFamily: "inherit",
+                  fontSize: "0.95rem",
+                  marginTop: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  transition: "background-color 0.3s",
                 }}
               >
-                Save Changes
+                {saveStatus === "saving" && "Saving..."}
+                {saveStatus === "saved" && (
+                  <>
+                    <Check size={16} /> Saved!
+                  </>
+                )}
+                {saveStatus === "error" && (
+                  <>
+                    <AlertCircle size={16} /> Error — try again
+                  </>
+                )}
+                {!saveStatus && "Save Changes"}
               </button>
 
               <hr
                 style={{
                   borderColor: "var(--border)",
-                  margin: "2rem 0",
+                  margin: "1.5rem 0",
                   width: "100%",
                 }}
               />
 
+              {/* Member since */}
+              <div
+                style={{
+                  color: "var(--ink-muted)",
+                  fontSize: "0.82rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                Member since{" "}
+                {user.createdAt ? formatDate(user.createdAt) : "recently"}
+              </div>
+
+              {/* Sign out */}
               <button
                 onClick={handleSignOut}
                 style={{
@@ -387,7 +977,16 @@ export default function ProfileDashboard() {
                   borderRadius: "8px",
                   cursor: "pointer",
                   fontWeight: "bold",
+                  fontFamily: "inherit",
+                  transition: "background 0.2s",
                 }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.background =
+                    "color-mix(in srgb, #ff4d4d 10%, transparent)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.background = "transparent")
+                }
               >
                 <LogOut size={16} /> Sign Out
               </button>
@@ -399,7 +998,8 @@ export default function ProfileDashboard() {
   );
 }
 
-// Helper Components for the Dashboard UI
+// ── Sub-components ────────────────────────────────────────────────────
+
 function TabButton({ icon, label, isActive, onClick }) {
   return (
     <button
@@ -455,6 +1055,38 @@ function StatCard({ label, value }) {
           fontWeight: "bold",
           fontFamily: '"JetBrains Mono", monospace',
           color: "var(--marigold)",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function MetricMini({ icon, label, value, bad }) {
+  return (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.3rem",
+          color: "var(--ink-muted)",
+          fontSize: "0.7rem",
+          fontWeight: "700",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginBottom: "0.25rem",
+        }}
+      >
+        {icon} {label}
+      </div>
+      <div
+        style={{
+          fontFamily: '"JetBrains Mono", monospace',
+          fontWeight: "700",
+          fontSize: "1rem",
+          color: bad ? "#ef4444" : "var(--ink)",
         }}
       >
         {value}

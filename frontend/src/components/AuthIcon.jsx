@@ -1,64 +1,20 @@
-import { useState, useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthIcon() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, login: authLogin, loading } = useAuth();
 
-  // 1. Check if they are already logged in when the app loads
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      try {
-        const res = await fetch("http://localhost:8000/api/users/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          setUser({ picture: data.picture });
-        } else {
-          localStorage.removeItem("token");
-        }
-      } catch (error) {
-        console.error("Failed to restore session");
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  // 2. The actual Google Login flow
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      try {
-        const res = await fetch("http://localhost:8000/api/users/google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: tokenResponse.access_token }),
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          // SAVE THE TOKEN TO LOCAL STORAGE
-          localStorage.setItem("token", data.token);
-          setUser(data.user);
-
-          // We will handle data.isNewUser logic here later
-        } else {
-          console.error("Login failed:", data.message);
-        }
-      } catch (error) {
-        console.error("Network error during login:", error);
-      }
+      await authLogin(tokenResponse.access_token);
     },
     onError: (error) => console.log("Google Login Failed:", error),
   });
+
+  // Don't flash the wrong icon while session is restoring
+  if (loading) return null;
 
   if (user) {
     return (
@@ -86,7 +42,7 @@ export default function AuthIcon() {
 
   return (
     <button
-      onClick={() => login()}
+      onClick={() => googleLogin()}
       style={{
         width: "42px",
         height: "42px",
