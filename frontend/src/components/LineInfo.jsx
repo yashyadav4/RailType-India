@@ -160,17 +160,9 @@ export default function LineInfo() {
           className="li-btn li-btn-pri"
           onClick={() => navigate(`/${cityId}/${lineId}/play`)}
         >
-          <Play size={18} fill="currentColor" /> Let's go
+          <Play size={18} fill="currentColor" /> Tap to Start
         </button>
-        <button
-          className="li-btn li-btn-sec"
-          onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Link copied to clipboard!");
-          }}
-        >
-          <Share2 size={16} /> Share Route
-        </button>
+        
       </div>
     </div>
   );

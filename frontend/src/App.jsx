@@ -6,6 +6,7 @@ import LineGuides from "./components/LineGuides";
 import LineInfo from "./components/LineInfo";
 import GameView from "./components/GameView";
 import SummaryPage from "./components/SummaryPage";
+import ProfileDashboard from "./components/ProfileDashboard";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/:cityId/:lineId" element={<LineInfo />} />
           <Route path="/:cityId/:lineId/play" element={<GameView />} />
           <Route path="/:cityId/:lineId/summary" element={<SummaryPage />} />
+          <Route path="/profile" element={<ProfileDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

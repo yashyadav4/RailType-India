@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Sun, Moon, User } from "lucide-react";
+import AuthIcon from "./AuthIcon";
 
 /* --------------------------------------------------------------------------
    useTheme — mirrors the exact same hook used in HomePage so both components
@@ -157,7 +158,13 @@ export default function Navbar() {
 
       <nav className="rtnav" role="navigation" aria-label="Main navigation">
         {/* Wordmark / Logo */}
-        <span className="rtnav-wordmark" onClick={() => { setActiveLink("home"); navigate("/"); }}>
+        <span
+          className="rtnav-wordmark"
+          onClick={() => {
+            setActiveLink("home");
+            navigate("/");
+          }}
+        >
           RAILTYPE<span className="dot">.</span>
           <small>type your way across India's railways</small>
         </span>
@@ -191,6 +198,7 @@ export default function Navbar() {
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
+          <AuthIcon />
         </div>
       </nav>
     </>
