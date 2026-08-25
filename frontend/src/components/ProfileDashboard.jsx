@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { CITY_CATALOG } from "../data/cities/index";
+import { STAMP_CATALOG } from "../data/stampCatalog";
 
 const API_BASE = "http://localhost:8000/api";
 
@@ -111,21 +112,13 @@ export default function ProfileDashboard() {
   const uniqueLines = new Set(runs.map((r) => `${r.cityId}/${r.lineId}`));
 
   // Compute best per line
-  const bestsByLine = {};
-  runs.forEach((run) => {
-    const key = `${run.cityId}/${run.lineId}`;
-    if (!bestsByLine[key] || run.timeMs < bestsByLine[key].timeMs) {
-      bestsByLine[key] = run;
-    }
-  });
-  const bestsArray = Object.entries(bestsByLine)
-    .map(([key, run]) => {
-      const [cityId, lineId] = key.split("/");
-      const info = lookupLine(cityId, lineId);
+  const bestsArray = (user.bests || [])
+    .map((best) => {
+      const info = lookupLine(best.cityId, best.routeId);
       const attempts = runs.filter(
-        (r) => r.cityId === cityId && r.lineId === lineId
+        (r) => r.cityId === best.cityId && r.lineId === best.routeId
       ).length;
-      return { ...run, ...info, attempts };
+      return { ...best, ...info, attempts };
     })
     .sort((a, b) => a.timeMs - b.timeMs);
 
@@ -320,7 +313,7 @@ export default function ProfileDashboard() {
           />
           <TabButton
             icon={<Award size={18} />}
-            label="Stamp Book"
+            label="Stamps"
             isActive={activeTab === "stamps"}
             onClick={() => setActiveTab("stamps")}
           />
@@ -366,7 +359,7 @@ export default function ProfileDashboard() {
             >
               <StatCard label="Total Runs" value={user.totalRuns || runs.length} />
               <StatCard label="Lines Played" value={uniqueLines.size} />
-              <StatCard label="Stamps Collected" value={user.stamps || 0} />
+              <StatCard label="Stamps Collected" value={user.stamps ? user.stamps.length : 0} />
             </div>
 
             {/* Recent Runs + Stamps Preview */}
@@ -416,7 +409,7 @@ export default function ProfileDashboard() {
                       const info = lookupLine(run.cityId, run.lineId);
                       return (
                         <div
-                          key={i}
+                          key={run._id || i}
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -488,28 +481,36 @@ export default function ProfileDashboard() {
                     View All
                   </button>
                 </div>
-                {(!user.badges || user.badges.length === 0) ? (
+                {(!user.stamps || user.stamps.length === 0) ? (
                   <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem" }}>
                     No stamps collected yet.
                   </p>
                 ) : (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-                    {user.badges.slice(0, 6).map((badge, i) => (
-                      <span
-                        key={i}
-                        style={{
-                          background: "color-mix(in srgb, var(--marigold) 12%, transparent)",
-                          border: "1px solid color-mix(in srgb, var(--marigold) 30%, transparent)",
-                          color: "var(--marigold)",
-                          padding: "0.4rem 0.8rem",
-                          borderRadius: "99px",
-                          fontSize: "0.8rem",
-                          fontWeight: "600",
-                        }}
-                      >
-                        🏅 {badge}
-                      </span>
-                    ))}
+                    {user.stamps.slice(-6).reverse().map((stampId, i) => {
+                      const stamp = STAMP_CATALOG[stampId];
+                      if (!stamp) return null;
+                      return (
+                        <span
+                          key={i}
+                          title={stamp.description}
+                          style={{
+                            background: "color-mix(in srgb, var(--marigold) 12%, transparent)",
+                            border: "1px solid color-mix(in srgb, var(--marigold) 30%, transparent)",
+                            color: "var(--marigold)",
+                            padding: "0.4rem 0.8rem",
+                            borderRadius: "99px",
+                            fontSize: "0.8rem",
+                            fontWeight: "600",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.4rem"
+                          }}
+                        >
+                          {stamp.icon} {stamp.name}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -517,43 +518,49 @@ export default function ProfileDashboard() {
           </div>
         )}
 
-        {/* ═══════════ STAMP BOOK TAB ═══════════ */}
+        {/* ═══════════ STAMPS TAB ═══════════ */}
         {activeTab === "stamps" && (
           <div>
             <h2 style={{ fontSize: "2.5rem", fontWeight: "800", margin: "0 0 0.5rem 0" }}>
-              Stamp Book
+              Stamps
             </h2>
             <p style={{ color: "var(--ink-muted)", marginBottom: "2rem" }}>
-              Badges and milestones you've earned on your journey.
+              Stamps and milestones you've earned on your journey.
             </p>
 
-            {(!user.badges || user.badges.length === 0) ? (
-              <div className="pd-empty">
-                <div className="pd-empty-icon">🎫</div>
-                <h3 style={{ margin: "0 0 0.5rem", fontWeight: "700" }}>No stamps yet</h3>
-                <p style={{ maxWidth: "400px", margin: "0 auto" }}>
-                  Complete lines and hit milestones to start collecting stamps.
-                  Each line you complete earns you closer to your first badge!
-                </p>
+            {["accuracy", "speed", "dedication"].map(category => (
+              <div key={category} style={{ marginBottom: "3rem" }}>
+                <h3 style={{ textTransform: "capitalize", fontSize: "1.5rem", marginBottom: "1rem", borderBottom: "2px solid var(--border)", paddingBottom: "0.5rem", color: "var(--ink)" }}>
+                  {category}
+                </h3>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                    gap: "1.2rem",
+                  }}
+                >
+                  {Object.values(STAMP_CATALOG)
+                    .filter(stamp => stamp.category === category)
+                    .map(stamp => {
+                      const isUnlocked = (user.stamps || []).includes(stamp.id);
+                      return (
+                        <div key={stamp.id} className="pd-badge-card" style={{ opacity: isUnlocked ? 1 : 0.4, filter: isUnlocked ? "none" : "grayscale(1)" }}>
+                          <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>
+                            {isUnlocked ? stamp.icon : "🔒"}
+                          </div>
+                          <div style={{ fontWeight: "800", fontSize: "1rem", color: isUnlocked ? "var(--marigold)" : "var(--ink-muted)", marginBottom: "0.5rem" }}>
+                            {stamp.name}
+                          </div>
+                          <div style={{ fontSize: "0.8rem", color: "var(--ink-muted)", lineHeight: "1.4" }}>
+                            {stamp.description}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
-            ) : (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-                  gap: "1.2rem",
-                }}
-              >
-                {user.badges.map((badge, i) => (
-                  <div key={i} className="pd-badge-card">
-                    <div style={{ fontSize: "2.5rem" }}>🏅</div>
-                    <div style={{ fontWeight: "700", fontSize: "0.95rem" }}>
-                      {badge}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            ))}
           </div>
         )}
 
@@ -608,7 +615,7 @@ export default function ProfileDashboard() {
                   <span>#</span>
                   <span>Line</span>
                   <span>Time</span>
-                  <span>CPM</span>
+                  <span>WPM</span>
                   <span>Acc.</span>
                   <span>Miss</span>
                   <span>Date</span>
@@ -670,7 +677,7 @@ export default function ProfileDashboard() {
                           fontWeight: "600",
                         }}
                       >
-                        {run.cpm}
+                        {Math.round(run.cpm / 5)}
                       </span>
 
                       <span
@@ -807,8 +814,8 @@ export default function ProfileDashboard() {
                     >
                       <MetricMini
                         icon={<Zap size={13} />}
-                        label="CPM"
-                        value={best.cpm}
+                        label="WPM"
+                        value={Math.round(best.cpm / 5)}
                       />
                       <MetricMini
                         icon={<Target size={13} />}

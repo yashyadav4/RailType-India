@@ -26,15 +26,22 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    stamps: {
-      type: Number,
-      default: 0,
-    },
-    badges: [
+    stamps: [
       {
         type: String,
       },
     ],
+    perfectRuns: {
+      type: Number,
+      default: 0,
+    },
+    currentStreak: {
+      type: Number,
+      default: 0,
+    },
+    lastRunDate: {
+      type: Date,
+    },
 
     bests: [
       {
@@ -42,6 +49,9 @@ const userSchema = new mongoose.Schema(
         routeId: { type: String, required: true }, // e.g., "yellow_line"
         timeMs: { type: Number, required: true },
         accuracy: { type: Number, required: true },
+        cpm: { type: Number, default: 0 },
+        mistakes: { type: Number, default: 0 },
+        createdAt: { type: Date, default: Date.now },
       },
     ],
   },

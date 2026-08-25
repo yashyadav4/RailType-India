@@ -1,16 +1,21 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Repeat, LogIn, Award, MapPin } from "lucide-react";
+import { ArrowLeft, Repeat, LogIn, Award, MapPin, Trophy } from "lucide-react";
 import { CITY_CATALOG } from "../data/cities/index";
 import { useAuth } from "../context/AuthContext";
 import { saveGuestRun } from "../utils/guestRuns";
+import { STAMP_CATALOG } from "../data/stampCatalog";
 
 export default function SummaryPage() {
   const { cityId, lineId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, token, setUser } = useAuth();
   const hasSavedRef = useRef(false);
+
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [globalRank, setGlobalRank] = useState(null);
+  const [unlockedStamps, setUnlockedStamps] = useState([]);
 
   // Extract all telemetry data passed from GameView
   const {
@@ -21,6 +26,14 @@ export default function SummaryPage() {
     totalMistakes = 0,
     splits = [],
   } = location.state || {};
+
+  // Fetch leaderboard on mount
+  useEffect(() => {
+    fetch(`http://localhost:8000/api/runs/leaderboard/${cityId}/${lineId}`)
+      .then((res) => res.json())
+      .then((data) => setLeaderboard(data))
+      .catch((err) => console.error("Failed to load leaderboard:", err));
+  }, [cityId, lineId]);
 
   // Save the run on mount (once)
   useEffect(() => {
@@ -38,7 +51,22 @@ export default function SummaryPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(runData),
-      }).catch((err) => console.error("Failed to save run:", err));
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.rank) setGlobalRank(data.rank);
+          if (data.updatedBests) {
+            setUser({ ...user, bests: data.updatedBests });
+          }
+          if (data.newStampsEarned && data.newStampsEarned.length > 0) {
+            setUnlockedStamps(data.newStampsEarned);
+          }
+          // Refresh leaderboard just in case this run made the top 10
+          return fetch(`http://localhost:8000/api/runs/leaderboard/${cityId}/${lineId}`);
+        })
+        .then((res) => res.json())
+        .then((data) => setLeaderboard(data))
+        .catch((err) => console.error("Failed to save run:", err));
     } else {
       // Guest — save to localStorage
       saveGuestRun(runData);
@@ -58,6 +86,20 @@ export default function SummaryPage() {
     const millis = Math.floor((ms % 1000) / 10);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}.${millis < 10 ? "0" : ""}${millis}`;
   };
+
+  // Find Personal Best
+  let pbFormatted = "--:--.--";
+  if (user && user.bests) {
+    const best = user.bests.find((b) => b.cityId === cityId && b.routeId === lineId);
+    if (best) {
+      const bestTimeMs = Math.min(best.timeMs, timeMs);
+      pbFormatted = formatSplitTime(bestTimeMs);
+    } else {
+      pbFormatted = formatSplitTime(timeMs);
+    }
+  } else if (!user) {
+    pbFormatted = formatSplitTime(timeMs); // Guest session PB
+  }
 
   // Find the longest time to set the 100% width benchmark
   const maxSplitTime =
@@ -163,6 +205,7 @@ export default function SummaryPage() {
           justify-content: center;
           min-width: 140px;
           color: var(--lc);
+          text-align: center;
         }
         .sp-rank-icon { margin-bottom: 0.5rem; }
         .sp-rank-val { font-size: 1.5rem; font-weight: 800; }
@@ -190,11 +233,7 @@ export default function SummaryPage() {
         .sp-pb {
           font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 1rem;
         }
-        .sp-login {
-          font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;
-        }
-        .sp-login a { color: var(--teal); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-
+        
         .sp-metrics {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -228,7 +267,7 @@ export default function SummaryPage() {
           margin-bottom: 2rem;
         }
         .sp-splits-title {
-          font-size: 1.25rem; font-weight: 800; margin: 0 0 1.5rem;
+          font-size: 1.25rem; font-weight: 800; margin: 0 0 1.5rem; display: flex; align-items: center; gap: 0.5rem;
         }
         .sp-splits-list {
           display: flex; flex-direction: column; gap: 1rem;
@@ -267,7 +306,7 @@ export default function SummaryPage() {
         .sp-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
         /* Actions */
-        .sp-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .sp-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
         .sp-btn {
           font-family: inherit; font-size: 1rem; font-weight: 700;
           padding: 1rem 2rem; border-radius: 12px; cursor: pointer;
@@ -315,24 +354,21 @@ export default function SummaryPage() {
         <div className="sp-score-flex">
           <div className="sp-rank-box">
             <Award size={36} className="sp-rank-icon" />
-            <div className="sp-rank-val">--</div>
+            <div className="sp-rank-val">
+              {user ? (globalRank ? `#${globalRank}` : "--") : "-"}
+            </div>
             <div className="sp-rank-lbl">Global Rank</div>
+            {!user && (
+              <div style={{ fontSize: "0.7rem", marginTop: "0.5rem", color: "var(--ink)" }}>
+                Login to rank
+              </div>
+            )}
           </div>
 
           <div className="sp-time-col">
             <div className="sp-time-lbl">Total Time</div>
             <div className="sp-time-val">{timeFormatted}</div>
-            <div className="sp-pb">Personal best --:--.--</div>
-            <div className="sp-login">
-              <span>Leaderboard unavailable offline!</span>
-              <a>
-                <LogIn
-                  size={14}
-                  style={{ display: "inline", transform: "translateY(2px)" }}
-                />{" "}
-                Login
-              </a>
-            </div>
+            <div className="sp-pb">Personal best {pbFormatted}</div>
           </div>
         </div>
 
@@ -355,6 +391,95 @@ export default function SummaryPage() {
               {totalMistakes}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="sp-actions">
+        <button
+          className="sp-btn sp-btn-pri"
+          onClick={() => navigate(`/${cityId}/${lineId}/play`)}
+        >
+          <Repeat size={18} /> Play again
+        </button>
+        <button
+          className="sp-btn sp-btn-sec"
+          onClick={() => navigate(`/lines`)}
+        >
+          Change route
+        </button>
+        <button className="sp-btn sp-btn-sec" onClick={() => navigate("/")}>
+          Home
+        </button>
+      </div>
+
+      {/* Leaderboard Card */}
+      <div className="sp-card" style={{ padding: "1.5rem" }}>
+        <h3 className="sp-splits-title">
+          <Trophy size={20} color="var(--marigold)" /> Top 10 Leaderboard
+        </h3>
+        
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginTop: "1.5rem" }}>
+          {leaderboard.length === 0 ? (
+            <p style={{ color: "var(--ink-muted)", fontStyle: "italic", margin: "1rem 0" }}>
+              No runs recorded yet. Be the first to rank!
+            </p>
+          ) : (
+            leaderboard.map((run, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  padding: "0.8rem 1rem",
+                  background: "var(--panel-raised)",
+                  borderRadius: "10px",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <div
+                  style={{
+                    width: "28px",
+                    fontWeight: "800",
+                    color: i < 3 ? "var(--marigold)" : "var(--ink-muted)",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  #{i + 1}
+                </div>
+                <img
+                  src={run.picture || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest"}
+                  alt="Avatar"
+                  style={{ width: "34px", height: "34px", borderRadius: "50%", border: "1px solid var(--border)" }}
+                />
+                <div style={{ flex: 1, fontWeight: "700", fontSize: "1rem", color: "var(--ink)" }}>
+                  {run.name}
+                </div>
+                <div
+                  style={{
+                    fontFamily: '"JetBrains Mono", monospace',
+                    fontWeight: "800",
+                    color: "var(--lc)",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {formatSplitTime(run.timeMs)}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "var(--ink-muted)",
+                    fontWeight: "600",
+                    width: "60px",
+                    textAlign: "right",
+                  }}
+                >
+                  {run.accuracy}%
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -421,24 +546,65 @@ export default function SummaryPage() {
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="sp-actions">
-        <button
-          className="sp-btn sp-btn-pri"
-          onClick={() => navigate(`/${cityId}/${lineId}/play`)}
-        >
-          <Repeat size={18} /> Play again
-        </button>
-        <button
-          className="sp-btn sp-btn-sec"
-          onClick={() => navigate(`/lines`)}
-        >
-          Change route
-        </button>
-        <button className="sp-btn sp-btn-sec" onClick={() => navigate("/")}>
-          Home
-        </button>
-      </div>
+      {unlockedStamps.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          backgroundColor: 'var(--paper)',
+          border: '1px solid var(--border)',
+          borderRadius: '16px',
+          padding: '1.5rem',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+          zIndex: 9999,
+          animation: 'slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+          maxWidth: '350px'
+        }}>
+          <style>{`
+            @keyframes slideInUp {
+              from { transform: translateY(150%); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+          `}</style>
+          <h3 style={{ margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--marigold)' }}>
+            <Award size={20} /> New Stamps Unlocked!
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '400px', overflowY: 'auto' }}>
+            {unlockedStamps.map(id => {
+               const stamp = STAMP_CATALOG[id];
+               if (!stamp) return null;
+               return (
+                 <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--bg)', padding: '0.8rem', borderRadius: '12px' }}>
+                    <div style={{ fontSize: '2rem' }}>{stamp.icon}</div>
+                    <div>
+                      <div style={{ fontWeight: '800', color: 'var(--ink)' }}>{stamp.name}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--ink-muted)', lineHeight: '1.3', marginTop: '0.2rem' }}>{stamp.description}</div>
+                    </div>
+                 </div>
+               );
+            })}
+          </div>
+          <button 
+            onClick={() => setUnlockedStamps([])} 
+            style={{ 
+              marginTop: '1.2rem', 
+              width: '100%', 
+              padding: '0.8rem', 
+              background: 'var(--border)', 
+              border: 'none', 
+              borderRadius: '8px', 
+              color: 'var(--ink)', 
+              cursor: 'pointer', 
+              fontWeight: '700',
+              transition: 'background 0.2s',
+            }}
+            onMouseOver={(e) => e.target.style.background = 'var(--marigold)'}
+            onMouseOut={(e) => e.target.style.background = 'var(--border)'}
+          >
+            Awesome!
+          </button>
+        </div>
+      )}
     </div>
   );
 }
