@@ -5,6 +5,47 @@ import { CITY_CATALOG } from "../data/cities/index";
 import { useAuth } from "../context/AuthContext";
 import { saveGuestRun } from "../utils/guestRuns";
 import { STAMP_CATALOG } from "../data/stampCatalog";
+import { useToast } from "../context/ToastContext";
+import confetti from "canvas-confetti";
+
+// ── Animated counter hook ────────────────────────────────────────────
+function useCountUp(target, duration = 1000) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!target) return;
+    let raf;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / duration);
+      setValue(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
+}
+
+// ── Stamp unlock chime ───────────────────────────────────────────────
+function playStampChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, t + i * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.12 + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t + i * 0.12);
+      osc.stop(t + i * 0.12 + 0.4);
+    });
+  } catch (e) { /* audio not available */ }
+}
 
 export default function SummaryPage() {
   const { cityId, lineId } = useParams();
@@ -12,6 +53,8 @@ export default function SummaryPage() {
   const navigate = useNavigate();
   const { user, token, setUser } = useAuth();
   const hasSavedRef = useRef(false);
+  const toast = useToast();
+  const [isNewPB, setIsNewPB] = useState(false);
 
   const [leaderboard, setLeaderboard] = useState([]);
   const [globalRank, setGlobalRank] = useState(null);
@@ -19,6 +62,7 @@ export default function SummaryPage() {
 
   // Extract all telemetry data passed from GameView
   const {
+    runId,
     timeFormatted = "0:00.00",
     timeMs = 0,
     cpm = 0,
@@ -38,6 +82,11 @@ export default function SummaryPage() {
   // Save the run on mount (once)
   useEffect(() => {
     if (hasSavedRef.current || !timeMs) return;
+
+    // Prevent duplicate saves on page reload using sessionStorage and runId
+    if (runId && sessionStorage.getItem(`saved_run_${runId}`)) return;
+    if (runId) sessionStorage.setItem(`saved_run_${runId}`, "true");
+
     hasSavedRef.current = true;
 
     const runData = { cityId, lineId, timeMs, accuracy, cpm, mistakes: totalMistakes };
@@ -56,22 +105,50 @@ export default function SummaryPage() {
         .then((data) => {
           if (data.rank) setGlobalRank(data.rank);
           if (data.updatedBests) {
+            // Check if this run IS the new PB
+            const best = user.bests?.find(b => b.cityId === cityId && b.routeId === lineId);
+            if (!best || timeMs <= best.timeMs) {
+              setIsNewPB(true);
+              confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+              toast.success("🎉 New Personal Best!");
+            }
             setUser({ ...user, bests: data.updatedBests });
           }
           if (data.newStampsEarned && data.newStampsEarned.length > 0) {
             setUnlockedStamps(data.newStampsEarned);
+            playStampChime();
           }
+          toast.success("Run saved successfully!");
           // Refresh leaderboard just in case this run made the top 10
           return fetch(`http://localhost:8000/api/runs/leaderboard/${cityId}/${lineId}`);
         })
         .then((res) => res.json())
         .then((data) => setLeaderboard(data))
-        .catch((err) => console.error("Failed to save run:", err));
+        .catch((err) => {
+          console.error("Failed to save run:", err);
+          toast.error("Failed to save run. Check your connection.");
+        });
     } else {
       // Guest — save to localStorage
       saveGuestRun(runData);
+      toast.info("Run saved locally. Log in to sync!");
     }
   }, []);
+
+  // Animated counters for metrics
+  const animWpm = useCountUp(Math.round(cpm / 5), 1200);
+  const animCpm = useCountUp(cpm, 1200);
+  const animAcc = useCountUp(accuracy, 1000);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "r" || e.key === "R") navigate(`/${cityId}/${lineId}/play`);
+      if (e.key === "Escape") navigate("/");
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [cityId, lineId, navigate]);
 
   const wpm = Math.round(cpm / 5);
   const city = CITY_CATALOG[cityId];
@@ -368,22 +445,25 @@ export default function SummaryPage() {
           <div className="sp-time-col">
             <div className="sp-time-lbl">Total Time</div>
             <div className="sp-time-val">{timeFormatted}</div>
-            <div className="sp-pb">Personal best {pbFormatted}</div>
+            <div className="sp-pb">
+              {isNewPB && <span style={{ color: 'var(--marigold)', fontWeight: 800 }}>🏆 NEW </span>}
+              Personal best {pbFormatted}
+            </div>
           </div>
         </div>
 
         <div className="sp-metrics">
           <div>
             <div className="sp-metric-lbl">WPM</div>
-            <div className="sp-metric-val">{wpm}</div>
+            <div className="sp-metric-val">{animWpm}</div>
           </div>
           <div>
             <div className="sp-metric-lbl">CPM</div>
-            <div className="sp-metric-val">{cpm}</div>
+            <div className="sp-metric-val">{animCpm}</div>
           </div>
           <div>
             <div className="sp-metric-lbl">Accuracy</div>
-            <div className="sp-metric-val">{accuracy}%</div>
+            <div className="sp-metric-val">{animAcc}%</div>
           </div>
           <div>
             <div className="sp-metric-lbl">Mistakes</div>
@@ -401,6 +481,7 @@ export default function SummaryPage() {
           onClick={() => navigate(`/${cityId}/${lineId}/play`)}
         >
           <Repeat size={18} /> Play again
+          <span style={{ fontSize: '0.65rem', opacity: 0.6, marginLeft: '0.3rem', fontWeight: 500, border: '1px solid rgba(0,0,0,0.2)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>R</span>
         </button>
         <button
           className="sp-btn sp-btn-sec"
@@ -410,6 +491,7 @@ export default function SummaryPage() {
         </button>
         <button className="sp-btn sp-btn-sec" onClick={() => navigate("/")}>
           Home
+          <span style={{ fontSize: '0.65rem', opacity: 0.5, marginLeft: '0.3rem', fontWeight: 500, border: '1px solid var(--border)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>Esc</span>
         </button>
       </div>
 

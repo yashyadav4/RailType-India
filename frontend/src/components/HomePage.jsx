@@ -745,16 +745,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer className="hp-footer">
-        <p className="hp-footer-copy">
-          Fan-made typing game · Station names are public facts · Not affiliated
-          with any metro or railway operator.
-        </p>
-        <div className="hp-footer-tag">
-          <Star size={12} fill="currentColor" /> RAILTYPE.INDIA
-        </div>
-      </footer>
+
     </div>
   );
 }

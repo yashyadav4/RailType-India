@@ -272,8 +272,11 @@ export default function GameView() {
           )
         : 100;
 
+    const runId = crypto.randomUUID();
+
     navigate(`/${cityId}/${lineId}/summary`, {
       state: {
+        runId,
         timeFormatted: formatTime(finalTimeMs),
         timeMs: finalTimeMs,
         cpm: finalCpm,

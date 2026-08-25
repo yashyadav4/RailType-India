@@ -98,8 +98,49 @@ export default function ProfileDashboard() {
 
   if (loading) {
     return (
-      <div style={{ color: "var(--ink)", padding: "4rem", textAlign: "center" }}>
-        Loading Profile...
+      <div className="pd-layout">
+        <style>{`
+          /* Reusing layout classes for skeleton */
+          .pd-layout { height: 100vh; background-color: var(--void); display: flex; overflow: hidden; }
+          .pd-sidebar { width: 280px; flex-shrink: 0; border-right: 1px solid var(--border); background-color: var(--panel); padding: 2rem 1.5rem; display: flex; flex-direction: column; }
+          .pd-main { flex: 1; padding: 4rem; overflow-y: auto; }
+          @media (max-width: 768px) {
+            .pd-layout { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+            .pd-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 1.5rem; }
+            .pd-main { padding: 1.5rem; }
+          }
+          /* Shimmer animation */
+          @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+          }
+          .skeleton-box {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(to right, color-mix(in srgb, var(--panel) 50%, var(--void)), color-mix(in srgb, var(--panel) 100%, var(--border)), color-mix(in srgb, var(--panel) 50%, var(--void)));
+            background-size: 1000px 100%;
+            border-radius: 12px;
+          }
+        `}</style>
+        <aside className="pd-sidebar">
+           <div className="skeleton-box" style={{ width: '40%', height: '20px', marginBottom: '2.5rem' }} />
+           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '3rem' }}>
+             <div className="skeleton-box" style={{ width: '50px', height: '50px', borderRadius: '14px' }} />
+             <div style={{ flex: 1 }}>
+               <div className="skeleton-box" style={{ width: '70%', height: '20px', marginBottom: '0.5rem' }} />
+               <div className="skeleton-box" style={{ width: '90%', height: '14px' }} />
+             </div>
+           </div>
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+             {[...Array(5)].map((_, i) => <div key={i} className="skeleton-box" style={{ width: '100%', height: '44px', borderRadius: '8px' }} />)}
+           </div>
+        </aside>
+        <main className="pd-main" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+          <div className="skeleton-box" style={{ width: '30%', height: '40px' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+             {[...Array(4)].map((_, i) => <div key={i} className="skeleton-box" style={{ height: '140px', borderRadius: '16px' }} />)}
+          </div>
+          <div className="skeleton-box" style={{ width: '100%', height: '300px', borderRadius: '16px' }} />
+        </main>
       </div>
     );
   }
@@ -155,15 +196,7 @@ export default function ProfileDashboard() {
 
   // ── Render ───────────────────────────────────────────────────────
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "var(--void)",
-        color: "var(--ink)",
-        fontFamily: "inherit",
-        display: "flex",
-      }}
-    >
+    <div className="pd-layout">
       <style>{`
         .pd-run-row {
           display: grid;
@@ -239,19 +272,75 @@ export default function ProfileDashboard() {
         .pd-input:focus {
           border-color: var(--marigold);
         }
+        
+        /* Layout Classes */
+        .pd-layout {
+          height: 100vh;
+          background-color: var(--void);
+          color: var(--ink);
+          font-family: inherit;
+          display: flex;
+          overflow: hidden;
+        }
+        .pd-sidebar {
+          width: 280px;
+          flex-shrink: 0;
+          border-right: 1px solid var(--border);
+          background-color: var(--panel);
+          padding: 2rem 1.5rem;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+        .pd-main {
+          flex: 1;
+          padding: 4rem;
+          overflow-y: auto;
+        }
+        .pd-sidebar-tabs {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          flex: 1;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+          .pd-layout {
+            flex-direction: column;
+            height: auto;
+            min-height: 100vh;
+            overflow: visible;
+          }
+          .pd-sidebar {
+            width: 100%;
+            height: auto;
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem;
+          }
+          .pd-main {
+            padding: 1.5rem;
+            overflow-y: visible;
+          }
+          .pd-sidebar-tabs {
+            flex-direction: row;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+          }
+          .pd-sidebar-tabs::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+          }
+          .pd-sidebar-tabs > button {
+            white-space: nowrap;
+          }
+        }
       `}</style>
 
       {/* ── SIDEBAR ──────────────────────────────────────────────── */}
-      <aside
-        style={{
-          width: "280px",
-          borderRight: "1px solid var(--border)",
-          backgroundColor: "var(--panel)",
-          padding: "2rem 1.5rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <aside className="pd-sidebar">
         <button
           onClick={() => navigate("/")}
           style={{
@@ -297,14 +386,7 @@ export default function ProfileDashboard() {
           </div>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5rem",
-            flex: 1,
-          }}
-        >
+        <div className="pd-sidebar-tabs">
           <TabButton
             icon={<LayoutDashboard size={18} />}
             label="Overview"
@@ -339,7 +421,7 @@ export default function ProfileDashboard() {
       </aside>
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────── */}
-      <main style={{ flex: 1, padding: "4rem", overflowY: "auto" }}>
+      <main className="pd-main">
 
         {/* ═══════════ OVERVIEW TAB ═══════════ */}
         {activeTab === "overview" && (
