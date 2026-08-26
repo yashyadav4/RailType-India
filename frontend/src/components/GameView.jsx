@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { loadRouteData } from "../data/cities/index";
+import { Pause, Play, X } from "lucide-react";
 import MapView from "./MapView";
 
 // ── Subtle Sound Engine (Web Audio API) ─────────────────────────────
@@ -142,13 +143,14 @@ export default function GameView() {
   const navigate = useNavigate();
 
   const [routeData, setRouteData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Gameplay States (Only things that actually change the layout)
+  // Gameplay States
+  const [gameState, setGameState] = useState("loading"); // loading, countdown, playing, paused, completed
+  const [finalTimeMs, setFinalTimeMs] = useState(0);
+  const [countdownNum, setCountdownNum] = useState(3);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [userInput, setUserInput] = useState("");
   const [shake, setShake] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   // Core Telemetry Refs (Invisible, no re-renders)
   const startTimeRef = useRef(null);
@@ -156,6 +158,8 @@ export default function GameView() {
   const correctKeystrokesRef = useRef(0);
   const isCompletedRef = useRef(false);
   const elapsedMsRef = useRef(0); // Holds final time for the summary page
+  const totalPausedMsRef = useRef(0);
+  const pauseStartTimeRef = useRef(null);
 
   // Station Split Refs
   const splitsRef = useRef([]);
@@ -174,13 +178,12 @@ export default function GameView() {
   useEffect(() => {
     let isMounted = true;
     async function fetchRoute() {
-      setLoading(true);
+      setGameState("loading");
       const data = await loadRouteData(cityId, lineId);
       if (isMounted && data) {
         setRouteData(data);
         setCurrentIndex(1);
         setUserInput("");
-        setIsCompleted(false);
 
         // Reset all refs
         isCompletedRef.current = false;
@@ -188,6 +191,8 @@ export default function GameView() {
         totalKeystrokesRef.current = 0;
         correctKeystrokesRef.current = 0;
         elapsedMsRef.current = 0;
+        totalPausedMsRef.current = 0;
+        pauseStartTimeRef.current = null;
         splitsRef.current = [];
         currentStationStartTimeRef.current = null;
         currentStationMistakesRef.current = 0;
@@ -198,7 +203,11 @@ export default function GameView() {
         if (cpmDivRef.current) cpmDivRef.current.innerText = "0";
         if (accuracyDivRef.current) accuracyDivRef.current.innerText = "100.0%";
 
-        setLoading(false);
+        setGameState("countdown");
+        setCountdownNum(3);
+      } else if (isMounted && !data) {
+        // Fallback if the route data fails to load (e.g. invalid URL)
+        navigate("/lines");
       }
     }
     fetchRoute();
@@ -213,20 +222,50 @@ export default function GameView() {
 
   // Handle the automatic transition to the summary page
   useEffect(() => {
-    if (isCompleted) {
+    if (gameState === "completed") {
       const transitionTimer = setTimeout(() => {
         navigateToSummary();
       }, 3000);
       return () => clearTimeout(transitionTimer);
     }
-  }, [isCompleted]);
+  }, [gameState]);
+
+  // Countdown Logic
+  useEffect(() => {
+    if (gameState === "countdown") {
+      if (countdownNum > 0) {
+        const timer = setTimeout(() => setCountdownNum((n) => n - 1), 1000);
+        return () => clearTimeout(timer);
+      } else {
+        setGameState("playing");
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
+    }
+  }, [gameState, countdownNum]);
+
+  // Pause Logic
+  const togglePause = () => {
+    if (gameState === "playing") {
+      setGameState("paused");
+      pauseStartTimeRef.current = Date.now();
+      cancelAnimationFrame(animationFrameRef.current);
+    } else if (gameState === "paused") {
+      setGameState("playing");
+      totalPausedMsRef.current += Date.now() - pauseStartTimeRef.current;
+      pauseStartTimeRef.current = null;
+      if (startTimeRef.current && !isCompletedRef.current) {
+        animationFrameRef.current = requestAnimationFrame(updateTelemetry);
+      }
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  };
 
   // THE ENGINE: Runs at native 60fps natively synced with your monitor
   const updateTelemetry = () => {
     if (!startTimeRef.current || isCompletedRef.current) return;
 
     const now = Date.now();
-    const diff = now - startTimeRef.current;
+    const diff = now - startTimeRef.current - totalPausedMsRef.current;
     elapsedMsRef.current = diff; // Save silently for the end
 
     // 1. Direct DOM Update for Timer
@@ -257,10 +296,10 @@ export default function GameView() {
     animationFrameRef.current = requestAnimationFrame(updateTelemetry);
   };
 
-  const navigateToSummary = () => {
+  function navigateToSummary() {
     // Calculate final stats one last time to pass to the Summary Page
     const finalTimeMs = elapsedMsRef.current;
-    const finalElapsedMinutes = finalTimeMs / 1000 / 60;
+    const finalElapsedMinutes = finalTimeMs / 60000;
     const finalCpm =
       finalElapsedMinutes > 0
         ? Math.round(correctKeystrokesRef.current / finalElapsedMinutes)
@@ -285,17 +324,17 @@ export default function GameView() {
         splits: splitsRef.current,
       },
     });
-  };
+  }
 
-  const formatTime = (ms) => {
+  function formatTime(ms) {
     const totalSecs = Math.floor(ms / 1000);
     const mins = Math.floor(totalSecs / 60);
     const secs = totalSecs % 60;
     const millis = Math.floor((ms % 1000) / 10);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}.${millis < 10 ? "0" : ""}${millis}`;
-  };
+  }
 
-  if (loading || !routeData) {
+  if (gameState === "loading" || !routeData) {
     return (
       <div
         style={{
@@ -323,7 +362,7 @@ export default function GameView() {
       : "TERMINUS";
 
   const handleInputChange = (e) => {
-    if (isCompleted) return;
+    if (gameState !== "playing") return;
 
     const value = e.target.value;
     const now = Date.now();
@@ -335,10 +374,8 @@ export default function GameView() {
       animationFrameRef.current = requestAnimationFrame(updateTelemetry);
     }
 
-    if (value.length < userInput.length) {
-      setUserInput(value);
-      return;
-    }
+    // Block backspace/delete — only allow forward typing
+    if (value.length <= userInput.length) return;
 
     totalKeystrokesRef.current += 1;
     const typedChar = value[value.length - 1];
@@ -382,7 +419,8 @@ export default function GameView() {
         // Game Over! Stop the loop.
         isCompletedRef.current = true;
         cancelAnimationFrame(animationFrameRef.current);
-        setIsCompleted(true);
+        setFinalTimeMs(elapsedMsRef.current);
+        setGameState("completed");
       }
     }
   };
@@ -417,14 +455,15 @@ export default function GameView() {
   return (
     <div
       style={{
-        position: "relative",
-        width: "100vw",
-        height: "100vh",
+        position: "fixed",
+        inset: 0,
         overflow: "hidden",
         fontFamily: "inherit",
         backgroundColor: "var(--void)",
       }}
-      onClick={() => inputRef.current?.focus()}
+      onClick={() => {
+        if (gameState === "playing") inputRef.current?.focus();
+      }}
     >
       <style>{`
         @keyframes shake {
@@ -447,8 +486,92 @@ export default function GameView() {
         targetLength={targetStation.length}
       />
 
+      {/* Countdown Overlay */}
+      {gameState === "countdown" && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            zIndex: 100,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            key={countdownNum}
+            style={{
+              fontSize: "8rem",
+              fontWeight: "900",
+              color: "#F59E0B",
+              animation: "popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            }}
+          >
+            {countdownNum > 0 ? countdownNum : "GO!"}
+          </div>
+          <div
+            style={{
+              marginTop: "2rem",
+              fontSize: "1.5rem",
+              fontWeight: "700",
+              color: "#FFFFFF",
+              letterSpacing: "2px",
+            }}
+          >
+            Keep your fingers on the keyboard...
+          </div>
+        </div>
+      )}
+
+      {/* Pause Overlay */}
+      {gameState === "paused" && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "color-mix(in srgb, var(--void) 70%, transparent)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "var(--panel)",
+              border: "1px solid var(--border)",
+              borderRadius: "20px",
+              padding: "4rem 5rem",
+              textAlign: "center",
+              boxShadow: "var(--shadow-md)",
+            }}
+          >
+            <h2 style={{ fontSize: "2.5rem", margin: "0 0 2rem", color: "var(--ink)" }}>Paused</h2>
+            <button
+              onClick={togglePause}
+              style={{
+                backgroundColor: "var(--marigold)",
+                color: "var(--marigold-ink)",
+                border: "none",
+                borderRadius: "12px",
+                padding: "1rem 3rem",
+                fontSize: "1.2rem",
+                fontWeight: "700",
+                cursor: "pointer",
+              }}
+            >
+              Resume Journey
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Completion Overlay */}
-      {isCompleted && (
+      {gameState === "completed" && (
         <div
           onClick={navigateToSummary}
           style={{
@@ -507,8 +630,7 @@ export default function GameView() {
                 letterSpacing: "2px",
               }}
             >
-              {/* Force a final read from the ref to display on the overlay */}
-              {formatTime(elapsedMsRef.current)}
+              {formatTime(finalTimeMs)}
             </div>
           </div>
         </div>
@@ -526,8 +648,10 @@ export default function GameView() {
           justifyContent: "space-between",
           alignItems: "center",
           padding: "1.2rem 2.5rem",
-          background:
-            "linear-gradient(to bottom, var(--void), transparent)",
+          background: "color-mix(in srgb, var(--void) 40%, transparent)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: "1px solid color-mix(in srgb, var(--border) 50%, transparent)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -609,7 +733,7 @@ export default function GameView() {
               100.0%
             </span>
           </div>
-          <div style={{ textAlign: "right" }}>
+          <div style={{ textAlign: "right", marginRight: "1rem" }}>
             <span
               style={{
                 fontSize: "0.75rem",
@@ -625,6 +749,57 @@ export default function GameView() {
             >
               0
             </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "0.8rem", borderLeft: "1px solid var(--border)", paddingLeft: "1.5rem" }}>
+            <button
+              onClick={togglePause}
+              style={{
+                background: "transparent",
+                border: "1px solid var(--border)",
+                borderRadius: "8px",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "var(--ink)",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "var(--panel-raised)")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+              title="Pause"
+            >
+              {gameState === "paused" ? <Play size={20} /> : <Pause size={20} />}
+            </button>
+            <button
+              onClick={() => navigate("/lines")}
+              style={{
+                background: "transparent",
+                border: "1px solid var(--border)",
+                borderRadius: "8px",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "var(--ink-muted)",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "var(--panel-raised)";
+                e.currentTarget.style.color = "var(--ink)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--ink-muted)";
+              }}
+              title="Quit Run"
+            >
+              <X size={20} />
+            </button>
           </div>
         </div>
       </div>

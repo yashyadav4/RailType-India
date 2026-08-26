@@ -234,19 +234,32 @@ function FeaturedCard({ cityId, lineId }) {
 // ---------------------------------------------------------------------------
 export default function HomePage() {
   const navigate = useNavigate();
+
+  // Basic derived stats
   const cities = Object.values(CITY_CATALOG);
   const totalLines = cities.reduce((acc, c) => acc + c.lines.length, 0);
   const totalStations = cities.reduce(
-    (acc, c) => acc + c.lines.reduce((s, l) => s + l.stations, 0),
+    (acc, c) => acc + c.lines.reduce((lacc, l) => lacc + l.stations, 0),
     0
   );
 
+  const [totalRuns, setTotalRuns] = useState(0);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/runs/stats/total")
+      .then(res => res.json())
+      .then(data => setTotalRuns(data.totalRuns || 0))
+      .catch(err => console.error(err));
+  }, []);
+
+  const citiesCount = useCountUp(cities.length);
   const linesCount = useCountUp(totalLines);
   const stationsCount = useCountUp(totalStations);
-  const citiesCount = useCountUp(cities.length);
+  const runsCount = useCountUp(totalRuns);
 
-  const featuredCity = cities[0];
-  const featuredLine = featuredCity?.lines?.[0];
+  // Pick a featured random line for the CTA
+  const featuredCity = CITY_CATALOG["delhi"];
+  const featuredLine = featuredCity?.lines[1];
 
   return (
     <div className="hp">
@@ -652,8 +665,13 @@ export default function HomePage() {
           </div>
           <div className="hp-stat-div" />
           <div>
-            <div className="hp-stat-val">{stationsCount}+</div>
+            <div className="hp-stat-val">{stationsCount}</div>
             <div className="hp-stat-lbl">Stations</div>
+          </div>
+          <div className="hp-stat-div" />
+          <div>
+            <div className="hp-stat-val" style={{ color: 'var(--marigold)' }}>{runsCount}</div>
+            <div className="hp-stat-lbl">Runs Completed</div>
           </div>
         </div>
       </section>

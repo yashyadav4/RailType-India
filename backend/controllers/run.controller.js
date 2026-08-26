@@ -2,6 +2,17 @@ import Run from "../models/run.model.js";
 import User from "../models/user.model.js";
 import { evaluateStamps } from "../utils/stampEvaluator.js";
 
+// GET /api/runs/stats/total — Get total runs played globally
+export const getTotalRuns = async (req, res) => {
+  try {
+    const totalRuns = await Run.estimatedDocumentCount();
+    res.json({ totalRuns });
+  } catch (error) {
+    console.error("Error getting total runs:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // POST /api/runs — Save a single run (authenticated)
 export const saveRun = async (req, res) => {
   try {
@@ -76,8 +87,11 @@ export const saveRun = async (req, res) => {
       // Evaluate new stamps
       newStampsEarned = evaluateStamps(user, { timeMs, accuracy, cpm, mistakes: mistakes || 0 }, globalRank, routeLength);
       if (newStampsEarned.length > 0) {
-        if (!user.stamps) user.stamps = [];
-        user.stamps.push(...newStampsEarned);
+        let currentStamps = Array.isArray(user.stamps) ? [...user.stamps] : [];
+        // Filter out any legacy integers that might have been casted
+        currentStamps = currentStamps.filter(s => typeof s === 'string');
+        user.stamps = [...currentStamps, ...newStampsEarned];
+        user.markModified('stamps');
       }
 
       await user.save();

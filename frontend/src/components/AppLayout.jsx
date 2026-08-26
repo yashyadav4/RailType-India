@@ -111,7 +111,7 @@ export default function AppLayout() {
       <Navbar />
 
       <div style={{ paddingTop: isPlaying ? "0" : "64px" }}>
-        <div key={location.pathname} className="page-transition">
+        <div key={location.pathname} className={isPlaying ? undefined : "page-transition"}>
           <Outlet />
         </div>
         {showFooter && <Footer />}
