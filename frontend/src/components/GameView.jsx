@@ -484,6 +484,7 @@ export default function GameView() {
         activeIndex={currentIndex}
         userInputLength={userInput.length}
         targetLength={targetStation.length}
+        lineColor={routeData.color}
       />
 
       {/* Countdown Overlay */}
