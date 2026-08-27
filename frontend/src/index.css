@@ -1,34 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
 
 /* ---- Global token definitions ---- */
-:root, [data-theme="dark"] {
-  --void:        #120f0c;
-  --panel:       #1c1712;
-  --panel-raised:#251e16;
-  --border:      #382c1e;
-  --ink:         #f3ede2;
-  --ink-muted:   #a89c89;
-  --marigold:    #f2a900;
+:root,
+[data-theme="dark"] {
+  --void: #120f0c;
+  --panel: #1c1712;
+  --panel-raised: #251e16;
+  --border: #382c1e;
+  --ink: #f3ede2;
+  --ink-muted: #a89c89;
+  --marigold: #f2a900;
   --marigold-dk: #c98b00;
-  --marigold-ink:#14100b;
-  --teal:        #2dd4bf;
-  --shadow-sm:   0 4px 16px rgba(0,0,0,.4);
-  --shadow-md:   0 16px 40px rgba(0,0,0,.55);
+  --marigold-ink: #14100b;
+  --teal: #2dd4bf;
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, .4);
+  --shadow-md: 0 16px 40px rgba(0, 0, 0, .55);
 }
 
 [data-theme="light"] {
-  --void:        #eef1ee;
-  --panel:       #ffffff;
-  --panel-raised:#f6f5f0;
-  --border:      #dcdad0;
-  --ink:         #17130f;
-  --ink-muted:   #6b6459;
-  --marigold:    #b3790a;
+  --void: #eef1ee;
+  --panel: #ffffff;
+  --panel-raised: #f6f5f0;
+  --border: #dcdad0;
+  --ink: #17130f;
+  --ink-muted: #6b6459;
+  --marigold: #b3790a;
   --marigold-dk: #8a5c06;
-  --marigold-ink:#ffffff;
-  --teal:        #0e8a79;
-  --shadow-sm:   0 4px 16px rgba(23,19,15,.10);
-  --shadow-md:   0 16px 40px rgba(23,19,15,.16);
+  --marigold-ink: #ffffff;
+  --teal: #0e8a79;
+  --shadow-sm: 0 4px 16px rgba(23, 19, 15, .10);
+  --shadow-md: 0 16px 40px rgba(23, 19, 15, .16);
 }
 
 /* ---- Global baseline & Cursor ---- */
@@ -46,7 +47,9 @@ body {
   transition: background .25s, color .25s;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -57,12 +60,17 @@ body {
 }
 
 /* ---- Smooth dark/light mode transitions ---- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     transition: none !important;
     animation: none !important;
   }

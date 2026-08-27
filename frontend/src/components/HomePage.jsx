@@ -246,7 +246,7 @@ export default function HomePage() {
   const [totalRuns, setTotalRuns] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/runs/stats/total")
+    fetch("/api/runs/stats/total")
       .then(res => res.json())
       .then(data => setTotalRuns(data.totalRuns || 0))
       .catch(err => console.error(err));

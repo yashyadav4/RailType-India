@@ -260,6 +260,25 @@ export default function GameView() {
     }
   };
 
+  // Auto-pause when leaving tab/window
+  useEffect(() => {
+    const handleFocusLoss = () => {
+      if ((document.hidden || !document.hasFocus()) && gameState === "playing") {
+        setGameState("paused");
+        pauseStartTimeRef.current = Date.now();
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+
+    window.addEventListener("blur", handleFocusLoss);
+    document.addEventListener("visibilitychange", handleFocusLoss);
+
+    return () => {
+      window.removeEventListener("blur", handleFocusLoss);
+      document.removeEventListener("visibilitychange", handleFocusLoss);
+    };
+  }, [gameState]);
+
   // THE ENGINE: Runs at native 60fps natively synced with your monitor
   const updateTelemetry = () => {
     if (!startTimeRef.current || isCompletedRef.current) return;

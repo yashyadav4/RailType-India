@@ -25,7 +25,7 @@ export default function LineInfo() {
     fetchData();
 
     // Fetch top 3 for the mini leaderboard
-    fetch(`http://localhost:8000/api/runs/leaderboard/${cityId}/${lineId}`)
+    fetch(`/api/runs/leaderboard/${cityId}/${lineId}`)
       .then(r => r.json())
       .then(data => setTopPlayers(Array.isArray(data) ? data.slice(0, 3) : []))
       .catch(() => {});

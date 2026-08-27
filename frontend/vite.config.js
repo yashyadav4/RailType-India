@@ -5,8 +5,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
+    allowedHosts: ["barber-uneaten-dinner.ngrok-free.dev"],
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
+    proxy: {
+      "/api": "http://localhost:8000",
     },
   },
 });

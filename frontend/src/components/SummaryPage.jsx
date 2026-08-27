@@ -73,7 +73,7 @@ export default function SummaryPage() {
 
   // Fetch leaderboard on mount
   useEffect(() => {
-    fetch(`http://localhost:8000/api/runs/leaderboard/${cityId}/${lineId}`)
+    fetch(`/api/runs/leaderboard/${cityId}/${lineId}`)
       .then((res) => res.json())
       .then((data) => setLeaderboard(data))
       .catch((err) => console.error("Failed to load leaderboard:", err));
@@ -93,7 +93,7 @@ export default function SummaryPage() {
 
     if (user && token) {
       // Logged in — save to backend
-      fetch("http://localhost:8000/api/runs", {
+      fetch("/api/runs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export default function SummaryPage() {
           }
           toast.success("Run saved successfully!");
           // Refresh leaderboard just in case this run made the top 10
-          return fetch(`http://localhost:8000/api/runs/leaderboard/${cityId}/${lineId}`);
+          return fetch(`/api/runs/leaderboard/${cityId}/${lineId}`);
         })
         .then((res) => res.json())
         .then((data) => setLeaderboard(data))
@@ -205,6 +205,17 @@ export default function SummaryPage() {
           max-width: 900px;
           margin: 0 auto;
           padding: 3rem 2.5rem 5rem;
+        }
+
+        @keyframes stampHit {
+          0% { transform: scale(3) rotate(calc(var(--rot) - 15deg)); opacity: 0; filter: blur(4px); }
+          30% { transform: scale(0.9) rotate(calc(var(--rot) + 5deg)); opacity: 1; filter: blur(0px); }
+          50% { transform: scale(1.05) rotate(var(--rot)); opacity: 1; }
+          100% { transform: scale(1) rotate(var(--rot)); opacity: 0.95; }
+        }
+        .sp-stamp-anim {
+          animation: stampHit 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          opacity: 0;
         }
 
         /* Certificate Header */
@@ -426,7 +437,44 @@ export default function SummaryPage() {
       </div>
 
       {/* Main Score Card */}
-      <div className="sp-card">
+      <div className="sp-card" style={{ position: "relative" }}>
+        {unlockedStamps.map((id, index) => {
+          const stamp = STAMP_CATALOG[id];
+          if (!stamp) return null;
+          return (
+            <div
+              key={id}
+              className="sp-stamp-anim"
+              style={{
+                "--rot": `${15 + index * 10}deg`,
+                position: "absolute",
+                top: `${-15 + index * 15}px`,
+                right: `${15 + index * 15}px`,
+                animationDelay: `${index * 0.4}s`,
+                zIndex: 10,
+              }}
+            >
+              <div style={{
+                color: "var(--marigold)",
+                border: "4px solid var(--marigold)",
+                borderRadius: "12px",
+                padding: "0.6rem 1rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.8rem",
+                pointerEvents: "none",
+                background: "color-mix(in srgb, var(--panel) 90%, transparent)",
+                backdropFilter: "blur(4px)",
+              }}>
+                <span style={{ fontSize: "2.5rem" }}>{stamp.icon}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                  <span style={{ fontWeight: 900, textTransform: "uppercase", fontSize: "1.3rem", letterSpacing: "1px", lineHeight: 1 }}>{stamp.name}</span>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px", opacity: 0.8, lineHeight: 1 }}>Unlocked!</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
         <div className="sp-card-strip" />
         <div className="sp-score-flex">
           <div className="sp-rank-box">
@@ -628,65 +676,7 @@ export default function SummaryPage() {
         </div>
       </div>
 
-      {unlockedStamps.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
-          backgroundColor: 'var(--paper)',
-          border: '1px solid var(--border)',
-          borderRadius: '16px',
-          padding: '1.5rem',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-          zIndex: 9999,
-          animation: 'slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-          maxWidth: '350px'
-        }}>
-          <style>{`
-            @keyframes slideInUp {
-              from { transform: translateY(150%); opacity: 0; }
-              to { transform: translateY(0); opacity: 1; }
-            }
-          `}</style>
-          <h3 style={{ margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--marigold)' }}>
-            <Award size={20} /> New Stamps Unlocked!
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '400px', overflowY: 'auto' }}>
-            {unlockedStamps.map(id => {
-               const stamp = STAMP_CATALOG[id];
-               if (!stamp) return null;
-               return (
-                 <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--bg)', padding: '0.8rem', borderRadius: '12px' }}>
-                    <div style={{ fontSize: '2rem' }}>{stamp.icon}</div>
-                    <div>
-                      <div style={{ fontWeight: '800', color: 'var(--ink)' }}>{stamp.name}</div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--ink-muted)', lineHeight: '1.3', marginTop: '0.2rem' }}>{stamp.description}</div>
-                    </div>
-                 </div>
-               );
-            })}
-          </div>
-          <button 
-            onClick={() => setUnlockedStamps([])} 
-            style={{ 
-              marginTop: '1.2rem', 
-              width: '100%', 
-              padding: '0.8rem', 
-              background: 'var(--border)', 
-              border: 'none', 
-              borderRadius: '8px', 
-              color: 'var(--ink)', 
-              cursor: 'pointer', 
-              fontWeight: '700',
-              transition: 'background 0.2s',
-            }}
-            onMouseOver={(e) => e.target.style.background = 'var(--marigold)'}
-            onMouseOut={(e) => e.target.style.background = 'var(--border)'}
-          >
-            Awesome!
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }

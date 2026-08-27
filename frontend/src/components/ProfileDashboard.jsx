@@ -18,7 +18,7 @@ import { useAuth } from "../context/AuthContext";
 import { CITY_CATALOG } from "../data/cities/index";
 import { STAMP_CATALOG } from "../data/stampCatalog";
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "/api";
 
 // ── Helpers ──────────────────────────────────────────────────────────
 function formatTime(ms) {

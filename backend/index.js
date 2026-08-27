@@ -21,6 +21,10 @@ app.use(cors(corsOptions));
 app.use("/api/users", userRoutes);
 app.use("/api/runs", runRoutes);
 
+app.get("/", (req, res) => {
+  return res.status(200).send("API is running!");
+});
+
 app.get("/home", (req, res) => {
   return res.status(200).json({
     message: "from the home page",

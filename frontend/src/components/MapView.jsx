@@ -5,7 +5,6 @@ import {
   Marker,
   Polyline,
   useMap,
-  ZoomControl,
 } from "react-leaflet";
 import L from "leaflet";
 
@@ -136,7 +135,7 @@ function ZoomButtons({ zoomIn, zoomOut }) {
       ))}
     </div>
   );
-
+}
 
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -144,16 +143,21 @@ function ZoomButtons({ zoomIn, zoomOut }) {
 // ═══════════════════════════════════════════════════════════════════════
 
 function SchematicMap({ stations, activeIndex, userInputLength, targetLength, lineColor }) {
-  const W = 1000;
-  const H = 500;
-  const PAD = 100;
+  const VIEW_W = 1000;
+  const VIEW_H = 500;
+
+  // Dynamically increase the internal mapping canvas to spread out points geographically
+  const mapSize = Math.max(3000, stations.length * 150);
+  const MAP_W = mapSize;
+  const MAP_H = mapSize;
+  const PAD = 300;
 
   // Zoom logic
   const [zoom, setZoom] = useState(1);
   const MIN_ZOOM = 0.5;
   const MAX_ZOOM = 3;
 
-  const points = useMemo(() => geoToScreen(stations, W, H, PAD), [stations]);
+  const points = useMemo(() => geoToScreen(stations, MAP_W, MAP_H, PAD), [stations, MAP_W, MAP_H]);
   const progress = Math.min(userInputLength / Math.max(targetLength, 1), 1);
   const prevIdx = Math.max(activeIndex - 1, 0);
 
@@ -176,15 +180,14 @@ function SchematicMap({ stations, activeIndex, userInputLength, targetLength, li
 
   if (points.length === 0) return null;
 
-  // Calculate translation for smooth camera follow. 
-  // Train is pinned to center-X and 40% from top-Y.
-  const tx = W / 2 - trainPos.x * zoom;
-  const ty = H * 0.4 - trainPos.y * zoom;
+  // Calculate translation for smooth camera follow using VIEW_W and VIEW_H
+  const tx = VIEW_W / 2 - trainPos.x * zoom;
+  const ty = VIEW_H * 0.4 - trainPos.y * zoom;
 
   return (
     <>
       <svg
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         style={{ width: "100%", height: "100%", display: "block" }}
       >
@@ -212,7 +215,7 @@ function SchematicMap({ stations, activeIndex, userInputLength, targetLength, li
           <rect x={-5000} y={-5000} width={10000} height={10000} fill="url(#grid)" />
 
           {/* Decorative transit lines (spaghetti) */}
-          <g opacity="0.1" fill="none" stroke="var(--ink)" strokeWidth="3">
+          <g opacity="0.1" fill="none" stroke="var(--ink)" strokeWidth="3" transform={`scale(${MAP_W / 1000})`}>
             <path d="M-500,200 Q0,800 1500,300 T2500,100" />
             <path d="M-200,-100 Q400,200 600,900 T1200,1500" />
             <path d="M100,-400 Q200,500 900,400 T1800,-200" />
@@ -310,9 +313,9 @@ function CustomLeafletZoom() {
   return <ZoomButtons zoomIn={zoomIn} zoomOut={zoomOut} />;
 }
 
-function createStationIcon(isCompleted) {
-  const c = isCompleted ? "#16a34a" : "#334155";
-  const s = isCompleted ? "rgba(22,163,74,0.6)" : "rgba(0,0,0,0.4)";
+function createStationIcon(isCompleted, lineColor) {
+  const c = isCompleted ? (lineColor || "#16a34a") : "#334155";
+  const s = isCompleted ? (lineColor ? `${lineColor}99` : "rgba(22,163,74,0.6)") : "rgba(0,0,0,0.4)";
   return L.divIcon({
     html: `<div style="width:16px;height:16px;border-radius:50%;background:${c};border:2px solid #fff;box-shadow:0 0 8px ${s}"><div style="width:4px;height:4px;border-radius:50%;background:#fff;margin:4px auto"></div></div>`,
     className: "custom-station-pin",
@@ -321,14 +324,16 @@ function createStationIcon(isCompleted) {
   });
 }
 
-const TRAIN_ICON = L.divIcon({
-  html: `<div style="font-size:28px;line-height:1;filter:drop-shadow(0 0 10px #16a34a)">🚂</div>`,
-  className: "custom-train-pin",
-  iconSize: [36, 36],
-  iconAnchor: [18, 18],
-});
+function createTrainIcon(lineColor) {
+  return L.divIcon({
+    html: `<div style="font-size:28px;line-height:1;filter:drop-shadow(0 0 10px ${lineColor || '#16a34a'})">🚂</div>`,
+    className: "custom-train-pin",
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+  });
+}
 
-function GeographicMap({ stations, activeIndex, userInputLength, targetLength, theme }) {
+function GeographicMap({ stations, activeIndex, userInputLength, targetLength, theme, lineColor }) {
   const frac = Math.min(userInputLength / Math.max(targetLength, 1), 1);
   const prevIdx = Math.max(activeIndex - 1, 0);
 
@@ -376,12 +381,12 @@ function GeographicMap({ stations, activeIndex, userInputLength, targetLength, t
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer key={theme} url={tileUrl} attribution='&copy; <a href="https://carto.com/">CARTO</a>' />
-        <Polyline positions={completedPath} color="#16a34a" weight={6} opacity={0.95} />
+        <Polyline positions={completedPath} color={lineColor || "#16a34a"} weight={6} opacity={0.95} />
         <Polyline positions={remainingPath} color="#475569" weight={5} opacity={0.75} />
         {stations.map((s, i) => (
-          <Marker key={s.id} position={s.coordinates} icon={createStationIcon(i < activeIndex)} />
+          <Marker key={s.id} position={s.coordinates} icon={createStationIcon(i < activeIndex, lineColor)} />
         ))}
-        <Marker position={trainCoords} icon={TRAIN_ICON} zIndexOffset={1000} />
+        <Marker position={trainCoords} icon={createTrainIcon(lineColor)} zIndexOffset={1000} />
         <CameraController trainCoordinates={trainCoords} />
         <CustomLeafletZoom />
       </MapContainer>
@@ -423,6 +428,7 @@ export default function MapView({
           userInputLength={userInputLength}
           targetLength={targetLength}
           theme={theme}
+          lineColor={lineColor}
         />
       )}
 
@@ -466,4 +472,4 @@ export default function MapView({
       </button>
     </div>
   );
-}}
+}
