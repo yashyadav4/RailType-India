@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Map, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
 import {
   MapContainer,
   TileLayer,
@@ -153,7 +154,7 @@ function SchematicMap({ stations, activeIndex, userInputLength, targetLength, li
   const PAD = 300;
 
   // Zoom logic
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.85);
   const MIN_ZOOM = 0.5;
   const MAX_ZOOM = 3;
 
@@ -274,9 +275,23 @@ function SchematicMap({ stations, activeIndex, userInputLength, targetLength, li
               transform: `translate(${trainPos.x}px, ${trainPos.y}px)`,
               transition: "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)",
             }}>
-              <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fontSize="28" filter="url(#trainGlow)">
-                🚂
-              </text>
+              {/* Pulsing ring */}
+              <circle r="22" fill="none" stroke={lineColor} strokeWidth="3">
+                <animate attributeName="r" values="18; 28" dur="1.2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="1; 0" dur="1.2s" repeatCount="indefinite" />
+              </circle>
+              {/* Solid train body background */}
+              <circle r="18" fill={lineColor} stroke="var(--void)" strokeWidth="3" />
+              
+              {/* Train icon paths */}
+              <g transform="translate(-12, -12)">
+                <path d="M8 3.1V7a4 4 0 0 0 8 0V3.1" fill="none" stroke="var(--void)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m9 15-1-1" fill="none" stroke="var(--void)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m15 15 1-1" fill="none" stroke="var(--void)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z" fill="none" stroke="var(--void)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m8 19-2 3" fill="none" stroke="var(--void)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m16 19 2 3" fill="none" stroke="var(--void)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </g>
             </g>
           )}
         </g>
@@ -325,8 +340,21 @@ function createStationIcon(isCompleted, lineColor) {
 }
 
 function createTrainIcon(lineColor) {
+  const c = lineColor || "#16a34a";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="18" fill="${c}" stroke="var(--void)" stroke-width="3" />
+    <g transform="translate(12, 12)">
+      <path d="M8 3.1V7a4 4 0 0 0 8 0V3.1" fill="none" stroke="var(--void)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="m9 15-1-1" fill="none" stroke="var(--void)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="m15 15 1-1" fill="none" stroke="var(--void)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z" fill="none" stroke="var(--void)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="m8 19-2 3" fill="none" stroke="var(--void)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="m16 19 2 3" fill="none" stroke="var(--void)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </svg>`;
+
   return L.divIcon({
-    html: `<div style="font-size:28px;line-height:1;filter:drop-shadow(0 0 10px ${lineColor || '#16a34a'})">🚂</div>`,
+    html: `<div style="filter:drop-shadow(0 0 10px ${c})">${svg}</div>`,
     className: "custom-train-pin",
     iconSize: [36, 36],
     iconAnchor: [18, 18],

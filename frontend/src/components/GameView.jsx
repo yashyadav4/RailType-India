@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { loadRouteData } from "../data/cities/index";
-import { Pause, Play, X } from "lucide-react";
+import { Pause, Play, X, TrainFront } from "lucide-react";
 import MapView from "./MapView";
 
 // ── Subtle Sound Engine (Web Audio API) ─────────────────────────────
@@ -277,6 +277,19 @@ export default function GameView() {
       window.removeEventListener("blur", handleFocusLoss);
       document.removeEventListener("visibilitychange", handleFocusLoss);
     };
+  }, [gameState]);
+
+  // Handle Escape key to pause
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        if (gameState === "playing" || gameState === "paused") {
+          togglePause();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [gameState]);
 
   // THE ENGINE: Runs at native 60fps natively synced with your monitor
@@ -684,10 +697,10 @@ export default function GameView() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "1.2rem",
+              color: "var(--void)" // high contrast dark icon on the colored block
             }}
           >
-            🚂
+            <TrainFront size={24} />
           </div>
           <div>
             <h3 style={{ margin: 0, color: "var(--ink)", fontSize: "1.1rem" }}>
