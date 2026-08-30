@@ -154,7 +154,7 @@ export default function LineInfo() {
 
       <div className="li-header" style={{ "--lc": brandColor }}>
         <div className="li-badge">
-          {city.name.toUpperCase()} · {catalogEntry.code || city.operator}
+          {city.name.toUpperCase()}
         </div>
         <h1 className="li-title">{catalogEntry.name}</h1>
         <p className="li-desc">{catalogEntry.terminals}</p>
@@ -171,6 +171,12 @@ export default function LineInfo() {
             <div className="li-stat-lbl">Type</div>
             <div className="li-stat-val" style={{ fontSize: "1.4rem", paddingTop: ".3rem" }}>
               {catalogEntry.type}
+            </div>
+          </div>
+          <div className="li-stat">
+            <div className="li-stat-lbl">Operator</div>
+            <div className="li-stat-val" style={{ fontSize: "1.1rem", paddingTop: ".3rem" }}>
+              {catalogEntry.operator || city.operator}
             </div>
           </div>
           <div className="li-stat">

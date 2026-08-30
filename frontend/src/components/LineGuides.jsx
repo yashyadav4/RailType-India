@@ -174,7 +174,7 @@ export default function LineGuides() {
           color: var(--marigold); flex-shrink: 0;
         }
         .lg-city-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -.01em; text-align:left; }
-        .lg-city-op { font-size: .72rem; color: var(--marigold); font-weight: 600; margin-top: 2px; }
+        .lg-city-op { font-size: .72rem; color: var(--marigold); font-weight: 600; margin-top: 2px;text-align:left; }
         .lg-city-right { display: flex; align-items: center; gap: .55rem; flex-shrink: 0; color: var(--ink-muted); }
         .lg-pill {
           display: inline-flex; align-items: center; gap: .3rem;

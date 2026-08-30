@@ -31,7 +31,7 @@ function playStampChime() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const t = ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -44,7 +44,9 @@ function playStampChime() {
       osc.start(t + i * 0.12);
       osc.stop(t + i * 0.12 + 0.4);
     });
-  } catch (e) { /* audio not available */ }
+  } catch (e) {
+    /* audio not available */
+  }
 }
 
 export default function SummaryPage() {
@@ -89,7 +91,14 @@ export default function SummaryPage() {
 
     hasSavedRef.current = true;
 
-    const runData = { cityId, lineId, timeMs, accuracy, cpm, mistakes: totalMistakes };
+    const runData = {
+      cityId,
+      lineId,
+      timeMs,
+      accuracy,
+      cpm,
+      mistakes: totalMistakes,
+    };
 
     if (user && token) {
       // Logged in — save to backend
@@ -106,7 +115,9 @@ export default function SummaryPage() {
           if (data.rank) setGlobalRank(data.rank);
           if (data.updatedBests) {
             // Check if this run IS the new PB
-            const best = user.bests?.find(b => b.cityId === cityId && b.routeId === lineId);
+            const best = user.bests?.find(
+              (b) => b.cityId === cityId && b.routeId === lineId,
+            );
             if (!best || timeMs <= best.timeMs) {
               setIsNewPB(true);
               confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
@@ -167,7 +178,9 @@ export default function SummaryPage() {
   // Find Personal Best
   let pbFormatted = "--:--.--";
   if (user && user.bests) {
-    const best = user.bests.find((b) => b.cityId === cityId && b.routeId === lineId);
+    const best = user.bests.find(
+      (b) => b.cityId === cityId && b.routeId === lineId,
+    );
     if (best) {
       const bestTimeMs = Math.min(best.timeMs, timeMs);
       pbFormatted = formatSplitTime(bestTimeMs);
@@ -268,11 +281,13 @@ export default function SummaryPage() {
           padding: 2.5rem;
           margin-bottom: 2rem;
           box-shadow: var(--shadow-sm);
+          overflow:hidden;
         }
         .sp-card-strip {
           height: 4px;
           background: var(--lc);
           margin: -2.5rem -2.5rem 2.5rem -2.5rem;
+          
         }
 
         .sp-score-flex {
@@ -454,22 +469,52 @@ export default function SummaryPage() {
                 zIndex: 10,
               }}
             >
-              <div style={{
-                color: "var(--marigold)",
-                border: "4px solid var(--marigold)",
-                borderRadius: "12px",
-                padding: "0.6rem 1rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.8rem",
-                pointerEvents: "none",
-                background: "color-mix(in srgb, var(--panel) 90%, transparent)",
-                backdropFilter: "blur(4px)",
-              }}>
+              <div
+                style={{
+                  color: "var(--marigold)",
+                  border: "4px solid var(--marigold)",
+                  borderRadius: "12px",
+                  padding: "0.6rem 1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.8rem",
+                  pointerEvents: "none",
+                  background:
+                    "color-mix(in srgb, var(--panel) 90%, transparent)",
+                  backdropFilter: "blur(4px)",
+                }}
+              >
                 <span style={{ fontSize: "2.5rem" }}>{stamp.icon}</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                  <span style={{ fontWeight: 900, textTransform: "uppercase", fontSize: "1.3rem", letterSpacing: "1px", lineHeight: 1 }}>{stamp.name}</span>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px", opacity: 0.8, lineHeight: 1 }}>Unlocked!</span>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.2rem",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 900,
+                      textTransform: "uppercase",
+                      fontSize: "1.3rem",
+                      letterSpacing: "1px",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {stamp.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      letterSpacing: "2px",
+                      opacity: 0.8,
+                      lineHeight: 1,
+                    }}
+                  >
+                    Unlocked!
+                  </span>
                 </div>
               </div>
             </div>
@@ -484,7 +529,13 @@ export default function SummaryPage() {
             </div>
             <div className="sp-rank-lbl">Global Rank</div>
             {!user && (
-              <div style={{ fontSize: "0.7rem", marginTop: "0.5rem", color: "var(--ink)" }}>
+              <div
+                style={{
+                  fontSize: "0.7rem",
+                  marginTop: "0.5rem",
+                  color: "var(--ink)",
+                }}
+              >
                 Login to rank
               </div>
             )}
@@ -494,7 +545,11 @@ export default function SummaryPage() {
             <div className="sp-time-lbl">Total Time</div>
             <div className="sp-time-val">{timeFormatted}</div>
             <div className="sp-pb">
-              {isNewPB && <span style={{ color: 'var(--marigold)', fontWeight: 800 }}>🏆 NEW </span>}
+              {isNewPB && (
+                <span style={{ color: "var(--marigold)", fontWeight: 800 }}>
+                  🏆 NEW{" "}
+                </span>
+              )}
               Personal best {pbFormatted}
             </div>
           </div>
@@ -529,7 +584,19 @@ export default function SummaryPage() {
           onClick={() => navigate(`/${cityId}/${lineId}/play`)}
         >
           <Repeat size={18} /> Play again
-          <span style={{ fontSize: '0.65rem', opacity: 0.6, marginLeft: '0.3rem', fontWeight: 500, border: '1px solid rgba(0,0,0,0.2)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>R</span>
+          <span
+            style={{
+              fontSize: "0.65rem",
+              opacity: 0.6,
+              marginLeft: "0.3rem",
+              fontWeight: 500,
+              border: "1px solid rgba(0,0,0,0.2)",
+              padding: "0.15rem 0.4rem",
+              borderRadius: "4px",
+            }}
+          >
+            R
+          </span>
         </button>
         <button
           className="sp-btn sp-btn-sec"
@@ -539,7 +606,19 @@ export default function SummaryPage() {
         </button>
         <button className="sp-btn sp-btn-sec" onClick={() => navigate("/")}>
           Home
-          <span style={{ fontSize: '0.65rem', opacity: 0.5, marginLeft: '0.3rem', fontWeight: 500, border: '1px solid var(--border)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>Esc</span>
+          <span
+            style={{
+              fontSize: "0.65rem",
+              opacity: 0.5,
+              marginLeft: "0.3rem",
+              fontWeight: 500,
+              border: "1px solid var(--border)",
+              padding: "0.15rem 0.4rem",
+              borderRadius: "4px",
+            }}
+          >
+            Esc
+          </span>
         </button>
       </div>
 
@@ -548,10 +627,23 @@ export default function SummaryPage() {
         <h3 className="sp-splits-title">
           <Trophy size={20} color="var(--marigold)" /> Top 10 Leaderboard
         </h3>
-        
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginTop: "1.5rem" }}>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.6rem",
+            marginTop: "1.5rem",
+          }}
+        >
           {leaderboard.length === 0 ? (
-            <p style={{ color: "var(--ink-muted)", fontStyle: "italic", margin: "1rem 0" }}>
+            <p
+              style={{
+                color: "var(--ink-muted)",
+                fontStyle: "italic",
+                margin: "1rem 0",
+              }}
+            >
               No runs recorded yet. Be the first to rank!
             </p>
           ) : (
@@ -579,11 +671,26 @@ export default function SummaryPage() {
                   #{i + 1}
                 </div>
                 <img
-                  src={run.picture || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest"}
+                  src={
+                    run.picture ||
+                    "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest"
+                  }
                   alt="Avatar"
-                  style={{ width: "34px", height: "34px", borderRadius: "50%", border: "1px solid var(--border)" }}
+                  style={{
+                    width: "34px",
+                    height: "34px",
+                    borderRadius: "50%",
+                    border: "1px solid var(--border)",
+                  }}
                 />
-                <div style={{ flex: 1, fontWeight: "700", fontSize: "1rem", color: "var(--ink)" }}>
+                <div
+                  style={{
+                    flex: 1,
+                    fontWeight: "700",
+                    fontSize: "1rem",
+                    color: "var(--ink)",
+                  }}
+                >
                   {run.name}
                 </div>
                 <div
@@ -675,8 +782,6 @@ export default function SummaryPage() {
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }

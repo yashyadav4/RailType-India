@@ -11,7 +11,8 @@ export const CITY_CATALOG = {
         code: "YL",
         color: "#facc15",
         stations: 37,
-        type: "Line",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Samaypur Badli ↔ Huda City Centre",
       },
       {
@@ -20,7 +21,8 @@ export const CITY_CATALOG = {
         code: "BL",
         color: "#2563eb",
         stations: 32,
-        type: "Line",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Dwarka ↔ Noida City Center",
       },
       {
@@ -29,7 +31,8 @@ export const CITY_CATALOG = {
         code: "BLB",
         color: "#3b82f6",
         stations: 8,
-        type: "Branch",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Yamuna Bank ↔ Vaishali",
       },
       {
@@ -39,6 +42,7 @@ export const CITY_CATALOG = {
         color: "#f97316",
         stations: 6,
         type: "Express",
+        operator: "DMRC",
         terminals: "New Delhi-Airport Express ↔ Dwarka Sector 21",
       },
       {
@@ -47,7 +51,8 @@ export const CITY_CATALOG = {
         code: "PL",
         color: "#ec4899",
         stations: 36,
-        type: "Ring",
+        type: "Metro Ring",
+        operator: "DMRC",
         terminals: "Majlis Park ↔ Johri Enclave",
       },
       {
@@ -56,7 +61,8 @@ export const CITY_CATALOG = {
         code: "RL",
         color: "#ef4444",
         stations: 29,
-        type: "Line",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Shaheed Sthal ↔ Rithala",
       },
       {
@@ -65,7 +71,8 @@ export const CITY_CATALOG = {
         code: "ML",
         color: "#d946ef",
         stations: 25,
-        type: "Line",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Janak Puri West ↔ Botanical Garden",
       },
       {
@@ -74,7 +81,8 @@ export const CITY_CATALOG = {
         code: "GL",
         color: "#22c55e",
         stations: 21,
-        type: "Line",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Inderlok Conn:Red ↔ Brigadier Hoshiar Singh",
       },
       {
@@ -83,7 +91,8 @@ export const CITY_CATALOG = {
         code: "VL",
         color: "#8b5cf6",
         stations: 33,
-        type: "Line",
+        type: "Metro",
+        operator: "DMRC",
         terminals: "Kashmere Gate ↔ Raja Nahar Singh",
       },
     ],
@@ -91,6 +100,7 @@ export const CITY_CATALOG = {
   mumbai: {
     id: "mumbai",
     name: "Mumbai",
+    operator: "MMRDA · MMMOCL · Western Railway",
     lines: [
       {
         id: "blue_line",
@@ -100,6 +110,7 @@ export const CITY_CATALOG = {
         terminals: "Versova ↔ Ghatkopar",
         startTerminal: "Versova",
         type: "Metro",
+        operator: "MMOPL",
       },
       {
         id: "yellow_line",
@@ -109,6 +120,7 @@ export const CITY_CATALOG = {
         terminals: "Dahisar East ↔ Andheri West",
         startTerminal: "Dahisar East",
         type: "Metro",
+        operator: "MMMOCL",
       },
       {
         id: "red_line",
@@ -118,6 +130,7 @@ export const CITY_CATALOG = {
         terminals: "Dahisar East ↔ Gundavali",
         startTerminal: "Dahisar East",
         type: "Metro",
+        operator: "MMMOCL",
       },
       {
         id: "western_local",
@@ -126,7 +139,8 @@ export const CITY_CATALOG = {
         stations: 21,
         terminals: "Churchgate ↔ Borivali",
         startTerminal: "Churchgate",
-        type: "Suburban",
+        type: "Local",
+        operator: "Western Railway",
       },
       {
         id: "monorail",
@@ -136,12 +150,14 @@ export const CITY_CATALOG = {
         terminals: "Chembur ↔ Jacob Circle",
         startTerminal: "Chembur",
         type: "Monorail",
+        operator: "MMRDA",
       },
     ],
   },
   bengaluru: {
     id: "bengaluru",
     name: "Namma Metro",
+    operator: "BMRCL",
     lines: [
       {
         id: "purple_line",
@@ -151,6 +167,7 @@ export const CITY_CATALOG = {
         terminals: "Challaghatta ↔ Whitefield",
         startTerminal: "Challaghatta",
         type: "Metro",
+        operator: "BMRCL",
       },
       {
         id: "green_line",
@@ -160,6 +177,7 @@ export const CITY_CATALOG = {
         terminals: "Nagasandra ↔ Silk Institute",
         startTerminal: "Nagasandra",
         type: "Metro",
+        operator: "BMRCL",
       },
       {
         id: "yellow_line",
@@ -169,13 +187,14 @@ export const CITY_CATALOG = {
         terminals: "RV Road ↔ Bommasandra",
         startTerminal: "RV Road",
         type: "Metro",
+        operator: "BMRCL",
       },
     ],
   },
   kolkata: {
     id: "kolkata",
     name: "Kolkata",
-    operator: "KMRC · India's First Metro",
+    operator: "KMRC · Metro Railway",
     lines: [
       {
         id: "blue_line",
@@ -184,7 +203,8 @@ export const CITY_CATALOG = {
         stations: 26,
         terminals: "Dakshineswar ↔ Kavi Subhash",
         startTerminal: "Dakshineswar",
-        type: "Metro",
+        type: "Subway",
+        operator: "Metro Railway (IR)",
       },
       {
         id: "green_line",
@@ -194,6 +214,7 @@ export const CITY_CATALOG = {
         terminals: "Howrah Maidan ↔ Salt Lake Sector V",
         startTerminal: "Howrah Maidan",
         type: "Metro",
+        operator: "KMRC",
       },
       {
         id: "purple_line",
@@ -203,6 +224,7 @@ export const CITY_CATALOG = {
         terminals: "Joka ↔ Esplanade",
         startTerminal: "Joka",
         type: "Metro",
+        operator: "Metro Railway (IR)",
       },
       {
         id: "yellow_line",
@@ -212,6 +234,7 @@ export const CITY_CATALOG = {
         terminals: "Noapara ↔ Barasat",
         startTerminal: "Noapara",
         type: "Metro",
+        operator: "Metro Railway (IR)",
       },
       {
         id: "orange_line",
@@ -221,6 +244,7 @@ export const CITY_CATALOG = {
         terminals: "Kavi Subhash ↔ Salt Lake Sector V",
         startTerminal: "Kavi Subhash",
         type: "Metro",
+        operator: "Metro Railway (IR)",
       },
     ],
   },
