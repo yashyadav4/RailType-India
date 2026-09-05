@@ -281,8 +281,9 @@ export default function SummaryPage() {
           padding: 2.5rem;
           margin-bottom: 2rem;
           box-shadow: var(--shadow-sm);
-          overflow:hidden;
+          
         }
+        
         .sp-card-strip {
           height: 4px;
           background: var(--lc);
@@ -520,7 +521,9 @@ export default function SummaryPage() {
             </div>
           );
         })}
-        <div className="sp-card-strip" />
+        <div class="sp-card-strip-wrapper">
+          <div class="sp-card-strip"></div>
+        </div>
         <div className="sp-score-flex">
           <div className="sp-rank-box">
             <Award size={36} className="sp-rank-icon" />
