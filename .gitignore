@@ -2,6 +2,9 @@
 client_secret_*.json
 *.pem
 *.key
+atlas-credentials.env
+*.env
+ngrok.js
 
 # ── Repomix output ──
 repomix-output.xml
