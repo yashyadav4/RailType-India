@@ -138,6 +138,74 @@ const playErrorBuzz = () => {
   osc2.stop(t + 0.1);
 };
 
+/**
+ * Countdown tick — crisp metronome-style beep for 3, 2, 1
+ * Clean sine tone with a percussive noise click layered on top
+ */
+const playCountdownTick = () => {
+  const ctx = getAudioCtx();
+  const t = ctx.currentTime;
+
+  // Primary tone — clean sine beep at A5
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(880, t);
+  osc.frequency.exponentialRampToValueAtTime(800, t + 0.15);
+  gain.gain.setValueAtTime(0.12, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.15);
+
+  // Percussive click layer for that satisfying "tick" attack
+  const click = ctx.createBufferSource();
+  click.buffer = _noiseBuffer;
+  const clickHPF = ctx.createBiquadFilter();
+  clickHPF.type = "highpass";
+  clickHPF.frequency.value = 3000;
+  const clickGain = ctx.createGain();
+  clickGain.gain.setValueAtTime(0.06, t);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  click.connect(clickHPF).connect(clickGain).connect(ctx.destination);
+  click.start(t);
+  click.stop(t + 0.03);
+};
+
+/**
+ * Countdown "GO!" — energetic ascending two-tone burst (C5 → G5)
+ * with a bright triangle shimmer at G6 to signal the race is on
+ */
+const playCountdownGo = () => {
+  const ctx = getAudioCtx();
+  const t = ctx.currentTime;
+
+  // Quick ascending C5 → G5 burst
+  [523.25, 783.99].forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    const start = t + i * 0.08;
+    gain.gain.setValueAtTime(0.15, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.2);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + 0.2);
+  });
+
+  // Bright shimmer overlay at G6
+  const shimmer = ctx.createOscillator();
+  const shimmerGain = ctx.createGain();
+  shimmer.type = "triangle";
+  shimmer.frequency.value = 1567.98;
+  shimmerGain.gain.setValueAtTime(0.04, t + 0.1);
+  shimmerGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+  shimmer.connect(shimmerGain).connect(ctx.destination);
+  shimmer.start(t + 0.1);
+  shimmer.stop(t + 0.35);
+};
+
 export default function GameView() {
   const { cityId, lineId } = useParams();
   const navigate = useNavigate();
@@ -218,7 +286,83 @@ export default function GameView() {
       if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityId, lineId]);
+
+  function formatTime(ms) {
+    const totalSecs = Math.floor(ms / 1000);
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    const millis = Math.floor((ms % 1000) / 10);
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}.${millis < 10 ? "0" : ""}${millis}`;
+  }
+
+  // THE ENGINE: Runs at native 60fps natively synced with your monitor
+  const updateTelemetry = useCallback(function tick() {
+    if (!startTimeRef.current || isCompletedRef.current) return;
+
+    const now = Date.now();
+    const diff = now - startTimeRef.current - totalPausedMsRef.current;
+    elapsedMsRef.current = diff; // Save silently for the end
+
+    // 1. Direct DOM Update for Timer
+    if (timerDivRef.current) {
+      timerDivRef.current.innerText = formatTime(diff);
+    }
+
+    // 2. Direct DOM Update for CPM
+    const elapsedMinutes = diff / 1000 / 60;
+    if (elapsedMinutes > 0 && cpmDivRef.current) {
+      cpmDivRef.current.innerText = Math.round(
+        correctKeystrokesRef.current / elapsedMinutes,
+      );
+    }
+
+    // 3. Direct DOM Update for Accuracy
+    if (accuracyDivRef.current) {
+      const acc =
+        totalKeystrokesRef.current > 0
+          ? Math.round(
+              (correctKeystrokesRef.current / totalKeystrokesRef.current) * 100,
+            )
+          : 100;
+      accuracyDivRef.current.innerText = `${acc}.0%`;
+    }
+
+    // Loop it for the next screen refresh
+    animationFrameRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  function navigateToSummary() {
+    // Calculate final stats one last time to pass to the Summary Page
+    const finalTimeMs = elapsedMsRef.current;
+    const finalElapsedMinutes = finalTimeMs / 60000;
+    const finalCpm =
+      finalElapsedMinutes > 0
+        ? Math.round(correctKeystrokesRef.current / finalElapsedMinutes)
+        : 0;
+    const finalAccuracy =
+      totalKeystrokesRef.current > 0
+        ? Math.round(
+            (correctKeystrokesRef.current / totalKeystrokesRef.current) * 100,
+          )
+        : 100;
+
+    const runId = crypto.randomUUID();
+
+    navigate(`/${cityId}/${lineId}/summary`, {
+      state: {
+        runId,
+        timeFormatted: formatTime(finalTimeMs),
+        timeMs: finalTimeMs,
+        cpm: finalCpm,
+        accuracy: finalAccuracy,
+        totalMistakes: totalMistakesRef.current,
+        splits: splitsRef.current,
+        routeLength: routeData?.stations?.length || splitsRef.current?.length || 0,
+      },
+    });
+  }
 
   // Handle the automatic transition to the summary page
   useEffect(() => {
@@ -228,17 +372,23 @@ export default function GameView() {
       }, 3000);
       return () => clearTimeout(transitionTimer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState]);
 
   // Countdown Logic
   useEffect(() => {
     if (gameState === "countdown") {
       if (countdownNum > 0) {
+        playCountdownTick();
         const timer = setTimeout(() => setCountdownNum((n) => n - 1), 1000);
         return () => clearTimeout(timer);
       } else {
-        setGameState("playing");
-        setTimeout(() => inputRef.current?.focus(), 100);
+        playCountdownGo();
+        const timer = setTimeout(() => {
+          setGameState("playing");
+          setTimeout(() => inputRef.current?.focus(), 100);
+        }, 0);
+        return () => clearTimeout(timer);
       }
     }
   }, [gameState, countdownNum]);
@@ -290,81 +440,8 @@ export default function GameView() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState]);
-
-  // THE ENGINE: Runs at native 60fps natively synced with your monitor
-  const updateTelemetry = () => {
-    if (!startTimeRef.current || isCompletedRef.current) return;
-
-    const now = Date.now();
-    const diff = now - startTimeRef.current - totalPausedMsRef.current;
-    elapsedMsRef.current = diff; // Save silently for the end
-
-    // 1. Direct DOM Update for Timer
-    if (timerDivRef.current) {
-      timerDivRef.current.innerText = formatTime(diff);
-    }
-
-    // 2. Direct DOM Update for CPM
-    const elapsedMinutes = diff / 1000 / 60;
-    if (elapsedMinutes > 0 && cpmDivRef.current) {
-      cpmDivRef.current.innerText = Math.round(
-        correctKeystrokesRef.current / elapsedMinutes,
-      );
-    }
-
-    // 3. Direct DOM Update for Accuracy
-    if (accuracyDivRef.current) {
-      const acc =
-        totalKeystrokesRef.current > 0
-          ? Math.round(
-              (correctKeystrokesRef.current / totalKeystrokesRef.current) * 100,
-            )
-          : 100;
-      accuracyDivRef.current.innerText = `${acc}.0%`;
-    }
-
-    // Loop it for the next screen refresh
-    animationFrameRef.current = requestAnimationFrame(updateTelemetry);
-  };
-
-  function navigateToSummary() {
-    // Calculate final stats one last time to pass to the Summary Page
-    const finalTimeMs = elapsedMsRef.current;
-    const finalElapsedMinutes = finalTimeMs / 60000;
-    const finalCpm =
-      finalElapsedMinutes > 0
-        ? Math.round(correctKeystrokesRef.current / finalElapsedMinutes)
-        : 0;
-    const finalAccuracy =
-      totalKeystrokesRef.current > 0
-        ? Math.round(
-            (correctKeystrokesRef.current / totalKeystrokesRef.current) * 100,
-          )
-        : 100;
-
-    const runId = crypto.randomUUID();
-
-    navigate(`/${cityId}/${lineId}/summary`, {
-      state: {
-        runId,
-        timeFormatted: formatTime(finalTimeMs),
-        timeMs: finalTimeMs,
-        cpm: finalCpm,
-        accuracy: finalAccuracy,
-        totalMistakes: totalMistakesRef.current,
-        splits: splitsRef.current,
-      },
-    });
-  }
-
-  function formatTime(ms) {
-    const totalSecs = Math.floor(ms / 1000);
-    const mins = Math.floor(totalSecs / 60);
-    const secs = totalSecs % 60;
-    const millis = Math.floor((ms % 1000) / 10);
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}.${millis < 10 ? "0" : ""}${millis}`;
-  }
 
   if (gameState === "loading" || !routeData) {
     return (
@@ -392,6 +469,22 @@ export default function GameView() {
     currentIndex < stations.length - 1
       ? stations[currentIndex + 1].name
       : "TERMINUS";
+
+  const targetStationLength = targetStation.length;
+  const stationFontSize =
+    targetStationLength > 24
+      ? "1.4rem"
+      : targetStationLength > 18
+      ? "1.65rem"
+      : targetStationLength > 12
+      ? "1.9rem"
+      : "2.2rem";
+  const stationLetterSpacing =
+    targetStationLength > 24
+      ? "1px"
+      : targetStationLength > 18
+      ? "1.5px"
+      : "2px";
 
   const handleInputChange = (e) => {
     if (gameState !== "playing") return;
@@ -462,6 +555,55 @@ export default function GameView() {
       let colorClass = "var(--ink-muted)";
       if (index < userInput.length) colorClass = "var(--teal)";
       const isCursor = index === userInput.length;
+      const isSpace = char === " ";
+
+      if (isSpace) {
+        return (
+          <span
+            key={index}
+            style={{
+              position: "relative",
+              display: "inline-block",
+              width: "0.55em",
+              margin: "0 1px",
+              color: colorClass,
+            }}
+          >
+            {isCursor && (
+              <span
+                style={{
+                  position: "absolute",
+                  left: "-2px",
+                  top: "10%",
+                  bottom: "10%",
+                  width: "3px",
+                  backgroundColor: "var(--teal)",
+                  borderRadius: "2px",
+                }}
+              />
+            )}
+            {/* Visual space indicator pill/dash */}
+            <span
+              style={{
+                position: "absolute",
+                bottom: "4px",
+                left: "15%",
+                right: "15%",
+                height: "2.5px",
+                borderRadius: "2px",
+                backgroundColor:
+                  index < userInput.length
+                    ? "var(--teal)"
+                    : isCursor
+                    ? "var(--teal)"
+                    : "color-mix(in srgb, var(--ink-muted) 45%, transparent)",
+                transition: "background-color 0.15s ease",
+              }}
+            />
+            &nbsp;
+          </span>
+        );
+      }
 
       return (
         <span key={index} style={{ position: "relative", color: colorClass }}>
@@ -849,6 +991,10 @@ export default function GameView() {
           alignItems: "center",
           gap: "1rem",
           zIndex: 10,
+          width: "100%",
+          padding: "0 1rem",
+          boxSizing: "border-box",
+          pointerEvents: "none",
         }}
       >
         <div
@@ -857,10 +1003,11 @@ export default function GameView() {
             backgroundColor: "var(--panel-raised)",
             border: "1px solid var(--border)",
             borderRadius: "32px",
-            width: "700px",
+            width: "min(740px, 92vw)",
             boxShadow: "var(--shadow-md)",
             overflow: "hidden",
             transition: "transform 0.1s ease",
+            pointerEvents: "auto",
           }}
         >
           {/* Main Content Area (Row Layout) */}
@@ -868,8 +1015,8 @@ export default function GameView() {
             style={{
               display: "flex",
               alignItems: "center",
-              padding: "2.5rem 3rem",
-              gap: "2.5rem",
+              padding: targetStationLength > 20 ? "1.8rem 2.2rem" : "2.5rem 3rem",
+              gap: targetStationLength > 20 ? "1.8rem" : "2.5rem",
             }}
           >
             {/* Left: Station Code Box (Mimicking the JY/30 box) */}
@@ -919,12 +1066,18 @@ export default function GameView() {
                 flexDirection: "column",
                 alignItems: "flex-start",
                 width: "100%",
+                minWidth: 0,
               }}
             >
               {/* Local Name (Massive, equivalent to the Kanji) */}
               <div
                 style={{
-                  fontSize: "2.0rem",
+                  fontSize:
+                    targetStationLength > 24
+                      ? "1.5rem"
+                      : targetStationLength > 18
+                      ? "1.75rem"
+                      : "2.0rem",
                   fontWeight: "900",
                   color: "var(--ink)",
                   lineHeight: "1.1",
@@ -938,12 +1091,12 @@ export default function GameView() {
               {/* English Name (Small, Uppercase, Spaced Out) */}
               <div
                 style={{
-                  fontSize: "0.95rem",
+                  fontSize: targetStationLength > 20 ? "0.85rem" : "0.95rem",
                   fontWeight: "700",
                   color: "var(--ink-muted)",
-                  letterSpacing: "4px",
+                  letterSpacing: targetStationLength > 20 ? "2.5px" : "4px",
                   textTransform: "uppercase",
-                  marginBottom: "2rem",
+                  marginBottom: targetStationLength > 20 ? "1.2rem" : "1.8rem",
                 }}
               >
                 {currentStation?.name}
@@ -952,13 +1105,16 @@ export default function GameView() {
               {/* Typing Render Component (Monospace styling preserved) */}
               <div
                 style={{
-                  fontSize: "2.2rem",
+                  fontSize: stationFontSize,
                   fontWeight: "bold",
                   fontFamily: '"JetBrains Mono", monospace',
-                  letterSpacing: "2px",
+                  letterSpacing: stationLetterSpacing,
                   color: "var(--ink-muted)",
                   display: "flex",
                   alignItems: "center",
+                  flexWrap: "wrap",
+                  lineHeight: "1.35",
+                  wordBreak: "break-word",
                   whiteSpace: "pre-wrap",
                 }}
               >
@@ -1008,6 +1164,7 @@ export default function GameView() {
             textAlign: "center",
             marginTop: "0.5rem",
             fontFamily: "inherit",
+            pointerEvents: "auto",
           }}
         >
           Wrong keys are ignored — just type the correct letter, no backspace

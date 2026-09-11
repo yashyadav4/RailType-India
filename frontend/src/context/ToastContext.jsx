@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { CheckCircle2, XCircle, Info } from "lucide-react";
 
 const ToastContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useToast() {
   return useContext(ToastContext);
 }
@@ -20,18 +21,14 @@ export function ToastProvider({ children }) {
     }, duration);
   }, []);
 
-  const toast = useCallback({
-    success: (msg) => addToast(msg, "success"),
-    error: (msg) => addToast(msg, "error"),
-    info: (msg) => addToast(msg, "info"),
-  }, [addToast]);
-
-  // Reassign so toast.success etc. work as methods
-  const toastApi = {
-    success: (msg) => addToast(msg, "success"),
-    error: (msg) => addToast(msg, "error"),
-    info: (msg) => addToast(msg, "info"),
-  };
+  const toastApi = useMemo(
+    () => ({
+      success: (msg) => addToast(msg, "success"),
+      error: (msg) => addToast(msg, "error"),
+      info: (msg) => addToast(msg, "info"),
+    }),
+    [addToast]
+  );
 
   return (
     <ToastContext.Provider value={toastApi}>

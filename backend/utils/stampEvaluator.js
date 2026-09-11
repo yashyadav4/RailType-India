@@ -12,12 +12,13 @@ export const evaluateStamps = (user, runData, currentRank, routeLength) => {
     }
   };
 
-  const { timeMs, accuracy, cpm, mistakes } = runData;
+  const { timeMs, accuracy, cpm, mistakes, clientHour } = runData;
   const { totalRuns = 0, perfectRuns = 0, currentStreak = 0 } = user;
   
-  // Parse local time for the run
-  const runDate = new Date(); // The run was just completed
-  const hours = runDate.getHours();
+  // Use client's local hour if provided, or fallback to server hour
+  const hours = (typeof clientHour === "number" && clientHour >= 0 && clientHour <= 23)
+    ? clientHour
+    : new Date().getHours();
 
   // ── 1. DEDICATION ──
   

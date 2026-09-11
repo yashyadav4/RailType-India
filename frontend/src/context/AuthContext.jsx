@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     };
 
     restoreSession();
-  }, []);
+  }, [token]);
 
   /**
    * Login with a Google OAuth access_token.
@@ -95,7 +95,19 @@ export function AuthProvider({ children }) {
       });
 
       if (res.ok) {
+        const bulkData = await res.json();
         clearGuestRuns();
+        if (bulkData.updatedBests) {
+          setUser((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  bests: bulkData.updatedBests,
+                  totalRuns: (prev.totalRuns || 0) + (bulkData.count || 0),
+                }
+              : prev
+          );
+        }
         console.log(`Synced ${guestRuns.length} guest runs to account`);
       }
     } catch (error) {
@@ -123,6 +135,7 @@ export function AuthProvider({ children }) {
 /**
  * Hook to consume auth state from any component.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

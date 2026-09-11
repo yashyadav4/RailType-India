@@ -54,7 +54,7 @@ export const googleLogin = async (req, res) => {
         picture: user.picture,
         badges: user.badges,
         totalRuns: user.totalRuns || 0,
-        stamps: user.stamps || 0,
+        stamps: Array.isArray(user.stamps) ? user.stamps : [],
         bests: user.bests || [],
       },
     });

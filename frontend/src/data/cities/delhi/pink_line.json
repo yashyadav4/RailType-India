@@ -35,8 +35,8 @@
     {
       "id": "pink_line_4",
       "code": "PL-04",
-      "name": "Netaji Subash Place",
-      "hindiName": "Netaji Subash Place",
+      "name": "Netaji Subhash Place",
+      "hindiName": "Netaji Subhash Place",
       "localName": "नेताजी सुभाष प्लेस",
       "coordinates": [28.696052, 77.15264]
     },
@@ -59,8 +59,8 @@
     {
       "id": "pink_line_7",
       "code": "PL-07",
-      "name": "ESI BASAI DARAPUR",
-      "hindiName": "ESI BASAI DARAPUR",
+      "name": "ESI Basai Darapur",
+      "hindiName": "ESI Basai Darapur",
       "localName": "ईएसआई बसई दारापुर",
       "coordinates": [28.658074, 77.127268]
     },
@@ -171,9 +171,9 @@
     {
       "id": "pink_line_22",
       "code": "PL-22",
-      "name": "Mayur Vihar Phase-1",
-      "hindiName": "Mayur Vihar Phase-1",
-      "localName": "मयूर विहार फेज-1",
+      "name": "Mayur Vihar Phase 1",
+      "hindiName": "Mayur Vihar Phase 1",
+      "localName": "मयूर विहार फेज 1",
       "coordinates": [28.603133, 77.292589]
     },
     {
@@ -203,9 +203,9 @@
     {
       "id": "pink_line_26",
       "code": "PL-26",
-      "name": "Mandawali - West Vinod Nagar",
-      "hindiName": "Mandawali - West Vinod Nagar",
-      "localName": "मंडावली - वेस्ट विनोद नगर",
+      "name": "Mandawali West Vinod Nagar",
+      "hindiName": "Mandawali West Vinod Nagar",
+      "localName": "मंडावली वेस्ट विनोद नगर",
       "coordinates": [28.6263, 77.3198]
     },
     {

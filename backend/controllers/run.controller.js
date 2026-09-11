@@ -17,7 +17,7 @@ export const getTotalRuns = async (req, res) => {
 export const saveRun = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { cityId, lineId, timeMs, accuracy, cpm, mistakes, routeLength = 0 } = req.body;
+    const { cityId, lineId, timeMs, accuracy, cpm, mistakes, routeLength = 0, clientHour } = req.body;
 
     if (!cityId || !lineId || !timeMs || accuracy == null || !cpm) {
       return res.status(400).json({ message: "Missing required run fields" });
@@ -64,7 +64,7 @@ export const saveRun = async (req, res) => {
         user.currentStreak = 1;
       } else {
         const diffTime = Math.abs(today - lastRun);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
         if (diffDays === 1) {
           user.currentStreak += 1;
         } else if (diffDays > 1) {
@@ -77,15 +77,17 @@ export const saveRun = async (req, res) => {
       const bestIndex = user.bests.findIndex(b => b.cityId === cityId && b.routeId === lineId);
       if (bestIndex === -1) {
         user.bests.push({ cityId, routeId: lineId, timeMs, accuracy, cpm, mistakes });
+        user.markModified('bests');
       } else if (timeMs < user.bests[bestIndex].timeMs) {
         user.bests[bestIndex].timeMs = timeMs;
         user.bests[bestIndex].accuracy = accuracy;
         user.bests[bestIndex].cpm = cpm;
         user.bests[bestIndex].mistakes = mistakes;
+        user.markModified('bests');
       }
       
       // Evaluate new stamps
-      newStampsEarned = evaluateStamps(user, { timeMs, accuracy, cpm, mistakes: mistakes || 0 }, globalRank, routeLength);
+      newStampsEarned = evaluateStamps(user, { timeMs, accuracy, cpm, mistakes: mistakes || 0, clientHour }, globalRank, routeLength);
       if (newStampsEarned.length > 0) {
         let currentStamps = Array.isArray(user.stamps) ? [...user.stamps] : [];
         // Filter out any legacy integers that might have been casted

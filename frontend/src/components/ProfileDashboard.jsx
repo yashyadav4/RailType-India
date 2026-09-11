@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -8,7 +8,6 @@ import {
   Settings,
   LogOut,
   ArrowLeft,
-  Clock,
   Target,
   Zap,
   AlertCircle,
@@ -60,7 +59,12 @@ export default function ProfileDashboard() {
   const [runsLoading, setRunsLoading] = useState(true);
 
   // Settings state
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState(user?.name || "");
+  const [prevUserName, setPrevUserName] = useState(user?.name);
+  if (user?.name !== prevUserName) {
+    setPrevUserName(user?.name);
+    setDisplayName(user?.name || "");
+  }
   const [saveStatus, setSaveStatus] = useState(null); // null | "saving" | "saved" | "error"
 
   // Redirect if not logged in
@@ -90,11 +94,6 @@ export default function ProfileDashboard() {
     };
     fetchRuns();
   }, [token]);
-
-  // Sync display name when user loads
-  useEffect(() => {
-    if (user?.name) setDisplayName(user.name);
-  }, [user]);
 
   if (loading) {
     return (
@@ -198,6 +197,15 @@ export default function ProfileDashboard() {
   return (
     <div className="pd-layout">
       <style>{`
+        .pd-back {
+          display: inline-flex; align-items: center; gap: .4rem;
+          font-family: inherit; font-size: .85rem; font-weight: 600;
+          color: var(--ink-muted); background: none; border: none;
+          cursor: pointer; margin-bottom: 2rem; padding: 0;
+          transition: color .15s;
+        }
+        .pd-back:hover { color: var(--ink); }
+
         .pd-run-row {
           display: grid;
           grid-template-columns: 36px 1fr 100px 80px 80px 70px 100px;
@@ -341,21 +349,8 @@ export default function ProfileDashboard() {
 
       {/* ── SIDEBAR ──────────────────────────────────────────────── */}
       <aside className="pd-sidebar">
-        <button
-          onClick={() => navigate("/")}
-          style={{
-            background: "none",
-            border: "none",
-            color: "var(--ink-muted)",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            cursor: "pointer",
-            marginBottom: "2rem",
-            fontWeight: "600",
-          }}
-        >
-          <ArrowLeft size={16} /> Back to Game
+        <button className="pd-back" onClick={() => navigate("/")}>
+          <ArrowLeft size={15} /> Back to Game
         </button>
 
         <div
@@ -441,7 +436,7 @@ export default function ProfileDashboard() {
             >
               <StatCard label="Total Runs" value={user.totalRuns || runs.length} />
               <StatCard label="Lines Played" value={uniqueLines.size} />
-              <StatCard label="Stamps Collected" value={user.stamps ? user.stamps.length : 0} />
+              <StatCard label="Stamps Collected" value={Array.isArray(user?.stamps) ? user.stamps.length : (typeof user?.stamps === "number" ? user.stamps : 0)} />
             </div>
 
             {/* Recent Runs + Stamps Preview */}
@@ -563,13 +558,13 @@ export default function ProfileDashboard() {
                     View All
                   </button>
                 </div>
-                {(!user.stamps || user.stamps.length === 0) ? (
+                {(!Array.isArray(user?.stamps) || user.stamps.length === 0) ? (
                   <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem" }}>
                     No stamps collected yet.
                   </p>
                 ) : (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-                    {user.stamps.slice(-6).reverse().map((stampId, i) => {
+                    {(Array.isArray(user?.stamps) ? user.stamps : []).slice(-6).reverse().map((stampId, i) => {
                       const stamp = STAMP_CATALOG[stampId];
                       if (!stamp) return null;
                       return (
@@ -625,7 +620,7 @@ export default function ProfileDashboard() {
                   {Object.values(STAMP_CATALOG)
                     .filter(stamp => stamp.category === category)
                     .map(stamp => {
-                      const isUnlocked = (user.stamps || []).includes(stamp.id);
+                      const isUnlocked = (Array.isArray(user?.stamps) ? user.stamps : []).includes(stamp.id);
                       return (
                         <div key={stamp.id} className="pd-badge-card" style={{ opacity: isUnlocked ? 1 : 0.4, filter: isUnlocked ? "none" : "grayscale(1)" }}>
                           <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>

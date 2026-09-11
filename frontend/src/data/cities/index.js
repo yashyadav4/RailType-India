@@ -83,7 +83,7 @@ export const CITY_CATALOG = {
         stations: 21,
         type: "Metro",
         operator: "DMRC",
-        terminals: "Inderlok Conn:Red ↔ Brigadier Hoshiar Singh",
+        terminals: "Inderlok ↔ Brigadier Hoshiar Singh",
       },
       {
         id: "voilet_line",
@@ -260,10 +260,34 @@ export function getAllRoutes() {
   );
 }
 
+export function sanitizeStationName(name) {
+  if (!name || typeof name !== "string") return "";
+  return name
+    .replace(/\s*Conn:[A-Za-z0-9_-]+/gi, "")        // Strip "Conn:Red" etc.
+    .replace(/-Airport Express/gi, "")             // Strip "-Airport Express"
+    .replace(/\b([A-Z])\.\s*([A-Z])\./g, "$1$2")  // K.R. -> KR, M.G. -> MG
+    .replace(/\b([A-Z])\.\s*/g, "$1 ")             // Dr. -> Dr
+    .replace(/\b([A-Z])\s+([A-Z])\s+/g, "$1$2 ")   // R K Ashram -> RK Ashram
+    .replace(/\bPhase-(\d+)/gi, "Phase $1")        // Phase-1 -> Phase 1
+    .replace(/\s+-\s+/g, " ")                      // " - " -> " "
+    .replace(/[-:]/g, " ")                         // Replace stray hyphens/colons with space
+    .replace(/\./g, "")                             // Strip remaining dots
+    .replace(/\s+/g, " ")                           // Clean multiple spaces
+    .trim();
+}
+
 export async function loadRouteData(cityName = "delhi", lineId = "red_line") {
   try {
     const routeModule = await import(`./${cityName}/${lineId}.json`);
-    return routeModule.default;
+    const rawData = routeModule.default;
+    if (!rawData) return null;
+    return {
+      ...rawData,
+      stations: (rawData.stations || []).map((s) => ({
+        ...s,
+        name: sanitizeStationName(s.name),
+      })),
+    };
   } catch (error) {
     console.error(`Failed to load route: ${cityName}/${lineId}`, error);
     return null;

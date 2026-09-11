@@ -11,10 +11,13 @@
     {
       "id": "orange_line_1",
       "code": "OL-01",
-      "name": "New Delhi-Airport Express",
-      "hindiName": "New Delhi-Airport Express",
-      "localName": "नई दिल्ली-एयरपोर्ट एक्सप्रेस",
-      "coordinates": [28.64307, 77.22144]
+      "name": "New Delhi",
+      "hindiName": "New Delhi",
+      "localName": "नई दिल्ली",
+      "coordinates": [
+        28.64307,
+        77.22144
+      ]
     },
     {
       "id": "orange_line_2",
@@ -22,7 +25,10 @@
       "name": "Shivaji Stadium",
       "hindiName": "Shivaji Stadium",
       "localName": "शिवाजी स्टेडियम",
-      "coordinates": [28.62901, 77.2119]
+      "coordinates": [
+        28.62901,
+        77.2119
+      ]
     },
     {
       "id": "orange_line_3",
@@ -30,7 +36,10 @@
       "name": "Dhaula Kuan",
       "hindiName": "Dhaula Kuan",
       "localName": "धौला कुआं",
-      "coordinates": [28.59178, 77.16155]
+      "coordinates": [
+        28.59178,
+        77.16155
+      ]
     },
     {
       "id": "orange_line_4",
@@ -38,7 +47,10 @@
       "name": "Delhi Aerocity",
       "hindiName": "Delhi Aerocity",
       "localName": "दिल्ली एयरोसिटी",
-      "coordinates": [28.54881, 77.12092]
+      "coordinates": [
+        28.54881,
+        77.12092
+      ]
     },
     {
       "id": "orange_line_5",
@@ -46,7 +58,10 @@
       "name": "IGI Airport",
       "hindiName": "IGI Airport",
       "localName": "आईजीआई एयरपोर्ट",
-      "coordinates": [28.55693, 77.08669]
+      "coordinates": [
+        28.55693,
+        77.08669
+      ]
     },
     {
       "id": "orange_line_6",
@@ -54,7 +69,10 @@
       "name": "Dwarka Sector 21",
       "hindiName": "Dwarka Sector 21",
       "localName": "द्वारका सेक्टर 21",
-      "coordinates": [28.55226, 77.05828]
+      "coordinates": [
+        28.55226,
+        77.05828
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Play, MapPin, Share2, MousePointer2, Trophy, Clock } from "lucide-react";
+import { ArrowLeft, Play, Trophy } from "lucide-react";
 import { CITY_CATALOG, loadRouteData } from "../data/cities/index";
 import { useAuth } from "../context/AuthContext";
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -7,7 +7,6 @@ import {
   Keyboard,
   Gauge,
   Play,
-  Star,
   ChevronRight,
 } from "lucide-react";
 import { CITY_CATALOG } from "../data/cities/index";
@@ -69,8 +68,10 @@ function TypingWord() {
           40
         );
       } else {
-        setWordIdx((i) => (i + 1) % CYCLING_STATIONS.length);
-        setPhase("typing");
+        timeout = setTimeout(() => {
+          setWordIdx((i) => (i + 1) % CYCLING_STATIONS.length);
+          setPhase("typing");
+        }, 300);
       }
     }
     return () => clearTimeout(timeout);

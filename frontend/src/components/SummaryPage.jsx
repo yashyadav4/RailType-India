@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Repeat, LogIn, Award, MapPin, Trophy } from "lucide-react";
+import { Repeat, Award, MapPin, Trophy } from "lucide-react";
 import { CITY_CATALOG } from "../data/cities/index";
 import { useAuth } from "../context/AuthContext";
 import { saveGuestRun } from "../utils/guestRuns";
@@ -44,7 +44,7 @@ function playStampChime() {
       osc.start(t + i * 0.12);
       osc.stop(t + i * 0.12 + 0.4);
     });
-  } catch (e) {
+  } catch {
     /* audio not available */
   }
 }
@@ -98,6 +98,8 @@ export default function SummaryPage() {
       accuracy,
       cpm,
       mistakes: totalMistakes,
+      routeLength: splits?.length || 0,
+      clientHour: new Date().getHours(),
     };
 
     if (user && token) {
@@ -144,6 +146,7 @@ export default function SummaryPage() {
       saveGuestRun(runData);
       toast.info("Run saved locally. Log in to sync!");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Animated counters for metrics
@@ -161,7 +164,6 @@ export default function SummaryPage() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [cityId, lineId, navigate]);
 
-  const wpm = Math.round(cpm / 5);
   const city = CITY_CATALOG[cityId];
   const catalogEntry = city?.lines.find((l) => l.id === lineId);
   const brandColor = catalogEntry ? catalogEntry.color : "var(--marigold)";

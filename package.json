@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "tunnel": "node backend/ngrok.js"
+  },
   "dependencies": {
     "@ngrok/ngrok": "^1.7.0"
   }

@@ -4,16 +4,16 @@
   "systemName": "Delhi Metro",
   "lineName": "Green Line",
   "color": "#22c55e",
-  "startTerminal": "Inderlok Conn:Red",
+  "startTerminal": "Inderlok",
   "endTerminal": "Brigadier Hoshiar Singh",
   "totalStations": 20,
   "stations": [
     {
       "id": "green_line_1",
       "code": "GL-01",
-      "name": "Inderlok Conn:Red",
-      "hindiName": "Inderlok Conn:Red",
-      "localName": "इंद्रलोक कनेक्शन: रेड",
+      "name": "Inderlok",
+      "hindiName": "Inderlok",
+      "localName": "इंद्रलोक",
       "coordinates": [28.67319, 77.16994]
     },
     {
@@ -123,9 +123,9 @@
     {
       "id": "green_line_16",
       "code": "GL-16",
-      "name": "Ghevra Metro station",
-      "hindiName": "Ghevra Metro station",
-      "localName": "घेवरा मेट्रो स्टेशन",
+      "name": "Ghevra",
+      "hindiName": "Ghevra",
+      "localName": "घेवरा",
       "coordinates": [28.685238, 76.996159]
     },
     {
@@ -155,8 +155,8 @@
     {
       "id": "green_line_20",
       "code": "GL-20",
-      "name": "Bahdurgarh City",
-      "hindiName": "Bahdurgarh City",
+      "name": "Bahadurgarh City",
+      "hindiName": "Bahadurgarh City",
       "localName": "बहादुरगढ़ सिटी",
       "coordinates": [28.690785, 76.935485]
     },

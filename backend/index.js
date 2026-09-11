@@ -7,12 +7,29 @@ import runRoutes from "./routers/runRoutes.js";
 dotenv.config({});
 const app = express();
 
-const port = process.env.port || 8000;
+const port = process.env.PORT || process.env.port || 8000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://barber-uneaten-dinner.ngrok-free.dev",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: (origin, callback) => {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.endsWith(".ngrok-free.dev") ||
+      origin.endsWith(".ngrok-free.app")
+    ) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Fallback to allow during dev tunnels
+    }
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));

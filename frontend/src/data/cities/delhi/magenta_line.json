@@ -19,9 +19,9 @@
     {
       "id": "magenta_line_2",
       "code": "ML-02",
-      "name": "Dabri Mor - Janakpuri South",
-      "hindiName": "Dabri Mor - Janakpuri South",
-      "localName": "डाबरी मोड़ - जनकपुरी साउथ",
+      "name": "Dabri Mor Janakpuri South",
+      "hindiName": "Dabri Mor Janakpuri South",
+      "localName": "डाबरी मोड़ जनकपुरी साउथ",
       "coordinates": [28.615755, 77.085178]
     },
     {
@@ -163,8 +163,8 @@
     {
       "id": "magenta_line_20",
       "code": "ML-20",
-      "name": "JAMIA MILLIA ISLAMIA",
-      "hindiName": "JAMIA MILLIA ISLAMIA",
+      "name": "Jamia Millia Islamia",
+      "hindiName": "Jamia Millia Islamia",
       "localName": "जामिया मिल्लिया इस्लामिया",
       "coordinates": [28.55849, 77.281165]
     },

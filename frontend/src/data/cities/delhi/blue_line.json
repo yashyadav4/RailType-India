@@ -155,8 +155,8 @@
     {
       "id": "blue_line_28",
       "code": "BL-28",
-      "name": "R K Ashram Marg",
-      "hindiName": "R K Ashram Marg",
+      "name": "RK Ashram Marg",
+      "hindiName": "RK Ashram Marg",
       "localName": "आर के आश्रम मार्ग",
       "coordinates": [28.63923, 77.2084]
     },
@@ -219,16 +219,16 @@
     {
       "id": "blue_line_36",
       "code": "BL-36",
-      "name": "Mayur Vihar Phase-1",
-      "hindiName": "Mayur Vihar Phase-1",
-      "localName": "मयूर विहार फेज-1",
+      "name": "Mayur Vihar Phase 1",
+      "hindiName": "Mayur Vihar Phase 1",
+      "localName": "मयूर विहार फेज 1",
       "coordinates": [28.603133, 77.292589]
     },
     {
       "id": "blue_line_37",
       "code": "BL-37",
-      "name": "Mayur Vihar Extention",
-      "hindiName": "Mayur Vihar Extention",
+      "name": "Mayur Vihar Extension",
+      "hindiName": "Mayur Vihar Extension",
       "localName": "मयूर विहार एक्सटेंशन",
       "coordinates": [28.599, 77.300]
     },
@@ -254,7 +254,7 @@
       "name": "Golf Course",
       "hindiName": "Golf Course",
       "localName": "गोल्फ कोर्स",
-      "coordinates": [28.574, 77.356]
+      "coordinates": [28.5671, 77.3458]
     },
     {
       "id": "blue_line_41",

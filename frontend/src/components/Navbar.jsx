@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Sun, Moon, User } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import AuthIcon from "./AuthIcon";
 
 /* --------------------------------------------------------------------------
@@ -33,18 +33,14 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [theme, setTheme] = useTheme();
-  const [activeLink, setActiveLink] = useState("home");
 
-  // Keep activeLink in sync when the URL changes (e.g. back button)
-  useEffect(() => {
-    if (location.pathname === "/") {
-      setActiveLink("home");
-    } else if (location.pathname === "/lines") {
-      setActiveLink("lines");
-    } else {
-      setActiveLink(null);
-    }
-  }, [location.pathname]);
+  // Derive activeLink directly from location without unnecessary state/effects
+  const activeLink =
+    location.pathname === "/"
+      ? "home"
+      : location.pathname === "/lines"
+      ? "lines"
+      : null;
 
   // Hide completely while the user is actively playing
   if (location.pathname.endsWith("/play")) return null;
@@ -161,7 +157,6 @@ export default function Navbar() {
         <span
           className="rtnav-wordmark"
           onClick={() => {
-            setActiveLink("home");
             navigate("/");
           }}
         >
@@ -174,7 +169,6 @@ export default function Navbar() {
           <button
             className={`rtnav-link${activeLink === "home" ? " active" : ""}`}
             onClick={() => {
-              setActiveLink("home");
               navigate("/");
             }}
           >
@@ -183,7 +177,6 @@ export default function Navbar() {
           <button
             className={`rtnav-link${activeLink === "lines" ? " active" : ""}`}
             onClick={() => {
-              setActiveLink("lines");
               navigate("/lines");
             }}
           >

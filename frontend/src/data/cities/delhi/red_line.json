@@ -43,8 +43,8 @@
     {
       "id": "red_line_5",
       "code": "RL-05",
-      "name": "Shyam park",
-      "hindiName": "Shyam park",
+      "name": "Shyam Park",
+      "hindiName": "Shyam Park",
       "localName": "श्याम पार्क",
       "coordinates": [28.682133, 77.373144]
     },
@@ -195,8 +195,8 @@
     {
       "id": "red_line_24",
       "code": "RL-24",
-      "name": "Netaji Subash Place",
-      "hindiName": "Netaji Subash Place",
+      "name": "Netaji Subhash Place",
+      "hindiName": "Netaji Subhash Place",
       "localName": "नेताजी सुभाष प्लेस",
       "coordinates": [28.696052, 77.15264]
     },

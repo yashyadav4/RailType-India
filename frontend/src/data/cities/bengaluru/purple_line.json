@@ -33,7 +33,7 @@
     { "id": "purple_23", "code": "IND", "name": "Indiranagar", "hindiName": "Indiranagar", "coordinates": [12.9784, 77.6387], "localName": "ಇಂದಿರಾನಗರ" },
     { "id": "purple_24", "code": "SVR", "name": "Swami Vivekananda Road", "hindiName": "Swami Vivekananda Road", "coordinates": [12.9856, 77.6449], "localName": "ಸ್ವಾಮಿ ವಿವೇಕಾನಂದ ರಸ್ತೆ" },
     { "id": "purple_25", "code": "BNG", "name": "Benniganahalli", "hindiName": "Benniganahalli", "coordinates": [12.9912, 77.6521], "localName": "ಬೆನ್ನಿಗಾನಹಳ್ಳಿ" },
-    { "id": "purple_26", "code": "KRP", "name": "K.R. Pura", "hindiName": "K.R. Pura", "coordinates": [12.9975, 77.6601], "localName": "ಕೆ.ಆರ್. ಪುರ" },
+    { "id": "purple_26", "code": "KRP", "name": "KR Pura", "hindiName": "KR Pura", "coordinates": [12.9975, 77.6601], "localName": "ಕೆ.ಆರ್. ಪುರ" },
     { "id": "purple_27", "code": "SNG", "name": "Singayyanapalya", "hindiName": "Singayyanapalya", "coordinates": [12.9942, 77.671], "localName": "ಸಿಂಗಯ್ಯನಪಾಳ್ಯ" },
     { "id": "purple_28", "code": "GAR", "name": "Garudacharpalya", "hindiName": "Garudacharpalya", "coordinates": [12.9902, 77.6835], "localName": "ಗರುಡಾಚಾರಪಾಳ್ಯ" },
     { "id": "purple_29", "code": "HOO", "name": "Hoodi Junction", "hindiName": "Hoodi Junction", "coordinates": [12.9881, 77.7011], "localName": "ಹೂಡಿ ಜಂಕ್ಷನ್" },

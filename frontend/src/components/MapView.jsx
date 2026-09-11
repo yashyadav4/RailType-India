@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from "react";
-import { Map, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
 import {
   MapContainer,
   TileLayer,
@@ -61,6 +60,57 @@ function smoothPath(points) {
   return d;
 }
 
+/**
+ * Compute stable cubic bezier segments from Catmull-Rom spline through all points.
+ * Each segment has { start, cp1, cp2, end } — same math as smoothPath but preserved per-segment.
+ */
+function computePathSegments(points) {
+  if (points.length < 2) return [];
+  const segments = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(i - 1, 0)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(i + 2, points.length - 1)];
+    segments.push({
+      start: p1,
+      cp1: { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 },
+      cp2: { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 },
+      end: p2,
+    });
+  }
+  return segments;
+}
+
+/** Convert an array of bezier segments into an SVG path string */
+function segmentsToPath(segments) {
+  if (segments.length === 0) return "";
+  let d = `M${segments[0].start.x},${segments[0].start.y}`;
+  for (const seg of segments) {
+    d += ` C${seg.cp1.x},${seg.cp1.y} ${seg.cp2.x},${seg.cp2.y} ${seg.end.x},${seg.end.y}`;
+  }
+  return d;
+}
+
+/**
+ * Split a cubic bezier at parameter t using De Casteljau's algorithm.
+ * Returns { first, second } — two sub-segments that together form the original.
+ * This guarantees NO curve distortion because control points are geometrically subdivided.
+ */
+function splitBezierAt(seg, t) {
+  const lp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+  const a = lp(seg.start, seg.cp1, t);
+  const b = lp(seg.cp1, seg.cp2, t);
+  const c = lp(seg.cp2, seg.end, t);
+  const d = lp(a, b, t);
+  const e = lp(b, c, t);
+  const f = lp(d, e, t); // The exact point on the curve at t
+  return {
+    first:  { start: seg.start, cp1: a, cp2: d, end: f },
+    second: { start: f, cp1: e, cp2: c, end: seg.end },
+  };
+}
+
 /** Detect current theme from <html data-theme="..."> */
 function useThemeDetect() {
   const [theme, setTheme] = useState(
@@ -112,6 +162,7 @@ function ZoomButtons({ zoomIn, zoomOut }) {
             e.stopPropagation();
             btn.action();
           }}
+          onMouseDown={(e) => e.preventDefault()}
           onDoubleClick={(e) => e.stopPropagation()}
           style={{
             width: "40px",
@@ -162,19 +213,29 @@ function SchematicMap({ stations, activeIndex, userInputLength, targetLength, li
   const progress = Math.min(userInputLength / Math.max(targetLength, 1), 1);
   const prevIdx = Math.max(activeIndex - 1, 0);
 
-  const trainPos = useMemo(
-    () => lerp(points[prevIdx], points[activeIndex], progress),
-    [points, prevIdx, activeIndex, progress]
-  );
+  // Compute all bezier segments ONCE — curves never change shape
+  const allSegments = useMemo(() => computePathSegments(points), [points]);
 
-  const completedPathD = useMemo(
-    () => smoothPath([...points.slice(0, activeIndex), trainPos]),
-    [points, activeIndex, trainPos]
-  );
-  const remainingPathD = useMemo(
-    () => smoothPath([trainPos, ...points.slice(activeIndex)]),
-    [points, activeIndex, trainPos]
-  );
+  // Split at the train's exact position on the curve using De Casteljau
+  const { completedPathD, remainingPathD, trainPos } = useMemo(() => {
+    if (allSegments.length === 0 || points.length === 0) {
+      return { completedPathD: "", remainingPathD: "", trainPos: { x: 0, y: 0 } };
+    }
+
+    const segIdx = Math.min(prevIdx, allSegments.length - 1);
+    const { first, second } = splitBezierAt(allSegments[segIdx], progress);
+
+    // Completed = all fully traversed segments + first half of current segment
+    const completedSegs = [...allSegments.slice(0, segIdx), first];
+    // Remaining = second half of current segment + all future segments
+    const remainingSegs = [second, ...allSegments.slice(segIdx + 1)];
+
+    return {
+      completedPathD: segmentsToPath(completedSegs),
+      remainingPathD: segmentsToPath(remainingSegs),
+      trainPos: first.end, // Exact point on the original curve
+    };
+  }, [allSegments, points, prevIdx, progress]);
 
   const zoomIn = () => setZoom((z) => Math.min(MAX_ZOOM, z * 1.3));
   const zoomOut = () => setZoom((z) => Math.max(MIN_ZOOM, z / 1.3));
@@ -463,6 +524,7 @@ export default function MapView({
       {/* Unified Glassmorphism Map Toggle Button */}
       <button
         onClick={() => setMode((m) => (m === "schematic" ? "geographic" : "schematic"))}
+        onMouseDown={(e) => e.preventDefault()}
         style={{
           position: "absolute",
           bottom: "1.5rem",
