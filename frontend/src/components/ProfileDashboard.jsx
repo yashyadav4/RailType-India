@@ -197,6 +197,9 @@ export default function ProfileDashboard() {
   return (
     <div className="pd-layout">
       <style>{`
+        @keyframes rt-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+        .rt-loader-pulse { animation: rt-pulse 1.5s ease-in-out infinite; }
+
         .pd-back {
           display: inline-flex; align-items: center; gap: .4rem;
           font-family: inherit; font-size: .85rem; font-weight: 600;
@@ -654,7 +657,10 @@ export default function ProfileDashboard() {
             </p>
 
             {runsLoading ? (
-              <p style={{ color: "var(--ink-muted)" }}>Loading runs...</p>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", padding: "1.5rem 0" }}>
+                <div className="rt-loader-pulse" style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "var(--marigold)" }} />
+                <span className="rt-loader-pulse" style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: "0.78rem", letterSpacing: "2px", fontWeight: "600", color: "var(--ink-muted)" }}>LOADING RUNS…</span>
+              </div>
             ) : runs.length === 0 ? (
               <div className="pd-empty">
                 <div className="pd-empty-icon">🚂</div>

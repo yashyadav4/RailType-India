@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Repeat, Award, MapPin, Trophy } from "lucide-react";
+import { Repeat, Award, MapPin, Trophy, RotateCcw } from "lucide-react";
 import { CITY_CATALOG } from "../data/cities/index";
 import { useAuth } from "../context/AuthContext";
 import { saveGuestRun } from "../utils/guestRuns";
+import { savePendingRun, removePendingRun, syncPendingRuns } from "../utils/pendingRuns";
 import { STAMP_CATALOG } from "../data/stampCatalog";
 import { useToast } from "../context/ToastContext";
 import confetti from "canvas-confetti";
@@ -61,6 +62,8 @@ export default function SummaryPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [globalRank, setGlobalRank] = useState(null);
   const [unlockedStamps, setUnlockedStamps] = useState([]);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Extract all telemetry data passed from GameView
   const {
@@ -81,17 +84,99 @@ export default function SummaryPage() {
       .catch((err) => console.error("Failed to load leaderboard:", err));
   }, [cityId, lineId]);
 
-  // Save the run on mount (once)
+  const handleSaveSuccess = (data) => {
+    setSaveFailed(false);
+    if (runId) {
+      sessionStorage.setItem(`saved_run_${runId}`, "true");
+      removePendingRun(runId);
+    }
+    if (data.rank) setGlobalRank(data.rank);
+    if (data.updatedBests) {
+      const best = user?.bests?.find(
+        (b) => b.cityId === cityId && b.routeId === lineId,
+      );
+      if (!best || timeMs <= best.timeMs) {
+        setIsNewPB(true);
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        toast.success("🎉 New Personal Best!");
+      }
+      setUser((prev) => (prev ? { ...prev, bests: data.updatedBests } : prev));
+    }
+    if (data.newStampsEarned && data.newStampsEarned.length > 0) {
+      setUnlockedStamps(data.newStampsEarned);
+      playStampChime();
+    }
+    toast.success("Run saved successfully!");
+
+    // Refresh leaderboard just in case this run made the top 10
+    fetch(`/api/runs/leaderboard/${cityId}/${lineId}`)
+      .then((res) => res.json())
+      .then((lData) => setLeaderboard(lData))
+      .catch(() => {});
+
+    // Sync any older pending runs in the background
+    if (token) {
+      syncPendingRuns(token, (bulkData) => {
+        if (bulkData.updatedBests) {
+          setUser((prev) =>
+            prev ? { ...prev, bests: bulkData.updatedBests } : prev,
+          );
+        }
+      });
+    }
+  };
+
+  const handleManualRetry = async () => {
+    if (isRetrying || !user || !token) return;
+    setIsRetrying(true);
+
+    const runData = {
+      runId,
+      cityId,
+      lineId,
+      timeMs,
+      accuracy,
+      cpm,
+      mistakes: totalMistakes,
+      routeLength: splits?.length || 0,
+      clientHour: new Date().getHours(),
+    };
+
+    try {
+      const res = await fetch("/api/runs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(runData),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        handleSaveSuccess(data);
+      } else {
+        toast.error("Retry failed. Your run is still saved locally.");
+      }
+    } catch (err) {
+      console.error("Manual retry failed:", err);
+      toast.error("Server still unreachable. Run is safely stored locally.");
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+  // Save the run on mount (with 3-attempt exponential retry & offline fallback)
   useEffect(() => {
     if (hasSavedRef.current || !timeMs) return;
 
     // Prevent duplicate saves on page reload using sessionStorage and runId
     if (runId && sessionStorage.getItem(`saved_run_${runId}`)) return;
-    if (runId) sessionStorage.setItem(`saved_run_${runId}`, "true");
 
     hasSavedRef.current = true;
 
     const runData = {
+      runId,
       cityId,
       lineId,
       timeMs,
@@ -103,51 +188,70 @@ export default function SummaryPage() {
     };
 
     if (user && token) {
-      // Logged in — save to backend
-      fetch("/api/runs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(runData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.rank) setGlobalRank(data.rank);
-          if (data.updatedBests) {
-            // Check if this run IS the new PB
-            const best = user.bests?.find(
-              (b) => b.cityId === cityId && b.routeId === lineId,
-            );
-            if (!best || timeMs <= best.timeMs) {
-              setIsNewPB(true);
-              confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-              toast.success("🎉 New Personal Best!");
+      // Logged in — save to backend with 3 attempts (immediate, 1.5s, 3s)
+      const attemptSave = async () => {
+        const retryDelays = [0, 1500, 3000];
+
+        for (let i = 0; i < retryDelays.length; i++) {
+          if (retryDelays[i] > 0) {
+            await new Promise((res) => setTimeout(res, retryDelays[i]));
+          }
+
+          // If device went offline, break straight to local pending save
+          if (!navigator.onLine) break;
+
+          try {
+            const res = await fetch("/api/runs", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(runData),
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              handleSaveSuccess(data);
+              return;
             }
-            setUser({ ...user, bests: data.updatedBests });
+          } catch (err) {
+            console.warn(`Run save attempt ${i + 1} failed:`, err);
           }
-          if (data.newStampsEarned && data.newStampsEarned.length > 0) {
-            setUnlockedStamps(data.newStampsEarned);
-            playStampChime();
-          }
-          toast.success("Run saved successfully!");
-          // Refresh leaderboard just in case this run made the top 10
-          return fetch(`/api/runs/leaderboard/${cityId}/${lineId}`);
-        })
-        .then((res) => res.json())
-        .then((data) => setLeaderboard(data))
-        .catch((err) => {
-          console.error("Failed to save run:", err);
-          toast.error("Failed to save run. Check your connection.");
-        });
+        }
+
+        // All 3 attempts failed or client is offline:
+        savePendingRun(runData);
+        setSaveFailed(true);
+        if (!navigator.onLine) {
+          toast.error("You are offline. Run saved to device!");
+        } else {
+          toast.error("Could not reach server. Run saved locally!");
+        }
+      };
+
+      attemptSave();
     } else {
       // Guest — save to localStorage
+      if (runId) sessionStorage.setItem(`saved_run_${runId}`, "true");
       saveGuestRun(runData);
       toast.info("Run saved locally. Log in to sync!");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-retry when internet comes back online
+  useEffect(() => {
+    const handleOnline = () => {
+      if (saveFailed && !isRetrying) {
+        toast.info("Connection restored! Retrying save...");
+        handleManualRetry();
+      }
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saveFailed, isRetrying]);
 
   // Animated counters for metrics
   const animWpm = useCountUp(Math.round(cpm / 5), 1200);
@@ -423,6 +527,10 @@ export default function SummaryPage() {
         .sp-btn-pri:hover { transform: translateY(-2px); box-shadow: 0 8px 24px color-mix(in srgb, var(--lc) 35%, transparent); }
         .sp-btn-sec { background: var(--panel); color: var(--ink); border: 1px solid var(--border); }
         .sp-btn-sec:hover { border-color: var(--ink-muted); }
+        @keyframes sp-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
 
         @media(max-width: 600px) {
           .sp-wrap { padding: 2rem 1.2rem; }
@@ -625,6 +733,27 @@ export default function SummaryPage() {
             Esc
           </span>
         </button>
+        {saveFailed && (
+          <button
+            className="sp-btn sp-btn-sec"
+            onClick={handleManualRetry}
+            disabled={isRetrying}
+            style={{
+              borderColor: "var(--crimson, #ef4444)",
+              color: "var(--crimson, #ef4444)",
+              background: "color-mix(in srgb, var(--crimson, #ef4444) 8%, var(--panel))",
+            }}
+            title="Retry saving run to server"
+          >
+            <RotateCcw
+              size={18}
+              style={{
+                animation: isRetrying ? "sp-spin 1s linear infinite" : "none",
+              }}
+            />
+            {isRetrying ? "Retrying..." : "Retry save"}
+          </button>
+        )}
       </div>
 
       {/* Leaderboard Card */}

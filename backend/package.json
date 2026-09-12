@@ -10,14 +10,15 @@
     "tunnel": "node ngrok.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Yash Yadav",
+  "license": "MIT",
+  "description": "RailType India Backend API",
   "dependencies": {
     "@ngrok/ngrok": "^1.7.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
     "google-auth-library": "^11.0.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.3"

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getGuestRuns, clearGuestRuns } from "../utils/guestRuns";
+import { syncPendingRuns } from "../utils/pendingRuns";
 
 const AuthContext = createContext(null);
 
@@ -26,6 +27,7 @@ export function AuthProvider({ children }) {
 
         if (res.ok) {
           setUser(data);
+          syncPendingRuns(token, setUser);
         } else {
           // Token is invalid/expired — clean up
           localStorage.removeItem("token");
@@ -39,6 +41,17 @@ export function AuthProvider({ children }) {
     };
 
     restoreSession();
+  }, [token]);
+
+  // Sync pending runs automatically when network reconnects
+  useEffect(() => {
+    const handleOnline = () => {
+      if (token) {
+        syncPendingRuns(token, setUser);
+      }
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
   }, [token]);
 
   /**
@@ -60,10 +73,9 @@ export function AuthProvider({ children }) {
         setToken(data.token);
         setUser(data.user);
 
-        // Sync guest runs only for brand-new users
-        if (data.isNewUser) {
-          await syncGuestRuns(data.token);
-        }
+        // Sync any offline pending runs and guest runs
+        syncPendingRuns(data.token, setUser);
+        await syncGuestRuns(data.token);
 
         return { success: true, isNewUser: data.isNewUser };
       } else {

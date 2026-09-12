@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Volume2, VolumeX } from "lucide-react";
 import AuthIcon from "./AuthIcon";
 
 /* --------------------------------------------------------------------------
@@ -33,6 +33,15 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [theme, setTheme] = useTheme();
+  const [soundMuted, setSoundMuted] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('railtype-muted') || 'false'); } catch { return false; }
+  });
+
+  const handleSoundToggle = () => {
+    const next = !soundMuted;
+    setSoundMuted(next);
+    try { localStorage.setItem('railtype-muted', JSON.stringify(next)); } catch { /* ignore */ }
+  };
 
   // Derive activeLink directly from location without unnecessary state/effects
   const activeLink =
@@ -134,7 +143,6 @@ export default function Navbar() {
           display: flex; align-items: center; justify-content: center;
           cursor: pointer;
           color: var(--ink);
-          margin-left: 1.2rem;
           transition: border-color 0.15s ease, transform 0.15s ease, background 0.25s ease;
         }
         .rtnav-theme-btn:hover {
@@ -183,15 +191,27 @@ export default function Navbar() {
             Lines
           </button>
 
-          {/* Dark / Light toggle */}
-          <button
-            className="rtnav-theme-btn"
-            aria-label="Toggle theme"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <AuthIcon />
+          {/* Icon button group — tighter spacing */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginLeft: "0.4rem" }}>
+            {/* Sound toggle */}
+            <button
+              className="rtnav-theme-btn"
+              aria-label={soundMuted ? "Unmute sounds" : "Mute sounds"}
+              onClick={handleSoundToggle}
+            >
+              {soundMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
+
+            {/* Dark / Light toggle */}
+            <button
+              className="rtnav-theme-btn"
+              aria-label="Toggle theme"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <AuthIcon />
+          </div>
         </div>
       </nav>
     </>

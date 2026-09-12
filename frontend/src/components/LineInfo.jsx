@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Play, Trophy } from "lucide-react";
+import { ArrowLeft, Play, Trophy, TrainFront } from "lucide-react";
 import { CITY_CATALOG, loadRouteData } from "../data/cities/index";
 import { useAuth } from "../context/AuthContext";
 
@@ -52,7 +52,20 @@ export default function LineInfo() {
 
   if (!catalogEntry)
     return <div className="li-msg">Route not found!</div>;
-  if (loading) return <div className="li-msg">Connecting to data center...</div>;
+  if (loading) {
+    return (
+      <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.2rem" }}>
+        <style>{`
+          @keyframes rt-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+          .rt-loader-pulse { animation: rt-pulse 1.5s ease-in-out infinite; }
+        `}</style>
+        <TrainFront size={36} className="rt-loader-pulse" style={{ color: "var(--marigold)" }} />
+        <div className="rt-loader-pulse" style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: "0.82rem", letterSpacing: "2.5px", fontWeight: "600", color: "var(--ink-muted)" }}>
+          CONNECTING TO DATACENTER…
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="li-wrap">

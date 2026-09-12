@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { loadRouteData } from "../data/cities/index";
-import { Pause, Play, X, TrainFront } from "lucide-react";
+import { Pause, Play, X, TrainFront, Volume2, VolumeX, RotateCcw } from "lucide-react";
 import MapView from "./MapView";
 
 // ── Subtle Sound Engine (Web Audio API) ─────────────────────────────
@@ -31,6 +31,7 @@ const getAudioCtx = () => {
  * Each keypress is subtly randomized in pitch so repeated typing feels organic.
  */
 const playTypeClick = () => {
+  if (_muted) return;
   const ctx = getAudioCtx();
   const t = ctx.currentTime;
   const r = () => 0.93 + Math.random() * 0.14;
@@ -84,6 +85,7 @@ const playTypeClick = () => {
  * with a warm sine base + soft triangle harmonic overlay
  */
 const playSuccessChime = () => {
+  if (_muted) return;
   const ctx = getAudioCtx();
   const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
 
@@ -116,6 +118,7 @@ const playSuccessChime = () => {
 
 /** Quick low-freq buzz for wrong key */
 const playErrorBuzz = () => {
+  if (_muted) return;
   const ctx = getAudioCtx();
   const t = ctx.currentTime;
 
@@ -143,6 +146,7 @@ const playErrorBuzz = () => {
  * Clean sine tone with a percussive noise click layered on top
  */
 const playCountdownTick = () => {
+  if (_muted) return;
   const ctx = getAudioCtx();
   const t = ctx.currentTime;
 
@@ -177,6 +181,7 @@ const playCountdownTick = () => {
  * with a bright triangle shimmer at G6 to signal the race is on
  */
 const playCountdownGo = () => {
+  if (_muted) return;
   const ctx = getAudioCtx();
   const t = ctx.currentTime;
 
@@ -206,6 +211,10 @@ const playCountdownGo = () => {
   shimmer.stop(t + 0.35);
 };
 
+// ── Sound Mute System ──────────────────────────────────────────────────
+let _muted = false;
+try { _muted = JSON.parse(localStorage.getItem('railtype-muted') || 'false'); } catch { /* ignore */ }
+
 export default function GameView() {
   const { cityId, lineId } = useParams();
   const navigate = useNavigate();
@@ -219,6 +228,10 @@ export default function GameView() {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [userInput, setUserInput] = useState("");
   const [shake, setShake] = useState(false);
+  const [soundMuted, setSoundMuted] = useState(_muted);
+  const [stationFlash, setStationFlash] = useState(false);
+  const [personalBest, setPersonalBest] = useState(null);
+  const [restartCount, setRestartCount] = useState(0);
 
   // Core Telemetry Refs (Invisible, no re-renders)
   const startTimeRef = useRef(null);
@@ -271,6 +284,15 @@ export default function GameView() {
         if (cpmDivRef.current) cpmDivRef.current.innerText = "0";
         if (accuracyDivRef.current) accuracyDivRef.current.innerText = "100.0%";
 
+        // Load personal best from localStorage
+        try {
+          const pbKey = `railtype-pb-${cityId}-${lineId}`;
+          const stored = localStorage.getItem(pbKey);
+          if (stored) setPersonalBest(JSON.parse(stored));
+          else setPersonalBest(null);
+        } catch { setPersonalBest(null); }
+
+        setStationFlash(false);
         setGameState("countdown");
         setCountdownNum(3);
       } else if (isMounted && !data) {
@@ -287,7 +309,7 @@ export default function GameView() {
         cancelAnimationFrame(animationFrameRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityId, lineId]);
+  }, [cityId, lineId, restartCount]);
 
   function formatTime(ms) {
     const totalSecs = Math.floor(ms / 1000);
@@ -410,6 +432,20 @@ export default function GameView() {
     }
   };
 
+  // Restart the current route
+  const handleRestart = () => {
+    cancelAnimationFrame(animationFrameRef.current);
+    setRestartCount((c) => c + 1);
+  };
+
+  // Sound toggle handler
+  const handleSoundToggle = (e) => {
+    e.stopPropagation();
+    _muted = !_muted;
+    setSoundMuted(_muted);
+    try { localStorage.setItem('railtype-muted', JSON.stringify(_muted)); } catch { /* ignore */ }
+  };
+
   // Auto-pause when leaving tab/window
   useEffect(() => {
     const handleFocusLoss = () => {
@@ -450,13 +486,22 @@ export default function GameView() {
           height: "100vh",
           width: "100vw",
           backgroundColor: "var(--void)",
-          color: "var(--ink)",
+          color: "var(--ink-muted)",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          gap: "1.5rem",
         }}
       >
-        <h2>Loading Metro Route...</h2>
+        <style>{`
+          @keyframes rt-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+          .rt-loader-pulse { animation: rt-pulse 1.5s ease-in-out infinite; }
+        `}</style>
+        <TrainFront size={48} className="rt-loader-pulse" style={{ color: "var(--marigold)" }} />
+        <div className="rt-loader-pulse" style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: "0.95rem", letterSpacing: "3px", fontWeight: "600" }}>
+          LOADING METRO ROUTE…
+        </div>
       </div>
     );
   }
@@ -533,6 +578,10 @@ export default function GameView() {
         mistakes: currentStationMistakesRef.current,
       });
 
+      // Flash the typing card border
+      setStationFlash(true);
+      setTimeout(() => setStationFlash(false), 600);
+
       if (currentIndex < stations.length - 1) {
         setCurrentIndex(currentIndex + 1);
         setUserInput("");
@@ -545,6 +594,19 @@ export default function GameView() {
         isCompletedRef.current = true;
         cancelAnimationFrame(animationFrameRef.current);
         setFinalTimeMs(elapsedMsRef.current);
+
+        // Save personal best
+        try {
+          const pbKey = `railtype-pb-${cityId}-${lineId}`;
+          const stored = localStorage.getItem(pbKey);
+          const prevBest = stored ? JSON.parse(stored).timeMs : Infinity;
+          if (elapsedMsRef.current < prevBest) {
+            const newPB = { timeMs: elapsedMsRef.current, date: Date.now() };
+            localStorage.setItem(pbKey, JSON.stringify(newPB));
+            setPersonalBest(newPB);
+          }
+        } catch { /* ignore */ }
+
         setGameState("completed");
       }
     }
@@ -650,6 +712,11 @@ export default function GameView() {
           0% { transform: scale(0.9); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
+        @keyframes stationFlash {
+          0%, 25% { border-color: var(--flash-color); }
+          100% { border-color: var(--border); }
+        }
+        .station-flash { animation: stationFlash 0.5s ease-out !important; }
       `}</style>
 
       {/* 1. Fullscreen Map Canvas */}
@@ -720,27 +787,82 @@ export default function GameView() {
               backgroundColor: "var(--panel)",
               border: "1px solid var(--border)",
               borderRadius: "20px",
-              padding: "4rem 5rem",
+              padding: "3rem 4rem",
               textAlign: "center",
               boxShadow: "var(--shadow-md)",
+              minWidth: "320px",
             }}
           >
-            <h2 style={{ fontSize: "2.5rem", margin: "0 0 2rem", color: "var(--ink)" }}>Paused</h2>
-            <button
-              onClick={togglePause}
-              style={{
-                backgroundColor: "var(--marigold)",
-                color: "var(--marigold-ink)",
-                border: "none",
-                borderRadius: "12px",
-                padding: "1rem 3rem",
-                fontSize: "1.2rem",
-                fontWeight: "700",
-                cursor: "pointer",
-              }}
-            >
-              Resume Journey
-            </button>
+            <h2 style={{ fontSize: "2.5rem", margin: "0 0 0.5rem", color: "var(--ink)" }}>Paused</h2>
+            <p style={{ color: "var(--ink-muted)", fontSize: "0.9rem", margin: "0 0 2.5rem" }}>Press Esc to resume</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+              <button
+                onClick={togglePause}
+                style={{
+                  backgroundColor: "var(--marigold)",
+                  color: "var(--marigold-ink)",
+                  border: "none",
+                  borderRadius: "12px",
+                  padding: "1rem 3rem",
+                  fontSize: "1.1rem",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  transition: "opacity 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.opacity = "0.9")}
+                onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+              >
+                <Play size={18} /> Resume Journey
+              </button>
+              <button
+                onClick={handleRestart}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "var(--ink)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "12px",
+                  padding: "0.9rem 3rem",
+                  fontSize: "1.05rem",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  transition: "background 0.2s",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = "var(--panel-raised)")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                <RotateCcw size={16} /> Restart Route
+              </button>
+              <button
+                onClick={() => navigate("/lines")}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "var(--ink-muted)",
+                  border: "1px solid color-mix(in srgb, var(--border) 50%, transparent)",
+                  borderRadius: "12px",
+                  padding: "0.9rem 3rem",
+                  fontSize: "1.05rem",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  transition: "background 0.2s, color 0.2s",
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.background = "var(--panel-raised)"; e.currentTarget.style.color = "var(--ink)"; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--ink-muted)"; }}
+              >
+                <X size={16} /> Quit to Menu
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -854,18 +976,32 @@ export default function GameView() {
           </div>
         </div>
 
-        {/* Timer tied directly to the DOM Ref */}
-        <div
-          ref={timerDivRef}
-          style={{
-            fontSize: "2.2rem",
-            fontWeight: "bold",
-            color: "var(--lc, var(--marigold))",
-            fontFamily: '"JetBrains Mono", monospace',
-            letterSpacing: "2px",
-          }}
-        >
-          0:00.00
+        {/* Timer + Personal Best — absolutely centered */}
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
+          <div
+            ref={timerDivRef}
+            style={{
+              fontSize: "2.2rem",
+              fontWeight: "bold",
+              color: "var(--lc, var(--marigold))",
+              fontFamily: '"JetBrains Mono", monospace',
+              letterSpacing: "2px",
+            }}
+          >
+            0:00.00
+          </div>
+          {personalBest && (
+            <div style={{
+              fontSize: "0.7rem",
+              color: "var(--ink-muted)",
+              fontFamily: '"JetBrains Mono", monospace',
+              letterSpacing: "1px",
+              opacity: 0.6,
+              marginTop: "2px",
+            }}>
+              PB {formatTime(personalBest.timeMs)}
+            </div>
+          )}
         </div>
 
         {/* Live Telemetry Stats tied to DOM Refs */}
@@ -928,6 +1064,27 @@ export default function GameView() {
 
           <div style={{ display: "flex", gap: "0.8rem", borderLeft: "1px solid var(--border)", paddingLeft: "1.5rem" }}>
             <button
+              onClick={handleSoundToggle}
+              style={{
+                background: "transparent",
+                border: "1px solid var(--border)",
+                borderRadius: "8px",
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: soundMuted ? "var(--ink-muted)" : "var(--ink)",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = "var(--panel-raised)")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+              title={soundMuted ? "Unmute" : "Mute"}
+            >
+              {soundMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
+            <button
               onClick={togglePause}
               style={{
                 background: "transparent",
@@ -977,6 +1134,23 @@ export default function GameView() {
             </button>
           </div>
         </div>
+        {/* Subtle progress bar at the bottom of HUD */}
+        <div style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "2px",
+          background: "color-mix(in srgb, var(--ink) 8%, transparent)",
+        }}>
+          <div style={{
+            height: "100%",
+            width: `${((currentIndex - 1) / Math.max(stations.length - 2, 1)) * 100}%`,
+            background: routeData.color || "var(--marigold)",
+            transition: "width 0.5s cubic-bezier(0.25, 1, 0.5, 1)",
+            opacity: 0.6,
+          }} />
+        </div>
       </div>
 
       {/* 3. Bottom Typing Card UI */}
@@ -998,15 +1172,16 @@ export default function GameView() {
         }}
       >
         <div
-          className={shake ? "shake-animation" : ""}
+          className={`${shake ? "shake-animation" : ""} ${stationFlash ? "station-flash" : ""}`}
           style={{
+            "--flash-color": routeData.color || "var(--marigold)",
             backgroundColor: "var(--panel-raised)",
             border: "1px solid var(--border)",
             borderRadius: "32px",
             width: "min(740px, 92vw)",
             boxShadow: "var(--shadow-md)",
             overflow: "hidden",
-            transition: "transform 0.1s ease",
+            transition: "transform 0.1s ease, box-shadow 0.3s ease",
             pointerEvents: "auto",
           }}
         >
@@ -1019,9 +1194,10 @@ export default function GameView() {
               gap: targetStationLength > 20 ? "1.8rem" : "2.5rem",
             }}
           >
-            {/* Left: Station Code Box (Mimicking the JY/30 box) */}
+            {/* Left: Station Code Box with typing progress fill */}
             <div
               style={{
+                position: "relative",
                 border: `5px solid ${routeData.color || "var(--marigold)"}`,
                 borderRadius: "18px",
                 width: "65px",
@@ -1032,31 +1208,45 @@ export default function GameView() {
                 justifyContent: "center",
                 fontWeight: "800",
                 color: "var(--panel-raised)",
-                backgroundColor: routeData.color || "var(--marigold)",
+                backgroundColor: "color-mix(in srgb, var(--ink) 12%, transparent)",
                 fontFamily: '"JetBrains Mono", monospace',
                 flexShrink: 0,
+                overflow: "hidden",
               }}
             >
-              {/* If the code has a hyphen (like ML-01), stack it like the reference image */}
-              {currentStation?.code?.includes("-") ? (
-                <>
-                  <span style={{ fontSize: "1rem", lineHeight: "1.2", letterSpacing: "1px" }}>
-                    {currentStation.code.split("-")[0]}
+              {/* Progress fill that rises from bottom as you type */}
+              <div style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: `${(userInput.length / Math.max(targetStation.length, 1)) * 100}%`,
+                backgroundColor: routeData.color || "var(--marigold)",
+                transition: "height 0.15s ease-out",
+                borderRadius: "0 0 13px 13px",
+              }} />
+              {/* Code text (above the fill) */}
+              <div style={{ position: "relative", zIndex: 1 }}>
+                {currentStation?.code?.includes("-") ? (
+                  <>
+                    <span style={{ fontSize: "1rem", lineHeight: "1.2", letterSpacing: "1px", display: "block", textAlign: "center" }}>
+                      {currentStation.code.split("-")[0]}
+                    </span>
+                    <span style={{ fontSize: "1.6rem", lineHeight: "1", display: "block", textAlign: "center" }}>
+                      {currentStation.code.split("-")[1]}
+                    </span>
+                  </>
+                ) : (
+                  <span
+                    style={{
+                      fontSize:
+                        currentStation?.code?.length > 4 ? "1rem" : "1.3rem",
+                    }}
+                  >
+                    {currentStation?.code}
                   </span>
-                  <span style={{ fontSize: "1.6rem", lineHeight: "1" }}>
-                    {currentStation.code.split("-")[1]}
-                  </span>
-                </>
-              ) : (
-                <span
-                  style={{
-                    fontSize:
-                      currentStation?.code?.length > 4 ? "1rem" : "1.3rem",
-                  }}
-                >
-                  {currentStation?.code}
-                </span>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Right: Text Information block */}
@@ -1137,20 +1327,21 @@ export default function GameView() {
               fontFamily: '"JetBrains Mono", monospace',
             }}
           >
-            <span style={{ flex: 1, textAlign: "left" }}>
+            <span style={{ flex: 1, textAlign: "left", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
               ◀ {prevStation || "---"}
             </span>
             <span
               style={{
                 fontSize: "0.85rem",
                 opacity: 0.9,
-                flex: 1,
+                flexShrink: 0,
                 textAlign: "center",
+                padding: "0 0.8rem",
               }}
             >
               Next Station
             </span>
-            <span style={{ flex: 1, textAlign: "right" }}>
+            <span style={{ flex: 1, textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
               {nextStation || "---"} ▶
             </span>
           </div>

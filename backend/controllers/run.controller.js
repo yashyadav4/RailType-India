@@ -2,6 +2,74 @@ import Run from "../models/run.model.js";
 import User from "../models/user.model.js";
 import { evaluateStamps } from "../utils/stampEvaluator.js";
 
+// ── Input Validation ───────────────────────────────────────────────
+// 
+// WHY THIS MATTERS:
+// All game logic runs on the client (browser). A malicious user can
+// open DevTools → Console and POST any data they want:
+//   fetch('/api/runs', { body: { timeMs: 1, cpm: 9999, accuracy: 100 } })
+// 
+// We can't *prove* a run is real (that would need server-side game state),
+// but we CAN reject data that's PHYSICALLY IMPOSSIBLE:
+//
+// Layer 1: TYPE CHECKS   — "Is timeMs actually a number?"
+// Layer 2: RANGE CHECKS  — "Is CPM within human limits?"
+// Layer 3: CROSS-CHECKS  — "Does CPM × time ≈ actual characters typed?"
+//
+const validateRunData = (data) => {
+  const { cityId, lineId, timeMs, accuracy, cpm, mistakes, clientHour } = data;
+  const errors = [];
+
+  // ── Layer 1: Type validation ──
+  if (typeof cityId !== "string" || !cityId.trim()) errors.push("cityId must be a non-empty string");
+  if (typeof lineId !== "string" || !lineId.trim()) errors.push("lineId must be a non-empty string");
+  if (typeof timeMs !== "number" || !Number.isFinite(timeMs)) errors.push("timeMs must be a finite number");
+  if (typeof accuracy !== "number" || !Number.isFinite(accuracy)) errors.push("accuracy must be a finite number");
+  if (typeof cpm !== "number" || !Number.isFinite(cpm)) errors.push("cpm must be a finite number");
+  if (mistakes != null && (typeof mistakes !== "number" || !Number.isFinite(mistakes))) errors.push("mistakes must be a number");
+
+  // Bail early if types are wrong — range checks would crash
+  if (errors.length > 0) return errors;
+
+  // ── Layer 2: Range validation (hard physical limits) ──
+  // Minimum 3 seconds (even the shortest route takes a few seconds)
+  // Maximum 1 hour (nobody types a single metro line for 60+ minutes)
+  if (timeMs < 3000) errors.push("timeMs too low (minimum 3 seconds)");
+  if (timeMs > 3600000) errors.push("timeMs too high (maximum 1 hour)");
+
+  // CPM: World typing record ≈ 220 WPM ≈ 1100 CPM. Cap at 1500 to be generous.
+  if (cpm < 1) errors.push("cpm must be positive");
+  if (cpm > 1500) errors.push("cpm exceeds human typing limits");
+
+  // Accuracy: must be a percentage
+  if (accuracy < 0 || accuracy > 100) errors.push("accuracy must be 0–100");
+
+  // Mistakes: can't be negative, cap at a sane upper bound
+  const m = mistakes || 0;
+  if (m < 0) errors.push("mistakes cannot be negative");
+  if (m > 5000) errors.push("mistakes exceeds sane limit");
+
+  // clientHour: must be 0–23 if provided
+  if (clientHour != null && (typeof clientHour !== "number" || clientHour < 0 || clientHour > 23)) {
+    errors.push("clientHour must be 0–23");
+  }
+
+  // ── Layer 3: Cross-validation (catch mathematically impossible data) ──
+  // If accuracy = 100%, there should be 0 mistakes
+  if (accuracy === 100 && m > 0) errors.push("100% accuracy with mistakes > 0 is contradictory");
+
+  // CPM sanity: The reported CPM should be roughly consistent with the time.
+  // CPM = (characters typed / timeMs) * 60000
+  // If someone claims 800 CPM over 5 seconds, that's 800 * 5/60 ≈ 67 chars in 5s.
+  // That's possible for a very short station. But 1200 CPM for 60 seconds = 1200 chars/min
+  // which is clearly superhuman. We flag if CPM > 1000 AND time > 30s.
+  if (cpm > 1000 && timeMs > 30000) {
+    errors.push("CPM + duration combination is implausible");
+  }
+
+  return errors;
+};
+
 // GET /api/runs/stats/total — Get total runs played globally
 export const getTotalRuns = async (req, res) => {
   try {
@@ -19,8 +87,10 @@ export const saveRun = async (req, res) => {
     const userId = req.user.userId;
     const { cityId, lineId, timeMs, accuracy, cpm, mistakes, routeLength = 0, clientHour } = req.body;
 
-    if (!cityId || !lineId || !timeMs || accuracy == null || !cpm) {
-      return res.status(400).json({ message: "Missing required run fields" });
+    // ── Validate input ──
+    const validationErrors = validateRunData({ cityId, lineId, timeMs, accuracy, cpm, mistakes, clientHour });
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ message: "Invalid run data", errors: validationErrors });
     }
 
     const run = new Run({
@@ -90,7 +160,6 @@ export const saveRun = async (req, res) => {
       newStampsEarned = evaluateStamps(user, { timeMs, accuracy, cpm, mistakes: mistakes || 0, clientHour }, globalRank, routeLength);
       if (newStampsEarned.length > 0) {
         let currentStamps = Array.isArray(user.stamps) ? [...user.stamps] : [];
-        // Filter out any legacy integers that might have been casted
         currentStamps = currentStamps.filter(s => typeof s === 'string');
         user.stamps = [...currentStamps, ...newStampsEarned];
         user.markModified('stamps');
@@ -119,6 +188,17 @@ export const bulkSaveRuns = async (req, res) => {
     // Cap at 50 runs to prevent abuse
     const capped = runs.slice(0, 50);
 
+    // Validate every run in the batch — reject the whole batch if any is bad
+    for (let i = 0; i < capped.length; i++) {
+      const errors = validateRunData(capped[i]);
+      if (errors.length > 0) {
+        return res.status(400).json({ message: `Invalid data in run #${i + 1}`, errors });
+      }
+    }
+
+    // Use server-generated timestamps (don't trust client createdAt).
+    // clientHour is preserved for time-of-day badge evaluation but
+    // the actual DB timestamp is always set by the server.
     const runDocs = capped.map((r) => ({
       user: userId,
       cityId: r.cityId,
@@ -127,7 +207,7 @@ export const bulkSaveRuns = async (req, res) => {
       accuracy: r.accuracy,
       cpm: r.cpm,
       mistakes: r.mistakes || 0,
-      createdAt: r.playedAt || new Date(),
+      // createdAt is auto-set by Mongoose timestamps — no client override
     }));
 
     await Run.insertMany(runDocs);
@@ -140,13 +220,12 @@ export const bulkSaveRuns = async (req, res) => {
       capped.forEach(r => {
         const bestIndex = user.bests.findIndex(b => b.cityId === r.cityId && b.routeId === r.lineId);
         if (bestIndex === -1) {
-          user.bests.push({ cityId: r.cityId, routeId: r.lineId, timeMs: r.timeMs, accuracy: r.accuracy, cpm: r.cpm, mistakes: r.mistakes || 0, createdAt: r.playedAt || new Date() });
+          user.bests.push({ cityId: r.cityId, routeId: r.lineId, timeMs: r.timeMs, accuracy: r.accuracy, cpm: r.cpm, mistakes: r.mistakes || 0 });
         } else if (r.timeMs < user.bests[bestIndex].timeMs) {
           user.bests[bestIndex].timeMs = r.timeMs;
           user.bests[bestIndex].accuracy = r.accuracy;
           user.bests[bestIndex].cpm = r.cpm;
           user.bests[bestIndex].mistakes = r.mistakes || 0;
-          user.bests[bestIndex].createdAt = r.playedAt || new Date();
         }
       });
 
